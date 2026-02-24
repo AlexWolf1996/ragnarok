@@ -292,6 +292,64 @@ function AnimatedLetter({ letter, delay }: { letter: string; delay: number }) {
 }
 
 // ============================================
+// TYPEWRITER TEXT EFFECT
+// ============================================
+function TypewriterText({
+  texts,
+  typingSpeed = 80,
+  deletingSpeed = 40,
+  pauseDuration = 2000
+}: {
+  texts: string[];
+  typingSpeed?: number;
+  deletingSpeed?: number;
+  pauseDuration?: number;
+}) {
+  const [currentTextIndex, setCurrentTextIndex] = useState(0);
+  const [displayedText, setDisplayedText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (reducedMotion) {
+      setDisplayedText(texts[0]);
+      return;
+    }
+
+    const currentFullText = texts[currentTextIndex];
+
+    const timeout = setTimeout(() => {
+      if (!isDeleting) {
+        // Typing
+        if (displayedText.length < currentFullText.length) {
+          setDisplayedText(currentFullText.slice(0, displayedText.length + 1));
+        } else {
+          // Pause before deleting
+          setTimeout(() => setIsDeleting(true), pauseDuration);
+        }
+      } else {
+        // Deleting
+        if (displayedText.length > 0) {
+          setDisplayedText(displayedText.slice(0, -1));
+        } else {
+          setIsDeleting(false);
+          setCurrentTextIndex((prev) => (prev + 1) % texts.length);
+        }
+      }
+    }, isDeleting ? deletingSpeed : typingSpeed);
+
+    return () => clearTimeout(timeout);
+  }, [displayedText, isDeleting, currentTextIndex, texts, typingSpeed, deletingSpeed, pauseDuration, reducedMotion]);
+
+  return (
+    <span className="inline-block">
+      {displayedText}
+      <span className="animate-blink text-amber-500">|</span>
+    </span>
+  );
+}
+
+// ============================================
 // SCROLL INDICATOR
 // ============================================
 function ScrollIndicator() {
@@ -605,10 +663,28 @@ function SectionDivider({ variant = 'gradient' }: { variant?: 'gradient' | 'line
 }
 
 // ============================================
-// ARENA PREVIEW CARD
+// ARENA PREVIEW CARD - ENHANCED
 // ============================================
 function ArenaPreviewCard() {
   const { ref, isVisible } = useScrollReveal();
+  const [battleTime, setBattleTime] = useState(0);
+  const [fenrirPower, setFenrirPower] = useState(75);
+  const [mjolnirPower, setMjolnirPower] = useState(42);
+  const reducedMotion = useReducedMotion();
+
+  // Simulate battle progress
+  useEffect(() => {
+    if (reducedMotion || !isVisible) return;
+
+    const interval = setInterval(() => {
+      setBattleTime((t) => t + 1);
+      // Subtle power fluctuations
+      setFenrirPower((p) => Math.min(100, Math.max(60, p + (Math.random() - 0.4) * 3)));
+      setMjolnirPower((p) => Math.min(100, Math.max(30, p + (Math.random() - 0.5) * 4)));
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [isVisible, reducedMotion]);
 
   return (
     <div
@@ -618,62 +694,115 @@ function ArenaPreviewCard() {
       }`}
     >
       <div
-        className="relative bg-[#0d0d16] border border-amber-500/15 rounded-2xl overflow-hidden animate-card-breathe"
+        className="relative bg-[#0d0d16] border border-amber-500/15 rounded-2xl overflow-hidden group"
         style={{ boxShadow: '0 0 60px rgba(255, 140, 0, 0.05)' }}
       >
+        {/* Animated border glow */}
+        <div
+          className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+          style={{
+            background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.1), transparent 50%, rgba(99, 102, 241, 0.1))',
+          }}
+        />
+
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-black/30">
           <div className="flex items-center gap-3">
-            <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
+            </span>
             <span className="text-sm font-semibold text-white tracking-wide">LIVE BATTLE #4,892</span>
+            <span className="px-2 py-0.5 bg-red-500/20 rounded text-[10px] font-bold text-red-400 uppercase tracking-wider">
+              Live
+            </span>
           </div>
-          <span className="text-xs text-zinc-500">Round 7 of 10</span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-zinc-500">Round 7 of 10</span>
+            <span className="text-xs text-amber-500 font-mono">
+              {Math.floor(battleTime / 60).toString().padStart(2, '0')}:{(battleTime % 60).toString().padStart(2, '0')}
+            </span>
+          </div>
         </div>
 
         <div className="grid grid-cols-3 gap-4 p-8">
+          {/* Fenrir */}
           <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center text-xl font-black text-white">
-              ᚠ
+            <div className="relative">
+              <div
+                className="w-20 h-20 mx-auto mb-3 rounded-full bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center text-2xl font-black text-white transition-transform duration-300 hover:scale-110"
+                style={{
+                  boxShadow: fenrirPower > 70 ? '0 0 30px rgba(245, 158, 11, 0.4)' : 'none',
+                }}
+              >
+                ᚠ
+              </div>
+              {fenrirPower > mjolnirPower && (
+                <span className="absolute -top-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center text-xs">
+                  👑
+                </span>
+              )}
             </div>
-            <h4 className="font-bold text-white mb-2">FENRIR-9B</h4>
+            <h4 className="font-bold text-white mb-1">FENRIR-9B</h4>
+            <p className="text-xs text-amber-500 mb-3">ELO: 2,847</p>
             <div className="relative h-3 bg-zinc-800 rounded-full overflow-hidden">
               <div
-                className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-500 to-amber-400 rounded-full animate-shimmer"
-                style={{ width: '75%' }}
+                className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-500 to-amber-400 rounded-full transition-all duration-1000"
+                style={{ width: `${fenrirPower}%` }}
               />
             </div>
-            <span className="text-xs text-zinc-400 mt-1 inline-block">75% Power</span>
+            <span className="text-xs text-zinc-400 mt-1 inline-block">{Math.round(fenrirPower)}% Power</span>
           </div>
 
-          <div className="flex items-center justify-center">
-            <div className="text-4xl">⚔️</div>
+          {/* VS */}
+          <div className="flex flex-col items-center justify-center">
+            <div className="text-5xl animate-pulse">⚔️</div>
+            <span className="text-xs text-zinc-600 mt-2 tracking-widest">VS</span>
           </div>
 
+          {/* Mjolnir */}
           <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xl font-black text-white">
-              ᚦ
+            <div className="relative">
+              <div
+                className="w-20 h-20 mx-auto mb-3 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-2xl font-black text-white transition-transform duration-300 hover:scale-110"
+                style={{
+                  boxShadow: mjolnirPower > 70 ? '0 0 30px rgba(99, 102, 241, 0.4)' : 'none',
+                }}
+              >
+                ᚦ
+              </div>
+              {mjolnirPower > fenrirPower && (
+                <span className="absolute -top-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center text-xs">
+                  👑
+                </span>
+              )}
             </div>
-            <h4 className="font-bold text-white mb-2">MJOLNIR-3</h4>
+            <h4 className="font-bold text-white mb-1">MJOLNIR-3</h4>
+            <p className="text-xs text-indigo-400 mb-3">ELO: 2,691</p>
             <div className="relative h-3 bg-zinc-800 rounded-full overflow-hidden">
               <div
-                className="absolute inset-y-0 left-0 bg-gradient-to-r from-indigo-500 to-indigo-400 rounded-full animate-shimmer"
-                style={{ width: '42%' }}
+                className="absolute inset-y-0 left-0 bg-gradient-to-r from-indigo-500 to-indigo-400 rounded-full transition-all duration-1000"
+                style={{ width: `${mjolnirPower}%` }}
               />
             </div>
-            <span className="text-xs text-zinc-400 mt-1 inline-block">42% Power</span>
+            <span className="text-xs text-zinc-400 mt-1 inline-block">{Math.round(mjolnirPower)}% Power</span>
           </div>
         </div>
 
-        <div className="px-6 py-4 border-t border-white/5 bg-black/30 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4 sm:gap-6 flex-wrap justify-center">
-            <span className="text-sm text-zinc-400">Betting Odds:</span>
-            <span className="text-sm font-semibold text-amber-400">FENRIR: 1.35x</span>
-            <span className="text-sm font-semibold text-indigo-400">MJOLNIR: 2.80x</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="h-1 bg-zinc-700 rounded-full w-24">
-              <div className="h-full bg-amber-500 rounded-full" style={{ width: '70%' }} />
+        <div className="px-6 py-4 border-t border-white/5 bg-black/30">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4 sm:gap-6 flex-wrap justify-center">
+              <span className="text-sm text-zinc-400">Betting Pool:</span>
+              <span className="text-sm font-bold text-emerald-400">847 SOL</span>
+              <span className="text-zinc-600">|</span>
+              <span className="text-sm font-semibold text-amber-400">FENRIR: 1.35x</span>
+              <span className="text-sm font-semibold text-indigo-400">MJOLNIR: 2.80x</span>
             </div>
-            <span className="text-xs text-zinc-500">Round 7/10</span>
+            <Link
+              href="/arena"
+              className="px-4 py-2 bg-amber-500/20 border border-amber-500/30 rounded-lg text-sm font-semibold text-amber-500 hover:bg-amber-500/30 transition-colors"
+            >
+              Watch Live →
+            </Link>
           </div>
         </div>
       </div>
@@ -1217,10 +1346,20 @@ export default function Home() {
             </p>
 
             <p
-              className="text-lg font-medium bg-gradient-to-r from-amber-500 to-red-500 bg-clip-text text-transparent mb-12 opacity-0 animate-fade-in"
+              className="text-lg md:text-xl font-medium text-amber-500 mb-12 h-8 opacity-0 animate-fade-in"
               style={{ animationDelay: '900ms', animationFillMode: 'forwards' }}
             >
-              Where Agents Fight. You Profit.
+              <TypewriterText
+                texts={[
+                  'Where Agents Fight. You Profit.',
+                  'Deploy. Battle. Dominate.',
+                  'The Ultimate AI Arena.',
+                  'Built on Solana. Powered by AI.',
+                ]}
+                typingSpeed={60}
+                deletingSpeed={30}
+                pauseDuration={3000}
+              />
             </p>
 
             <div
@@ -1819,6 +1958,19 @@ export default function Home() {
           animation: live-pulse 2s ease-in-out infinite;
         }
 
+        @keyframes blink {
+          0%, 50% {
+            opacity: 1;
+          }
+          51%, 100% {
+            opacity: 0;
+          }
+        }
+
+        .animate-blink {
+          animation: blink 1s step-end infinite;
+        }
+
         @media (prefers-reduced-motion: reduce) {
           .animate-fade-in,
           .animate-cta-glow,
@@ -1827,8 +1979,13 @@ export default function Home() {
           .animate-shimmer,
           .animate-rune-float,
           .animate-pulse-scale,
-          .animate-live-pulse {
+          .animate-live-pulse,
+          .animate-blink {
             animation: none;
+          }
+
+          .animate-blink {
+            opacity: 1;
           }
 
           .animate-fade-in {
