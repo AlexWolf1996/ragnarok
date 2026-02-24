@@ -682,7 +682,7 @@ function ArenaPreviewCard() {
 }
 
 // ============================================
-// FEATURE PILLAR CARD
+// FEATURE PILLAR CARD WITH 3D TILT
 // ============================================
 function PillarCard({
   icon,
@@ -698,31 +698,115 @@ function PillarCard({
   delay: number;
 }) {
   const { ref, isVisible } = useScrollReveal();
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const reducedMotion = useReducedMotion();
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (reducedMotion || !cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    setTilt({ x: y * -8, y: x * 8 });
+  }, [reducedMotion]);
+
+  const handleMouseLeave = useCallback(() => {
+    setTilt({ x: 0, y: 0 });
+  }, []);
 
   return (
     <div
       ref={ref}
-      className={`group relative bg-[#111118] border border-white/[0.06] rounded-xl p-8 transition-all duration-500 hover:-translate-y-1 ${
+      className={`transition-all duration-500 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}
-      style={{ transitionDelay: `${delay}ms` }}
+      style={{ transitionDelay: `${delay}ms`, perspective: '1000px' }}
     >
       <div
-        className="absolute top-0 left-0 right-0 h-[3px] rounded-t-xl transition-opacity duration-300 group-hover:opacity-100 opacity-70"
-        style={{ backgroundColor: accentColor }}
-      />
-
-      <div className="relative mb-6">
+        ref={cardRef}
+        className="group relative bg-[#111118] border border-white/[0.06] rounded-xl p-8 transition-all duration-300 hover:border-opacity-20"
+        style={{
+          transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+          transformStyle: 'preserve-3d',
+        }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* Gradient border glow on hover */}
         <div
-          className="absolute inset-0 blur-xl opacity-30 transition-opacity duration-300 group-hover:opacity-50"
-          style={{ backgroundColor: accentColor }}
+          className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+          style={{
+            background: `linear-gradient(135deg, ${accentColor}20, transparent 50%, ${accentColor}10)`,
+          }}
         />
-        <span className="relative text-5xl">{icon}</span>
-      </div>
 
-      <h3 className="text-xl font-bold text-white mb-3">{title}</h3>
-      <p className="text-zinc-400 text-sm leading-relaxed">{description}</p>
+        <div
+          className="absolute top-0 left-0 right-0 h-[3px] rounded-t-xl transition-all duration-300 group-hover:opacity-100 group-hover:shadow-lg opacity-70"
+          style={{
+            backgroundColor: accentColor,
+            boxShadow: `0 0 20px ${accentColor}60`,
+          }}
+        />
+
+        <div className="relative mb-6" style={{ transform: 'translateZ(20px)' }}>
+          <div
+            className="absolute inset-0 blur-xl opacity-30 transition-opacity duration-300 group-hover:opacity-60"
+            style={{ backgroundColor: accentColor }}
+          />
+          <span className="relative text-5xl group-hover:scale-110 transition-transform duration-300 inline-block">{icon}</span>
+        </div>
+
+        <h3 className="text-xl font-bold text-white mb-3" style={{ transform: 'translateZ(15px)' }}>{title}</h3>
+        <p className="text-zinc-400 text-sm leading-relaxed" style={{ transform: 'translateZ(10px)' }}>{description}</p>
+      </div>
     </div>
+  );
+}
+
+// ============================================
+// BUILT ON SOLANA - PARTNERS SECTION
+// ============================================
+function BuiltOnSection() {
+  const { ref, isVisible } = useScrollReveal();
+
+  const partners = [
+    { name: 'Solana', icon: '⚡', color: '#9945ff' },
+    { name: 'Anchor', icon: '⚓', color: '#00bfa5' },
+    { name: 'Metaplex', icon: '💎', color: '#f59e0b' },
+  ];
+
+  return (
+    <section
+      ref={ref}
+      className={`py-16 px-6 transition-all duration-700 ${
+        isVisible ? 'opacity-100' : 'opacity-0'
+      }`}
+    >
+      <div className="max-w-4xl mx-auto text-center">
+        <p className="text-xs tracking-[0.3em] text-zinc-600 uppercase mb-8">
+          Built on the fastest blockchain
+        </p>
+        <div className="flex items-center justify-center gap-12 flex-wrap">
+          {partners.map((partner, i) => (
+            <div
+              key={partner.name}
+              className={`flex items-center gap-3 transition-all duration-500 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              }`}
+              style={{ transitionDelay: `${i * 100}ms` }}
+            >
+              <span className="text-3xl">{partner.icon}</span>
+              <span
+                className="text-lg font-bold tracking-wider"
+                style={{ color: partner.color }}
+              >
+                {partner.name}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -1464,34 +1548,85 @@ export default function Home() {
         <SectionDivider variant="gradient" />
 
         {/* ============================================
+            BUILT ON SOLANA
+            ============================================ */}
+        <BuiltOnSection />
+
+        {/* ============================================
             CTA BANNER
             ============================================ */}
         <section
           ref={ctaRef}
-          className="relative py-24 px-6 overflow-hidden"
+          className="relative py-32 px-6 overflow-hidden"
           style={{
-            background: 'linear-gradient(90deg, rgba(180, 83, 9, 0.1) 0%, transparent 50%, rgba(127, 29, 29, 0.1) 100%)',
+            background: 'linear-gradient(180deg, #0a0a12 0%, #1a0808 50%, #0a0a12 100%)',
           }}
         >
-          <EmberParticles particleCount={20} />
+          {/* Dramatic background effects */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full"
+              style={{
+                background: 'radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, transparent 70%)',
+              }}
+            />
+          </div>
+
+          <EmberParticles particleCount={30} />
 
           <div
             className={`relative z-10 text-center max-w-3xl mx-auto transition-all duration-700 ${
               ctaVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+            {/* Norse rune decoration */}
+            <div className="mb-6 flex items-center justify-center gap-4">
+              <span className="text-amber-500/30 text-2xl">ᚠ</span>
+              <span className="text-amber-500/40 text-3xl">ᚦ</span>
+              <span className="text-amber-500/30 text-2xl">ᚱ</span>
+            </div>
+
+            <h2
+              className="text-5xl md:text-6xl font-black text-white mb-6"
+              style={{ textShadow: '0 0 60px rgba(245, 158, 11, 0.3)' }}
+            >
               Ready for Ragnarök?
             </h2>
-            <p className="text-lg text-zinc-400 mb-10">
-              The arena is waiting. Deploy your agent or place your first bet.
+            <p className="text-xl text-zinc-400 mb-12 max-w-xl mx-auto">
+              The twilight approaches. Deploy your champion and claim your place in Valhalla.
             </p>
-            <Link
-              href="/arena"
-              className="inline-block px-12 py-4 bg-gradient-to-r from-amber-600 to-red-600 text-white font-bold text-lg tracking-wide rounded-full transition-all duration-300 hover:scale-105 animate-cta-glow"
-            >
-              Enter the Arena
-            </Link>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/arena"
+                className="group relative inline-block px-12 py-5 bg-gradient-to-r from-amber-600 to-red-600 text-white font-bold text-lg tracking-wide rounded-full transition-all duration-300 hover:scale-105 animate-cta-glow overflow-hidden"
+              >
+                <span className="relative z-10">Enter the Arena</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-red-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </Link>
+              <Link
+                href="/docs"
+                className="inline-block px-10 py-5 border-2 border-zinc-700 text-zinc-400 font-semibold text-lg rounded-full transition-all duration-300 hover:border-amber-500/50 hover:text-white"
+              >
+                Read the Docs
+              </Link>
+            </div>
+
+            {/* Trust indicators */}
+            <div className="mt-12 flex items-center justify-center gap-6 text-xs text-zinc-600">
+              <span className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-emerald-500 rounded-full" />
+                Trustless & Verifiable
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-amber-500 rounded-full" />
+                Built on Solana
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-indigo-500 rounded-full" />
+                Open Source
+              </span>
+            </div>
           </div>
         </section>
       </main>
