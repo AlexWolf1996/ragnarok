@@ -1,0 +1,333 @@
+import { createClient, RealtimeChannel } from '@supabase/supabase-js';
+import { Database, Tables, TablesInsert } from './types';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables');
+}
+
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+
+// ============================================================================
+// Agent Operations
+// ============================================================================
+
+export async function registerAgent(data: TablesInsert<'agents'>) {
+  const { data: agent, error } = await supabase
+    .from('agents')
+    .insert(data)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return agent;
+}
+
+export async function getAgents() {
+  const { data, error } = await supabase
+    .from('agents')
+    .select('*')
+    .order('elo_rating', { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getAgentByWallet(wallet: string) {
+  const { data, error } = await supabase
+    .from('agents')
+    .select('*')
+    .eq('wallet_address', wallet)
+    .single();
+
+  if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows
+  return data;
+}
+
+export async function getAgentById(id: string) {
+  const { data, error } = await supabase
+    .from('agents')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function checkAgentNameExists(name: string) {
+  const { data, error } = await supabase
+    .from('agents')
+    .select('id')
+    .eq('name', name)
+    .single();
+
+  if (error && error.code !== 'PGRST116') throw error;
+  return !!data;
+}
+
+// ============================================================================
+// Match Operations
+// ============================================================================
+
+export async function getRecentMatches(limit: number = 10) {
+  const { data, error } = await supabase
+    .from('matches')
+    .select(`
+      *,
+      agent_a:agents!matches_agent_a_id_fkey(*),
+      agent_b:agents!matches_agent_b_id_fkey(*),
+      winner:agents!matches_winner_id_fkey(*),
+      challenge:challenges(*)
+    `)
+    .eq('status', 'completed')
+    .order('completed_at', { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getLiveMatches() {
+  const { data, error } = await supabase
+    .from('matches')
+    .select(`
+      *,
+      agent_a:agents!matches_agent_a_id_fkey(*),
+      agent_b:agents!matches_agent_b_id_fkey(*),
+      challenge:challenges(*)
+    `)
+    .in('status', ['pending', 'in_progress'])
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getMatchById(id: string) {
+  const { data, error } = await supabase
+    .from('matches')
+    .select(`
+      *,
+      agent_a:agents!matches_agent_a_id_fkey(*),
+      agent_b:agents!matches_agent_b_id_fkey(*),
+      winner:agents!matches_winner_id_fkey(*),
+      challenge:challenges(*)
+    `)
+    .eq('id', id)
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export function subscribeToMatches(
+  callback: (payload: {
+    eventType: 'INSERT' | 'UPDATE' | 'DELETE';
+    new: Tables<'matches'>;
+    old: Tables<'matches'> | null;
+  }) => void
+): RealtimeChannel {
+  return supabase
+    .channel('matches-changes')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'matches',
+      },
+      (payload) => {
+        callback({
+          eventType: payload.eventType as 'INSERT' | 'UPDATE' | 'DELETE',
+          new: payload.new as Tables<'matches'>,
+          old: payload.old as Tables<'matches'> | null,
+        });
+      }
+    )
+    .subscribe();
+}
+
+export async function getMatchStats() {
+  const { count: totalMatches, error: matchError } = await supabase
+    .from('matches')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'completed');
+
+  if (matchError) throw matchError;
+
+  const { count: activeAgents, error: agentError } = await supabase
+    .from('agents')
+    .select('*', { count: 'exact', head: true });
+
+  if (agentError) throw agentError;
+
+  const { data: topAgent, error: topError } = await supabase
+    .from('agents')
+    .select('name, elo_rating')
+    .order('elo_rating', { ascending: false })
+    .limit(1)
+    .single();
+
+  if (topError && topError.code !== 'PGRST116') throw topError;
+
+  const { data: betsData, error: betsError } = await supabase
+    .from('bets')
+    .select('amount_sol');
+
+  if (betsError) throw betsError;
+
+  const totalWagered = betsData?.reduce((sum, bet) => sum + bet.amount_sol, 0) || 0;
+
+  return {
+    totalMatches: totalMatches || 0,
+    activeAgents: activeAgents || 0,
+    topAgent: topAgent || null,
+    totalWagered,
+  };
+}
+
+// ============================================================================
+// Leaderboard Operations
+// ============================================================================
+
+export async function getLeaderboard() {
+  const { data, error } = await supabase
+    .from('leaderboard')
+    .select('*')
+    .order('rank', { ascending: true });
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getAgentRecentMatches(agentId: string, limit: number = 5) {
+  const { data, error } = await supabase
+    .from('matches')
+    .select(`
+      *,
+      agent_a:agents!matches_agent_a_id_fkey(name),
+      agent_b:agents!matches_agent_b_id_fkey(name),
+      winner:agents!matches_winner_id_fkey(name)
+    `)
+    .or(`agent_a_id.eq.${agentId},agent_b_id.eq.${agentId}`)
+    .eq('status', 'completed')
+    .order('completed_at', { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return data;
+}
+
+// ============================================================================
+// Betting Operations
+// ============================================================================
+
+export async function placeBet(data: TablesInsert<'bets'>) {
+  const { data: bet, error } = await supabase
+    .from('bets')
+    .insert(data)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return bet;
+}
+
+export async function getMatchBets(matchId: string) {
+  const { data, error } = await supabase
+    .from('bets')
+    .select(`
+      *,
+      agent:agents(name)
+    `)
+    .eq('match_id', matchId);
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getBetsByWallet(walletAddress: string) {
+  const { data, error } = await supabase
+    .from('bets')
+    .select(`
+      *,
+      match:matches(*),
+      agent:agents(name)
+    `)
+    .eq('wallet_address', walletAddress)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
+// ============================================================================
+// Challenge Operations
+// ============================================================================
+
+export async function getChallenges() {
+  const { data, error } = await supabase
+    .from('challenges')
+    .select('*')
+    .order('difficulty', { ascending: true });
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getRandomChallenge() {
+  const { data, error } = await supabase
+    .from('challenges')
+    .select('*');
+
+  if (error) throw error;
+  if (!data || data.length === 0) return null;
+
+  const randomIndex = Math.floor(Math.random() * data.length);
+  return data[randomIndex];
+}
+
+export async function getChallengeById(id: string) {
+  const { data, error } = await supabase
+    .from('challenges')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+// ============================================================================
+// Match Execution (Edge Function)
+// ============================================================================
+
+export async function runMatch(agentAId: string, agentBId: string, challengeId?: string) {
+  const { data, error } = await supabase.functions.invoke('run-match', {
+    body: {
+      agent_a_id: agentAId,
+      agent_b_id: agentBId,
+      challenge_id: challengeId,
+    },
+  });
+
+  if (error) throw error;
+  return data;
+}
+
+export async function updateMatchSolanaTxHash(matchId: string, txHash: string) {
+  const { data, error } = await supabase
+    .from('matches')
+    .update({ solana_tx_hash: txHash })
+    .eq('id', matchId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export default supabase;
