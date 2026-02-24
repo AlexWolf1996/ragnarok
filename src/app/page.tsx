@@ -1,5 +1,8 @@
 'use client';
 
+// Homepage v2 - Updated Protocol Flow, Roadmap, and Leaderboard sections
+// Last rebuild: 2026-02-24
+
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import LandingHeader from '@/components/landing/LandingHeader';
