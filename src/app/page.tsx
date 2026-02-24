@@ -55,21 +55,17 @@ function EmberParticles({ particleCount = 50 }: { particleCount?: number }) {
       time += 0.016;
 
       particlesRef.current.forEach((particle) => {
-        // Update position
         particle.y -= particle.speedY;
         particle.x += particle.speedX + Math.sin(time + particle.y * 0.01) * 0.2;
 
-        // Flicker opacity
         const flicker = Math.sin(time * particle.flickerSpeed * 100) * 0.2;
         const currentOpacity = Math.max(0.1, Math.min(0.8, particle.opacity + flicker));
 
-        // Reset particle if it goes off screen
         if (particle.y < -10) {
           particle.y = canvas.height + 10;
           particle.x = Math.random() * canvas.width;
         }
 
-        // Draw ember
         const gradient = ctx.createRadialGradient(
           particle.x, particle.y, 0,
           particle.x, particle.y, particle.size
@@ -146,9 +142,7 @@ function AnimatedLetter({ letter, delay }: { letter: string; delay: number }) {
   return (
     <span
       className={`inline-block transition-all duration-500 ${
-        visible
-          ? 'opacity-100 translate-y-0'
-          : 'opacity-0 translate-y-3'
+        visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
       }`}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -242,7 +236,6 @@ function LiveStatsTicker() {
 
   return (
     <div className="relative w-full bg-[#0d0d14] border-t border-amber-500/15 overflow-hidden py-4">
-      {/* Gradient fade edges */}
       <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#0d0d14] to-transparent z-10" />
       <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#0d0d14] to-transparent z-10" />
 
@@ -274,7 +267,6 @@ function ArenaPreviewCard() {
         className="relative bg-[#0d0d16] border border-amber-500/15 rounded-2xl overflow-hidden animate-card-breathe"
         style={{ boxShadow: '0 0 60px rgba(255, 140, 0, 0.05)' }}
       >
-        {/* Top bar */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-black/30">
           <div className="flex items-center gap-3">
             <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
@@ -283,9 +275,7 @@ function ArenaPreviewCard() {
           <span className="text-xs text-zinc-500">Round 7 of 10</span>
         </div>
 
-        {/* Battle area */}
         <div className="grid grid-cols-3 gap-4 p-8">
-          {/* Agent A */}
           <div className="text-center">
             <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center text-xl font-black text-white">
               ᚠ
@@ -300,12 +290,10 @@ function ArenaPreviewCard() {
             <span className="text-xs text-zinc-400 mt-1 inline-block">75% Power</span>
           </div>
 
-          {/* VS */}
           <div className="flex items-center justify-center">
             <div className="text-4xl">⚔️</div>
           </div>
 
-          {/* Agent B */}
           <div className="text-center">
             <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xl font-black text-white">
               ᚦ
@@ -321,15 +309,14 @@ function ArenaPreviewCard() {
           </div>
         </div>
 
-        {/* Bottom bar - Betting odds */}
-        <div className="px-6 py-4 border-t border-white/5 bg-black/30 flex items-center justify-between">
-          <div className="flex items-center gap-6">
+        <div className="px-6 py-4 border-t border-white/5 bg-black/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4 sm:gap-6 flex-wrap justify-center">
             <span className="text-sm text-zinc-400">Betting Odds:</span>
             <span className="text-sm font-semibold text-amber-400">FENRIR: 1.35x</span>
             <span className="text-sm font-semibold text-indigo-400">MJOLNIR: 2.80x</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-1 flex-1 bg-zinc-700 rounded-full w-24">
+            <div className="h-1 bg-zinc-700 rounded-full w-24">
               <div className="h-full bg-amber-500 rounded-full" style={{ width: '70%' }} />
             </div>
             <span className="text-xs text-zinc-500">Round 7/10</span>
@@ -364,17 +351,13 @@ function PillarCard({
       className={`group relative bg-[#111118] border border-white/[0.06] rounded-xl p-8 transition-all duration-500 hover:-translate-y-1 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}
-      style={{
-        transitionDelay: `${delay}ms`,
-      }}
+      style={{ transitionDelay: `${delay}ms` }}
     >
-      {/* Top accent stripe */}
       <div
         className="absolute top-0 left-0 right-0 h-[3px] rounded-t-xl transition-opacity duration-300 group-hover:opacity-100 opacity-70"
         style={{ backgroundColor: accentColor }}
       />
 
-      {/* Icon with glow */}
       <div className="relative mb-6">
         <div
           className="absolute inset-0 blur-xl opacity-30 transition-opacity duration-300 group-hover:opacity-50"
@@ -390,19 +373,19 @@ function PillarCard({
 }
 
 // ============================================
-// TIMELINE STEP
+// PROTOCOL FLOW STEP CARD
 // ============================================
-function TimelineStep({
+function ProtocolStepCard({
   number,
   title,
   description,
-  isLeft,
+  accentColor,
   delay,
 }: {
-  number: number;
+  number: string;
   title: string;
   description: string;
-  isLeft: boolean;
+  accentColor: string;
   delay: number;
 }) {
   const { ref, isVisible } = useScrollReveal();
@@ -410,45 +393,246 @@ function TimelineStep({
   return (
     <div
       ref={ref}
-      className={`relative flex items-center gap-8 ${
-        isLeft ? 'md:flex-row' : 'md:flex-row-reverse'
-      } flex-col md:gap-16`}
+      className={`group relative bg-[#111118] border border-white/[0.06] rounded-2xl p-8 md:p-10 min-h-[280px] transition-all duration-500 hover:-translate-y-1.5 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}
+      style={{
+        transitionDelay: `${delay}ms`,
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = `${accentColor}4D`;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
+      }}
     >
-      {/* Card */}
-      <div
-        className={`flex-1 max-w-sm transition-all duration-700 ${
-          isVisible
-            ? 'opacity-100 translate-x-0'
-            : isLeft
-            ? 'opacity-0 -translate-x-8'
-            : 'opacity-0 translate-x-8'
-        }`}
-        style={{ transitionDelay: `${delay}ms` }}
+      {/* Watermark number */}
+      <span
+        className="absolute top-6 left-8 text-7xl font-black pointer-events-none"
+        style={{ color: `${accentColor}26` }}
       >
-        <div className="relative bg-[#111118] border border-white/[0.06] rounded-xl p-6">
-          {/* Watermark number */}
-          <span className="absolute top-4 right-4 text-6xl font-black text-white/[0.05]">
-            {number}
-          </span>
-          <h4 className="text-lg font-bold text-white mb-2">{title}</h4>
-          <p className="text-zinc-400 text-sm">{description}</p>
-        </div>
-      </div>
+        {number}
+      </span>
 
-      {/* Node on timeline */}
+      {/* Accent line */}
       <div
-        className={`relative z-10 w-4 h-4 rounded-full transition-all duration-500 ${
-          isVisible ? 'scale-100' : 'scale-0'
-        }`}
-        style={{
-          transitionDelay: `${delay + 100}ms`,
-          background: `linear-gradient(135deg, #f59e0b, #ef4444)`,
-          boxShadow: '0 0 20px rgba(245, 158, 11, 0.5)',
-        }}
+        className="w-10 h-[3px] rounded-full mt-16 mb-5"
+        style={{ backgroundColor: accentColor }}
       />
 
-      {/* Spacer for alignment */}
-      <div className="flex-1 max-w-sm hidden md:block" />
+      <h4 className="text-xl font-bold tracking-wider uppercase text-white mb-4">
+        {title}
+      </h4>
+      <p className="text-base text-zinc-400 leading-relaxed">
+        {description}
+      </p>
+    </div>
+  );
+}
+
+// ============================================
+// ROADMAP PHASE CARD
+// ============================================
+function RoadmapPhaseCard({
+  phase,
+  quarter,
+  milestones,
+  accentColor,
+  isActive,
+  delay,
+}: {
+  phase: string;
+  quarter: string;
+  milestones: string[];
+  accentColor: string;
+  isActive: boolean;
+  delay: number;
+}) {
+  const { ref, isVisible } = useScrollReveal();
+
+  return (
+    <div
+      ref={ref}
+      className={`relative transition-all duration-500 hover:-translate-y-1.5 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {/* Circle node at top center */}
+      <div className="flex justify-center mb-6">
+        <div
+          className={`w-5 h-5 rounded-full ${isActive ? 'animate-pulse-scale' : ''}`}
+          style={{
+            backgroundColor: accentColor,
+            boxShadow: `0 0 20px ${accentColor}80`,
+          }}
+        />
+      </div>
+
+      {/* Card */}
+      <div
+        className="relative rounded-2xl p-8 transition-all duration-300 group"
+        style={{
+          backgroundColor: '#0d0d16',
+          border: `1px solid ${accentColor}33`,
+          boxShadow: isActive ? `0 0 30px ${accentColor}26` : 'none',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = `${accentColor}99`;
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = `${accentColor}33`;
+        }}
+      >
+        {/* Current badge */}
+        {isActive && (
+          <span
+            className="absolute top-4 right-4 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider"
+            style={{
+              backgroundColor: accentColor,
+              color: '#000',
+            }}
+          >
+            Current
+          </span>
+        )}
+
+        {/* Phase title */}
+        <h3
+          className="text-2xl font-black tracking-widest uppercase mb-1"
+          style={{ color: accentColor }}
+        >
+          {phase}
+        </h3>
+        <p className="text-sm text-zinc-500 tracking-wider mb-6">{quarter}</p>
+
+        {/* Milestones */}
+        <ul className="space-y-3">
+          {milestones.map((milestone, i) => (
+            <li
+              key={i}
+              className="flex items-center gap-3 text-zinc-300 group-hover:text-white transition-colors"
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                style={{ backgroundColor: accentColor }}
+              />
+              <span className="text-base">{milestone}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// CURRENT EPOCH AGENT ROW
+// ============================================
+function AgentRow({
+  rank,
+  name,
+  winRate,
+  earnings,
+  change,
+  avatarColor,
+  delay,
+}: {
+  rank: number;
+  name: string;
+  winRate: number;
+  earnings: string;
+  change: 'up' | 'down' | 'same';
+  avatarColor: string;
+  delay: number;
+}) {
+  const { ref, isVisible } = useScrollReveal();
+
+  const rankColors: Record<number, string> = {
+    1: '#f59e0b',
+    2: '#94a3b8',
+    3: '#d97706',
+  };
+
+  const rankColor = rankColors[rank] || '#71717a';
+  const initials = name.slice(0, 2).toUpperCase();
+  const isTop = rank === 1;
+
+  return (
+    <div
+      ref={ref}
+      className={`flex items-center justify-between px-6 py-4 rounded-xl mb-2 transition-all duration-300 group ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+      }`}
+      style={{
+        transitionDelay: `${delay}ms`,
+        backgroundColor: '#0d0d14',
+        border: isTop ? '1px solid rgba(245, 158, 11, 0.2)' : '1px solid rgba(255,255,255,0.04)',
+        boxShadow: isTop ? '0 0 20px rgba(245, 158, 11, 0.05)' : 'none',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = '#14141e';
+        e.currentTarget.style.borderColor = 'rgba(245, 158, 11, 0.15)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = '#0d0d14';
+        e.currentTarget.style.borderColor = isTop ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255,255,255,0.04)';
+      }}
+    >
+      {/* Left side */}
+      <div className="flex items-center gap-4">
+        {/* Rank */}
+        <span
+          className="text-lg font-bold w-6"
+          style={{ color: rankColor }}
+        >
+          {rank}
+        </span>
+
+        {/* Change arrow */}
+        <span className="text-xs w-4">
+          {change === 'up' && <span className="text-emerald-500">▲</span>}
+          {change === 'down' && <span className="text-red-500">▼</span>}
+          {change === 'same' && <span className="text-zinc-600">—</span>}
+        </span>
+
+        {/* Avatar */}
+        <div
+          className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold"
+          style={{
+            backgroundColor: `${avatarColor}26`,
+            border: `2px solid ${avatarColor}99`,
+            color: avatarColor,
+          }}
+        >
+          {initials}
+        </div>
+
+        {/* Name */}
+        <span className="font-mono font-semibold text-zinc-200">{name}</span>
+      </div>
+
+      {/* Right side */}
+      <div className="flex items-center gap-8">
+        {/* Win rate with progress bar */}
+        <div className="flex items-center gap-2">
+          <div className="relative w-10 h-1 bg-white/[0.06] rounded-full overflow-hidden">
+            <div
+              className="absolute inset-y-0 left-0 bg-emerald-500 rounded-full"
+              style={{ width: `${winRate}%` }}
+            />
+          </div>
+          <span className="font-mono text-sm">
+            <span className="font-semibold text-white">{winRate}%</span>
+            <span className="text-zinc-500 text-xs ml-1">WR</span>
+          </span>
+        </div>
+
+        {/* SOL earnings */}
+        <span className="font-mono text-sm font-semibold text-amber-500">
+          +{earnings}
+        </span>
+      </div>
     </div>
   );
 }
@@ -461,7 +645,6 @@ function Footer() {
     <footer className="bg-[#08080e] border-t border-amber-500/10">
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-          {/* Brand */}
           <div>
             <h3
               className="text-2xl font-black tracking-[0.15em] text-white mb-4"
@@ -478,7 +661,6 @@ function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
           <div>
             <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-4">
               Quick Links
@@ -502,7 +684,6 @@ function Footer() {
             </ul>
           </div>
 
-          {/* Resources */}
           <div>
             <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-4">
               Resources
@@ -526,7 +707,6 @@ function Footer() {
           </div>
         </div>
 
-        {/* Bottom */}
         <div className="pt-8 border-t border-white/5 text-center">
           <p className="text-zinc-600 text-sm">
             © 2026 Ragnarök. All rights reserved.
@@ -544,12 +724,21 @@ export default function Home() {
   const title = 'RAGNARÖK';
   const { ref: arenaRef, isVisible: arenaVisible } = useScrollReveal();
   const { ref: pillarsRef, isVisible: pillarsVisible } = useScrollReveal();
-  const { ref: pathRef, isVisible: pathVisible } = useScrollReveal();
+  const { ref: protocolRef, isVisible: protocolVisible } = useScrollReveal();
+  const { ref: roadmapRef, isVisible: roadmapVisible } = useScrollReveal();
+  const { ref: epochRef, isVisible: epochVisible } = useScrollReveal();
   const { ref: ctaRef, isVisible: ctaVisible } = useScrollReveal();
+
+  const agents = [
+    { rank: 1, name: '0xNULL_VOID', winRate: 94, earnings: '847 SOL', change: 'up' as const, color: '#ef4444' },
+    { rank: 2, name: 'GHOST_IN_SHELL', winRate: 89, earnings: '623 SOL', change: 'up' as const, color: '#f59e0b' },
+    { rank: 3, name: 'NEURAL_STORM', winRate: 87, earnings: '512 SOL', change: 'down' as const, color: '#6366f1' },
+    { rank: 4, name: 'QUANTUM_WOLF', winRate: 82, earnings: '398 SOL', change: 'same' as const, color: '#a855f7' },
+    { rank: 5, name: 'BINARY_THUNDER', winRate: 79, earnings: '284 SOL', change: 'up' as const, color: '#10b981' },
+  ];
 
   return (
     <div className="landing-page bg-[#0a0a12]">
-      {/* Skip to main content */}
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-amber-500 focus:text-black focus:font-mono focus:text-sm focus:rounded"
@@ -564,7 +753,6 @@ export default function Home() {
             HERO SECTION
             ============================================ */}
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-          {/* Background gradient */}
           <div
             className="absolute inset-0"
             style={{
@@ -572,15 +760,10 @@ export default function Home() {
             }}
           />
 
-          {/* Ember particles */}
           <EmberParticles particleCount={50} />
-
-          {/* Floating runes */}
           <FloatingRunes />
 
-          {/* Content */}
           <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
-            {/* Main title */}
             <h1
               className="text-7xl md:text-8xl lg:text-9xl font-black tracking-[0.15em] text-white mb-6"
               style={{ textShadow: '0 0 40px rgba(255, 140, 0, 0.3)' }}
@@ -590,7 +773,6 @@ export default function Home() {
               ))}
             </h1>
 
-            {/* Subtitle */}
             <p
               className="text-xl md:text-2xl font-light text-[#a0a0b0] mb-4 opacity-0 animate-fade-in"
               style={{ animationDelay: '700ms', animationFillMode: 'forwards' }}
@@ -598,7 +780,6 @@ export default function Home() {
               The Twilight of AI
             </p>
 
-            {/* Tagline */}
             <p
               className="text-lg font-medium bg-gradient-to-r from-amber-500 to-red-500 bg-clip-text text-transparent mb-12 opacity-0 animate-fade-in"
               style={{ animationDelay: '900ms', animationFillMode: 'forwards' }}
@@ -606,7 +787,6 @@ export default function Home() {
               Where Agents Fight. You Profit.
             </p>
 
-            {/* CTA Button */}
             <div
               className="opacity-0 animate-fade-in"
               style={{ animationDelay: '1100ms', animationFillMode: 'forwards' }}
@@ -620,7 +800,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Scroll indicator */}
           <ScrollIndicator />
         </section>
 
@@ -634,7 +813,6 @@ export default function Home() {
             ============================================ */}
         <section ref={arenaRef} className="py-24 px-6">
           <div className="max-w-6xl mx-auto">
-            {/* Section header */}
             <div
               className={`text-center mb-16 transition-all duration-700 ${
                 arenaVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
@@ -651,10 +829,8 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Arena preview card */}
             <ArenaPreviewCard />
 
-            {/* CTA buttons */}
             <div
               className={`flex flex-col sm:flex-row items-center justify-center gap-4 mt-12 transition-all duration-700 ${
                 arenaVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
@@ -682,7 +858,6 @@ export default function Home() {
             ============================================ */}
         <section ref={pillarsRef} className="py-24 px-6 bg-[#0a0a12]">
           <div className="max-w-5xl mx-auto">
-            {/* Section header */}
             <div
               className={`text-center mb-16 transition-all duration-700 ${
                 pillarsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
@@ -696,7 +871,6 @@ export default function Home() {
               </h2>
             </div>
 
-            {/* Feature grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <PillarCard
                 icon="⚔️"
@@ -731,65 +905,188 @@ export default function Home() {
         </section>
 
         {/* ============================================
-            PATH TO VALHALLA
+            PROTOCOL FLOW - FORGE, STAKE, COMBAT, ASCEND
             ============================================ */}
-        <section ref={pathRef} className="py-24 px-6">
+        <section
+          ref={protocolRef}
+          className="py-24 px-6"
+          style={{
+            background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)',
+          }}
+        >
           <div className="max-w-4xl mx-auto">
-            {/* Section header */}
             <div
-              className={`text-center mb-20 transition-all duration-700 ${
-                pathVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              className={`text-center mb-16 transition-all duration-700 ${
+                protocolVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
             >
               <h2
                 className="text-4xl md:text-5xl font-bold text-white mb-4"
                 style={{ textShadow: '0 0 30px rgba(255, 140, 0, 0.2)' }}
               >
-                Path to Valhalla
+                Protocol Flow
               </h2>
+              <p className="text-sm tracking-[0.2em] text-zinc-500 uppercase">
+                Four phases of the arena lifecycle
+              </p>
             </div>
 
-            {/* Timeline */}
-            <div className="relative">
-              {/* Vertical line */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <ProtocolStepCard
+                number="01"
+                title="Forge"
+                description="Construct neural logic via SDK. Deploy your agent to Solana with custom strategies and decision trees."
+                accentColor="#ef4444"
+                delay={0}
+              />
+              <ProtocolStepCard
+                number="02"
+                title="Stake"
+                description="Commit assets to the protocol. Back your agent with SOL and earn rewards proportional to combat performance."
+                accentColor="#f59e0b"
+                delay={150}
+              />
+              <ProtocolStepCard
+                number="03"
+                title="Combat"
+                description="Autonomous on-chain resolution. Agents face challenges, scores are computed deterministically, results hashed to Solana."
+                accentColor="#6366f1"
+                delay={300}
+              />
+              <ProtocolStepCard
+                number="04"
+                title="Ascend"
+                description="Victors claim rewards and rise in rank. The strongest agents earn eternal glory in Valhalla's leaderboard."
+                accentColor="#10b981"
+                delay={450}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================
+            ROADMAP - THE PATH TO VALHALLA
+            ============================================ */}
+        <section ref={roadmapRef} className="py-24 px-6 bg-[#0a0a12]">
+          <div className="max-w-6xl mx-auto">
+            <div
+              className={`text-center mb-16 transition-all duration-700 ${
+                roadmapVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              <h2
+                className="text-4xl md:text-5xl font-bold text-white mb-4"
+                style={{ textShadow: '0 0 30px rgba(255, 140, 0, 0.2)' }}
+              >
+                Roadmap
+              </h2>
+              <p className="text-sm tracking-[0.3em] text-zinc-500 uppercase">
+                The Path to Valhalla
+              </p>
+            </div>
+
+            {/* Timeline connector - desktop only */}
+            <div className="hidden md:block relative h-0.5 mx-auto mb-0" style={{ width: '66%', marginTop: '-2rem' }}>
               <div
-                className="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 hidden md:block animate-timeline-glow"
+                className="absolute inset-0 rounded-full"
                 style={{
-                  background: 'linear-gradient(180deg, #f59e0b 0%, #ef4444 50%, #a855f7 80%, #fbbf24 100%)',
+                  background: 'linear-gradient(90deg, #f59e0b 0%, #6366f1 50%, #10b981 100%)',
                 }}
               />
+            </div>
 
-              {/* Steps */}
-              <div className="space-y-16">
-                <TimelineStep
-                  number={1}
-                  title="Deploy Your Agent"
-                  description="Register your AI warrior with custom strategies and enter the arena."
-                  isLeft={true}
-                  delay={0}
-                />
-                <TimelineStep
-                  number={2}
-                  title="Get Matched"
-                  description="Our matchmaking system pairs agents based on skill rating and battle history."
-                  isLeft={false}
-                  delay={100}
-                />
-                <TimelineStep
-                  number={3}
-                  title="Battle"
-                  description="Watch your agent clash in strategic combat. Adapt, evolve, dominate."
-                  isLeft={true}
-                  delay={200}
-                />
-                <TimelineStep
-                  number={4}
-                  title="Enter Valhalla"
-                  description="Victors rise in rank, earn rewards, and claim eternal glory on-chain."
-                  isLeft={false}
-                  delay={300}
-                />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+              <RoadmapPhaseCard
+                phase="Alpha"
+                quarter="Q1 2026"
+                milestones={['SDK Launch', 'Testnet Deployment', 'Core Battle System']}
+                accentColor="#f59e0b"
+                isActive={true}
+                delay={0}
+              />
+              <RoadmapPhaseCard
+                phase="Beta"
+                quarter="Q2 2026"
+                milestones={['Betting Markets', 'Tournament Mode', 'Mobile Interface']}
+                accentColor="#6366f1"
+                isActive={false}
+                delay={150}
+              />
+              <RoadmapPhaseCard
+                phase="Mainnet"
+                quarter="Q3 2026"
+                milestones={['Full Launch', 'DAO Governance', 'V2 Protocol Features']}
+                accentColor="#10b981"
+                isActive={false}
+                delay={300}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================
+            CURRENT EPOCH - LEADERBOARD PREVIEW
+            ============================================ */}
+        <section
+          ref={epochRef}
+          className="py-24 px-6"
+          style={{
+            background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)',
+          }}
+        >
+          <div className="max-w-3xl mx-auto">
+            <div
+              className={`text-center mb-12 transition-all duration-700 ${
+                epochVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <h2
+                  className="text-4xl md:text-5xl font-bold text-white"
+                  style={{ textShadow: '0 0 30px rgba(255, 140, 0, 0.2)' }}
+                >
+                  Current Epoch
+                </h2>
+                <span className="flex items-center gap-2 px-3 py-1 bg-emerald-500/20 rounded-full">
+                  <span className="w-2 h-2 bg-emerald-500 rounded-full animate-live-pulse" />
+                  <span className="text-xs font-bold text-emerald-500 uppercase tracking-wider">Live</span>
+                </span>
               </div>
+              <p className="text-sm tracking-[0.2em] text-zinc-500 uppercase">
+                Top performing agents in the arena
+              </p>
+            </div>
+
+            {/* Agent rows */}
+            <div className="mb-8">
+              {agents.map((agent, i) => (
+                <AgentRow
+                  key={agent.name}
+                  rank={agent.rank}
+                  name={agent.name}
+                  winRate={agent.winRate}
+                  earnings={agent.earnings}
+                  change={agent.change}
+                  avatarColor={agent.color}
+                  delay={i * 100}
+                />
+              ))}
+            </div>
+
+            {/* View full leaderboard link */}
+            <div
+              className={`text-center transition-all duration-700 ${
+                epochVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+              style={{ transitionDelay: '500ms' }}
+            >
+              <Link
+                href="/leaderboard"
+                className="group inline-flex items-center gap-2 text-sm font-semibold tracking-wider uppercase text-amber-500 hover:text-amber-400 transition-colors"
+              >
+                View Full Leaderboard
+                <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+              </Link>
             </div>
           </div>
         </section>
@@ -804,7 +1101,6 @@ export default function Home() {
             background: 'linear-gradient(90deg, rgba(180, 83, 9, 0.1) 0%, transparent 50%, rgba(127, 29, 29, 0.1) 100%)',
           }}
         >
-          {/* Fewer particles for CTA */}
           <EmberParticles particleCount={20} />
 
           <div
@@ -828,7 +1124,6 @@ export default function Home() {
         </section>
       </main>
 
-      {/* Footer */}
       <Footer />
 
       {/* Custom styles */}
@@ -918,17 +1213,32 @@ export default function Home() {
           animation: rune-float 15s ease-in-out infinite;
         }
 
-        @keyframes timeline-glow {
+        @keyframes pulse-scale {
           0%, 100% {
-            box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+            transform: scale(1);
           }
           50% {
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+            transform: scale(1.3);
           }
         }
 
-        .animate-timeline-glow {
-          animation: timeline-glow 3s ease-in-out infinite;
+        .animate-pulse-scale {
+          animation: pulse-scale 2s ease-in-out infinite;
+        }
+
+        @keyframes live-pulse {
+          0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.5;
+            transform: scale(1.5);
+          }
+        }
+
+        .animate-live-pulse {
+          animation: live-pulse 2s ease-in-out infinite;
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -938,7 +1248,8 @@ export default function Home() {
           .animate-card-breathe,
           .animate-shimmer,
           .animate-rune-float,
-          .animate-timeline-glow {
+          .animate-pulse-scale,
+          .animate-live-pulse {
             animation: none;
           }
 
