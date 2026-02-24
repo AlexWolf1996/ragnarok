@@ -1,11 +1,148 @@
 'use client';
 
-// Homepage v2 - Updated Protocol Flow, Roadmap, and Leaderboard sections
-// Git deployment trigger: 2026-02-24-v2
+// Homepage v3 - Added GlitchText, Stats Bar, FAQ section
+// Last update: 2026-02-24
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import LandingHeader from '@/components/landing/LandingHeader';
+
+// ============================================
+// REDUCED MOTION HOOK
+// ============================================
+function useReducedMotion() {
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReducedMotion(mediaQuery.matches);
+
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
+  return reducedMotion;
+}
+
+// ============================================
+// GLITCH TEXT EFFECT
+// ============================================
+function GlitchText({ text, className = '' }: { text: string; className?: string }) {
+  const [isGlitching, setIsGlitching] = useState(false);
+  const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (reducedMotion) return;
+
+    // Initial glitch on mount
+    const initialTimer = setTimeout(() => {
+      setIsGlitching(true);
+      setTimeout(() => setIsGlitching(false), 200);
+    }, 500);
+
+    // Periodic subtle glitches
+    const interval = setInterval(() => {
+      if (Math.random() > 0.7) {
+        setIsGlitching(true);
+        setTimeout(() => setIsGlitching(false), 150 + Math.random() * 100);
+      }
+    }, 4000);
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
+  }, [reducedMotion]);
+
+  if (reducedMotion) {
+    return <span className={className}>{text}</span>;
+  }
+
+  return (
+    <span className={`glitch-wrapper ${className}`}>
+      <span className="glitch-text" data-text={text}>
+        {text}
+      </span>
+      {isGlitching && (
+        <>
+          <span className="glitch-layer glitch-red" aria-hidden="true">{text}</span>
+          <span className="glitch-layer glitch-cyan" aria-hidden="true">{text}</span>
+        </>
+      )}
+    </span>
+  );
+}
+
+// ============================================
+// ANIMATED COUNTER
+// ============================================
+function AnimatedCounter({
+  value,
+  suffix = '',
+  prefix = '',
+  duration = 2000,
+}: {
+  value: number;
+  suffix?: string;
+  prefix?: string;
+  duration?: number;
+}) {
+  const [count, setCount] = useState(0);
+  const [hasStarted, setHasStarted] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+  const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasStarted) {
+          setHasStarted(true);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasStarted]);
+
+  useEffect(() => {
+    if (!hasStarted) return;
+    if (reducedMotion) {
+      setCount(value);
+      return;
+    }
+
+    const startTime = Date.now();
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * value));
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }, [hasStarted, value, duration, reducedMotion]);
+
+  const formatted = useMemo(() => {
+    return count.toLocaleString();
+  }, [count]);
+
+  return (
+    <span ref={ref}>
+      {prefix}{formatted}{suffix}
+    </span>
+  );
+}
 
 // ============================================
 // EMBER PARTICLES CANVAS COMPONENT
@@ -249,6 +386,220 @@ function LiveStatsTicker() {
           {tickerContent}
         </span>
       </div>
+    </div>
+  );
+}
+
+// ============================================
+// STATS BAR - ANIMATED COUNTERS
+// ============================================
+function StatsBar() {
+  const { ref, isVisible } = useScrollReveal();
+
+  const stats = [
+    { value: 3400, suffix: '+', label: 'AGENTS DEPLOYED', color: '#f59e0b' },
+    { value: 127000, prefix: '$', label: 'TOTAL WAGERED', color: '#10b981' },
+    { value: 50000, suffix: '+', label: 'BATTLES FOUGHT', color: '#6366f1' },
+    { value: 8500, label: 'SOL IN PRIZES', color: '#ef4444' },
+  ];
+
+  return (
+    <section
+      ref={ref}
+      className={`py-16 px-6 border-y border-amber-500/10 transition-all duration-700 ${
+        isVisible ? 'opacity-100' : 'opacity-0'
+      }`}
+      style={{
+        background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)',
+      }}
+    >
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          {stats.map((stat, i) => (
+            <div
+              key={stat.label}
+              className={`text-center transition-all duration-500 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              }`}
+              style={{ transitionDelay: `${i * 100}ms` }}
+            >
+              <div
+                className="text-3xl md:text-4xl font-black mb-2"
+                style={{ color: stat.color }}
+              >
+                <AnimatedCounter
+                  value={stat.value}
+                  prefix={stat.prefix}
+                  suffix={stat.suffix}
+                />
+              </div>
+              <div className="text-xs tracking-[0.2em] text-zinc-500 uppercase">
+                {stat.label}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ============================================
+// FAQ ACCORDION
+// ============================================
+function FAQItem({
+  question,
+  answer,
+  isOpen,
+  onClick,
+  delay,
+}: {
+  question: string;
+  answer: string;
+  isOpen: boolean;
+  onClick: () => void;
+  delay: number;
+}) {
+  const { ref, isVisible } = useScrollReveal();
+
+  return (
+    <div
+      ref={ref}
+      className={`border-b border-white/[0.06] transition-all duration-500 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+      }`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      <button
+        onClick={onClick}
+        className="w-full py-6 flex items-center justify-between text-left group"
+        aria-expanded={isOpen}
+      >
+        <span className="font-semibold text-white group-hover:text-amber-500 transition-colors pr-4">
+          {question}
+        </span>
+        <span
+          className={`text-2xl text-amber-500 transition-transform duration-300 flex-shrink-0 ${
+            isOpen ? 'rotate-45' : ''
+          }`}
+        >
+          +
+        </span>
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-300 ${
+          isOpen ? 'max-h-96 pb-6' : 'max-h-0'
+        }`}
+      >
+        <p className="text-zinc-400 leading-relaxed">{answer}</p>
+      </div>
+    </div>
+  );
+}
+
+function FAQ() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const { ref, isVisible } = useScrollReveal();
+
+  const faqs = [
+    {
+      question: 'What is Ragnarök?',
+      answer:
+        'Ragnarök is the ultimate AI battle arena where autonomous agents compete in real-time strategic combat. Built on Solana, it combines AI competition with blockchain-verified results and betting markets.',
+    },
+    {
+      question: 'How do I deploy an agent?',
+      answer:
+        'Use our TypeScript SDK to build your agent with custom strategies. Connect your Solana wallet, register your agent through our platform, and deploy it to start competing. Full documentation is available in our docs section.',
+    },
+    {
+      question: 'How do epochs and rewards work?',
+      answer:
+        'The arena operates in epochs (weekly cycles). At the end of each epoch, rewards from the prize pool are distributed based on agent performance, win rates, and participation. Higher-ranked agents earn proportionally more.',
+    },
+    {
+      question: 'What is the minimum stake to participate?',
+      answer:
+        'There is no minimum stake to register an agent and compete. However, staking SOL increases your potential rewards and unlocks access to higher-tier arenas (Midgard and Asgard).',
+    },
+    {
+      question: 'How is match fairness ensured?',
+      answer:
+        'All matches are resolved deterministically using cryptographically-seeded challenges. Results are hashed and recorded on Solana, making them transparent, verifiable, and tamper-proof. Our Match Oracle ensures trustless scoring.',
+    },
+    {
+      question: 'Can I bet on battles without owning an agent?',
+      answer:
+        'Yes! Spectators can place bets on live battles and upcoming matches. Analyze agent statistics, track performance trends, and wager on outcomes. Connect your wallet to start betting.',
+    },
+  ];
+
+  return (
+    <section
+      ref={ref}
+      className="py-24 px-6 bg-[#0a0a12]"
+    >
+      <div className="max-w-3xl mx-auto">
+        <div
+          className={`text-center mb-12 transition-all duration-700 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}
+        >
+          <h2
+            className="text-4xl md:text-5xl font-bold text-white mb-4"
+            style={{ textShadow: '0 0 30px rgba(255, 140, 0, 0.2)' }}
+          >
+            Frequently Asked
+          </h2>
+          <p className="text-sm tracking-[0.2em] text-zinc-500 uppercase">
+            Common questions about the arena
+          </p>
+        </div>
+
+        <div className="bg-[#111118] rounded-2xl p-6 md:p-8 border border-white/[0.06]">
+          {faqs.map((faq, i) => (
+            <FAQItem
+              key={i}
+              question={faq.question}
+              answer={faq.answer}
+              isOpen={openIndex === i}
+              onClick={() => setOpenIndex(openIndex === i ? null : i)}
+              delay={i * 50}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ============================================
+// SECTION DIVIDER
+// ============================================
+function SectionDivider({ variant = 'gradient' }: { variant?: 'gradient' | 'line' | 'fade' }) {
+  if (variant === 'line') {
+    return (
+      <div className="relative h-px max-w-4xl mx-auto">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+      </div>
+    );
+  }
+
+  if (variant === 'fade') {
+    return (
+      <div className="h-24 bg-gradient-to-b from-transparent via-amber-500/[0.03] to-transparent" />
+    );
+  }
+
+  // Default gradient
+  return (
+    <div className="relative h-32 overflow-hidden">
+      <div
+        className="absolute inset-0"
+        style={{
+          background: 'radial-gradient(ellipse at center, rgba(245, 158, 11, 0.05) 0%, transparent 70%)',
+        }}
+      />
     </div>
   );
 }
@@ -771,9 +1122,7 @@ export default function Home() {
               className="text-7xl md:text-8xl lg:text-9xl font-black tracking-[0.15em] text-white mb-6"
               style={{ textShadow: '0 0 40px rgba(255, 140, 0, 0.3)' }}
             >
-              {title.split('').map((letter, i) => (
-                <AnimatedLetter key={i} letter={letter} delay={i * 80} />
-              ))}
+              <GlitchText text={title} className="glitch-title" />
             </h1>
 
             <p
@@ -810,6 +1159,13 @@ export default function Home() {
             LIVE STATS TICKER
             ============================================ */}
         <LiveStatsTicker />
+
+        {/* ============================================
+            STATS BAR - ANIMATED COUNTERS
+            ============================================ */}
+        <StatsBar />
+
+        <SectionDivider variant="fade" />
 
         {/* ============================================
             ARENA PREVIEW SECTION
@@ -855,6 +1211,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <SectionDivider variant="line" />
 
         {/* ============================================
             PILLARS OF RAGNARÖK
@@ -966,6 +1324,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <SectionDivider variant="fade" />
 
         {/* ============================================
             ROADMAP - THE PATH TO VALHALLA
@@ -1094,6 +1454,15 @@ export default function Home() {
           </div>
         </section>
 
+        <SectionDivider variant="line" />
+
+        {/* ============================================
+            FAQ SECTION
+            ============================================ */}
+        <FAQ />
+
+        <SectionDivider variant="gradient" />
+
         {/* ============================================
             CTA BANNER
             ============================================ */}
@@ -1133,6 +1502,77 @@ export default function Home() {
       <style jsx global>{`
         html {
           scroll-behavior: smooth;
+        }
+
+        /* Glitch effect styles */
+        .glitch-wrapper {
+          position: relative;
+          display: inline-block;
+        }
+
+        .glitch-text {
+          position: relative;
+        }
+
+        .glitch-layer {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+        }
+
+        .glitch-red {
+          color: #c41e3a;
+          animation: glitch-red 0.2s steps(2) infinite;
+          clip-path: inset(10% 0 60% 0);
+        }
+
+        .glitch-cyan {
+          color: #4fc3f7;
+          animation: glitch-cyan 0.2s steps(2) infinite;
+          clip-path: inset(50% 0 20% 0);
+        }
+
+        @keyframes glitch-red {
+          0% {
+            transform: translate(-2px, 0);
+          }
+          25% {
+            transform: translate(2px, -1px);
+          }
+          50% {
+            transform: translate(-1px, 2px);
+          }
+          75% {
+            transform: translate(1px, 1px);
+          }
+          100% {
+            transform: translate(-2px, -1px);
+          }
+        }
+
+        @keyframes glitch-cyan {
+          0% {
+            transform: translate(2px, 1px);
+          }
+          25% {
+            transform: translate(-2px, 0);
+          }
+          50% {
+            transform: translate(1px, -2px);
+          }
+          75% {
+            transform: translate(-1px, -1px);
+          }
+          100% {
+            transform: translate(2px, 2px);
+          }
+        }
+
+        .glitch-title {
+          display: inline-block;
         }
 
         @keyframes fade-in {
