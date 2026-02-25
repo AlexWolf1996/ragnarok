@@ -25,7 +25,6 @@ import NoiseOverlay from '@/components/effects/NoiseOverlay';
 import EmberField from '@/components/effects/EmberField';
 import Sigils from '@/components/effects/Sigils';
 import LightningForks from '@/components/effects/LightningForks';
-import FrameHUD from '@/components/effects/FrameHUD';
 
 // Supabase
 import { getAgents, getMatchStats } from '@/lib/supabase/client';
@@ -587,9 +586,6 @@ function Protocol() {
               </span>
             </h2>
           </div>
-          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-400">
-            DOTS TRAVEL // SIGNALS ALIGN
-          </div>
         </div>
 
         <div className="mt-14 grid grid-cols-1 md:grid-cols-4 gap-6 relative">
@@ -807,18 +803,26 @@ function Footer() {
   return (
     <footer className="relative bg-black py-14 border-t border-red-900/35">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-red-600 via-amber-500 to-red-600" />
+
+      {/* Decorative status text */}
+      <div className="max-w-[1400px] mx-auto px-6 mb-8">
+        <div className="font-mono text-[10px] tracking-[0.35em] text-amber-500/50 text-center">
+          TARGET_LOCK: ENABLED // VOLATILITY: HIGH // MERCY: DISABLED
+        </div>
+      </div>
+
       <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="font-[var(--font-orbitron)] font-black tracking-[0.2em] text-neutral-500">
+        <div className="font-[var(--font-orbitron)] font-black tracking-[0.2em] text-neutral-400">
           RAGNAROK_SYS
         </div>
-        <div className="flex gap-8 font-mono text-xs tracking-[0.3em] uppercase text-neutral-500">
-          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500">
+        <div className="flex gap-8 font-mono text-xs tracking-[0.3em] uppercase text-neutral-400">
+          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500 transition-colors">
             TWITTER
           </a>
-          <Link href="/docs" className="hover:text-amber-500">
+          <Link href="/docs" className="hover:text-amber-500 transition-colors">
             DOCS
           </Link>
-          <a href="https://discord.com" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500">
+          <a href="https://discord.com" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500 transition-colors">
             DISCORD
           </a>
         </div>
@@ -859,7 +863,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black text-white selection:bg-red-600 selection:text-black overflow-x-hidden">
       <NoiseOverlay />
-      <FrameHUD />
       <LandingHeader />
 
       <main>
