@@ -6,8 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Cpu,
   Zap,
@@ -24,7 +23,6 @@ import LandingHeader from '@/components/landing/LandingHeader';
 import NoiseOverlay from '@/components/effects/NoiseOverlay';
 import EmberField from '@/components/effects/EmberField';
 import Sigils from '@/components/effects/Sigils';
-import LightningForks from '@/components/effects/LightningForks';
 
 // Supabase
 import { getAgents, getMatchStats } from '@/lib/supabase/client';
@@ -166,9 +164,6 @@ function MatchmakingWidget({ agents, stats }: { agents: Agent[]; stats: { totalM
 // HERO SECTION
 // ============================================
 function Hero() {
-  const { scrollY } = useScroll();
-  const yA = useTransform(scrollY, [0, 900], [0, 220]);
-
   return (
     <Section className="min-h-screen overflow-hidden bg-black">
       {/* Background: Titan Battle Scene */}
@@ -181,25 +176,8 @@ function Hero() {
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black via-black/70 to-black" />
-      <Sigils density={90} />
-      <EmberField count={160} />
-      <LightningForks />
-
-      {/* Floating Gold Relic - free in background */}
-      <motion.div
-        style={{ y: yA }}
-        animate={{ x: [0, 20, 0], y: [0, -6, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-1/3 right-[10%] z-[1] pointer-events-none hidden lg:block"
-      >
-        <Image
-          src="/images/hammer-gold.png"
-          alt="Gold relic"
-          width={144}
-          height={144}
-          className="w-28 h-28 xl:w-36 xl:h-36 opacity-50 drop-shadow-[0_0_40px_rgba(245,158,11,0.5)]"
-        />
-      </motion.div>
+      <Sigils density={50} />
+      <EmberField count={40} />
 
       <div className="relative z-10 px-6 pt-28 md:pt-32 max-w-[1400px] mx-auto">
         <div className="max-w-3xl mx-auto text-center">
@@ -299,7 +277,7 @@ function Arena() {
         }}
       />
       <div className="absolute inset-0 bg-black/80" />
-      <EmberField count={140} />
+      <EmberField count={25} />
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6">
         <div className="flex items-end justify-between gap-8 flex-col md:flex-row">
@@ -470,7 +448,6 @@ function Features() {
         }}
       />
       <div className="absolute inset-0 bg-black/70" />
-      <Sigils density={60} />
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6">
         <div className="flex flex-col lg:flex-row items-end justify-between gap-8">
@@ -567,7 +544,7 @@ function Protocol() {
   return (
     <Section id="protocol" className="py-28 bg-black overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(220,38,38,0.25)_0%,rgba(0,0,0,0.9)_60%)]" />
-      <EmberField count={110} />
+      <EmberField count={20} />
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6">
         <div className="flex items-end justify-between flex-col md:flex-row gap-8">
@@ -760,7 +737,7 @@ function CTA() {
         }}
       />
 
-      <EmberField count={40} />
+      <EmberField count={15} />
 
       <div className="relative z-10 max-w-[1100px] mx-auto px-6 text-center">
         <div className="inline-flex items-center gap-3 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-400">
