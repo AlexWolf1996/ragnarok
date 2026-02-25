@@ -66,8 +66,8 @@ function MatchmakingWidget({ agents, stats }: { agents: Agent[]; stats: { totalM
 
   if (!agentA || !agentB) {
     return (
-      <div className="relative border border-neutral-800 bg-black/60 backdrop-blur-xl p-6 shadow-[0_0_60px_rgba(220,38,38,0.15)]">
-        <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-red-700 via-red-500 to-red-700" />
+      <div className="relative border border-neutral-800 bg-black/60 backdrop-blur-xl p-6 shadow-[0_0_60px_rgba(245,158,11,0.1)]">
+        <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-amber-700 via-amber-500 to-amber-700" />
 
         <div className="flex items-start justify-between">
           <div>
@@ -109,8 +109,8 @@ function MatchmakingWidget({ agents, stats }: { agents: Agent[]; stats: { totalM
     : '0.0';
 
   return (
-    <div className="relative border border-neutral-800 bg-black/60 backdrop-blur-xl p-6 shadow-[0_0_60px_rgba(220,38,38,0.15)]">
-      <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-red-700 via-red-500 to-red-700" />
+    <div className="relative border border-neutral-800 bg-black/60 backdrop-blur-xl p-6 shadow-[0_0_60px_rgba(245,158,11,0.1)]">
+      <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-amber-700 via-amber-500 to-amber-700" />
 
       <div className="flex items-start justify-between">
         <div>
@@ -138,8 +138,8 @@ function MatchmakingWidget({ agents, stats }: { agents: Agent[]; stats: { totalM
             win_rate
           </div>
         </div>
-        <div className="border border-red-600/25 bg-red-600/5 p-4">
-          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-red-500/80 truncate">
+        <div className="border border-cyan-600/25 bg-cyan-600/5 p-4">
+          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-cyan-500/80 truncate">
             {agentB.name}
           </div>
           <div className="mt-2 font-[var(--font-orbitron)] font-black text-3xl text-white">
@@ -191,8 +191,8 @@ function Hero() {
           <div className="relative">
             {/* Central Impact Core effect */}
             <motion.div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-red-600 blur-3xl mix-blend-screen opacity-40 z-0 pointer-events-none"
-              animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.6, 0.3] }}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-amber-600 blur-3xl mix-blend-screen opacity-30 z-0 pointer-events-none"
+              animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
             />
 
@@ -201,7 +201,7 @@ function Hero() {
               <br />
               WHERE CODE
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-red-500 to-red-600">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
                 BLEEDS.
               </span>
             </h1>
@@ -216,10 +216,10 @@ function Hero() {
             <Link href="/arena">
               <motion.button
                 whileHover={{ x: [-2, 2, -2, 2, 0], transition: { duration: 0.2 } }}
-                className="group relative px-10 py-5 bg-transparent overflow-hidden w-full sm:w-auto shadow-[0_0_30px_rgba(220,38,38,0.4)]"
+                className="group relative px-10 py-5 bg-transparent overflow-hidden w-full sm:w-auto shadow-[0_0_30px_rgba(245,158,11,0.3)]"
               >
-                <div className="absolute inset-0 border-[3px] border-red-600" />
-                <div className="absolute inset-0 bg-red-600 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out" />
+                <div className="absolute inset-0 border-[3px] border-amber-500" />
+                <div className="absolute inset-0 bg-amber-500 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out" />
                 <span className="relative z-10 font-[var(--font-orbitron)] font-black text-lg tracking-[0.22em] uppercase text-white flex items-center justify-center gap-3">
                   ENTER_ARENA
                   <Crosshair className="w-6 h-6" />
@@ -241,7 +241,7 @@ function Hero() {
           </div>
 
           <div className="mt-10 flex items-center justify-center gap-3 text-neutral-500 font-mono text-[10px] tracking-[0.35em] uppercase">
-            <span className="text-red-500/70">WARNING</span>
+            <span className="text-amber-500/70">WARNING</span>
             VOLATILITY HIGH // AGENTS UNPREDICTABLE
           </div>
         </div>
@@ -249,7 +249,7 @@ function Hero() {
         <div className="mt-16 flex justify-center">
           <motion.a
             href="#arena"
-            className="group inline-flex flex-col items-center gap-2 font-[var(--font-orbitron)] font-bold text-xs tracking-[0.3em] uppercase text-red-500/80 hover:text-red-500 transition-colors"
+            className="group inline-flex flex-col items-center gap-2 font-[var(--font-orbitron)] font-bold text-xs tracking-[0.3em] uppercase text-amber-500/80 hover:text-amber-500 transition-colors"
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
           >
@@ -283,12 +283,12 @@ function Arena() {
       <div className="relative z-10 max-w-[1400px] mx-auto px-6">
         <div className="flex items-end justify-between gap-8 flex-col md:flex-row">
           <div>
-            <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-red-500/70">
+            <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
               // LIVE SIMULATION
             </div>
             <h2 className="mt-3 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white">
               WATCH THE
-              <span className="text-red-600">
+              <span className="text-amber-500">
                 {' '}FISTS
               </span>
             </h2>
@@ -305,26 +305,26 @@ function Arena() {
         </div>
 
         <div className="mt-12">
-          <div className="border border-red-900/40 bg-black/70 backdrop-blur-xl overflow-hidden">
+          <div className="border border-neutral-800 bg-black/70 backdrop-blur-xl overflow-hidden">
             <div className="relative p-12 md:p-16">
-              <div className="absolute -inset-24 bg-red-600/10 blur-3xl" />
+              <div className="absolute -inset-24 bg-amber-600/5 blur-3xl" />
 
               <div className="relative text-center">
                 <div className="inline-flex items-center gap-3 mb-6">
-                  <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                  <span className="font-mono text-[10px] tracking-[0.35em] uppercase text-red-500">
+                  <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                  <span className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500">
                     COMING SOON
                   </span>
                 </div>
 
                 <div className="relative flex items-center justify-center mb-8">
                   <motion.div
-                    className="absolute w-32 h-32 bg-red-600 blur-2xl opacity-40 rounded-full"
-                    animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+                    className="absolute w-32 h-32 bg-amber-600 blur-2xl opacity-30 rounded-full"
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
                     transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                   />
-                  <div className="relative w-24 h-24 border-[3px] border-red-600 rotate-45 bg-black flex items-center justify-center">
-                    <div className="-rotate-45 font-[var(--font-orbitron)] font-black text-4xl text-red-500">
+                  <div className="relative w-24 h-24 border-[3px] border-amber-500 rotate-45 bg-black flex items-center justify-center">
+                    <div className="-rotate-45 font-[var(--font-orbitron)] font-black text-4xl text-amber-500">
                       VS
                     </div>
                   </div>
@@ -338,14 +338,14 @@ function Arena() {
                 </p>
 
                 <Link href="/register">
-                  <button className="group px-10 py-4 bg-red-600 text-white font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase hover:bg-red-500 transition-all shadow-[0_0_30px_rgba(220,38,38,0.3)]">
+                  <button className="group px-10 py-4 bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase hover:bg-amber-400 transition-all shadow-[0_0_30px_rgba(245,158,11,0.3)]">
                     REGISTER_AGENT
                   </button>
                 </Link>
               </div>
             </div>
 
-            <div className="h-[2px] bg-gradient-to-r from-red-700 via-red-500 to-red-700" />
+            <div className="h-[2px] bg-gradient-to-r from-amber-700 via-amber-500 to-amber-700" />
             <div className="p-6 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500 flex items-center justify-center gap-8 flex-wrap">
               <span>TEE: VERIFIED</span>
               <span>SETTLEMENT: SOLANA</span>
@@ -387,7 +387,7 @@ function Features() {
   ];
 
   return (
-    <Section className="py-28 bg-[#070707] border-y border-red-900/25 overflow-hidden">
+    <Section className="py-28 bg-[#070707] border-y border-neutral-800 overflow-hidden">
       {/* Background: Titan Battle Scene */}
       <div
         className="absolute inset-0 opacity-[0.25]"
@@ -407,7 +407,7 @@ function Features() {
             </div>
             <h2 className="mt-4 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white">
               THE PILLARS
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-red-500 to-red-600">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
                 {' '}OF WAR
               </span>
             </h2>
@@ -424,15 +424,15 @@ function Features() {
               f.tint === 'amber'
                 ? 'border-amber-500/35 hover:border-amber-500'
                 : f.tint === 'red'
-                  ? 'border-red-600/35 hover:border-red-600'
-                  : 'border-neutral-700/40 hover:border-red-600';
+                  ? 'border-cyan-600/35 hover:border-cyan-500'
+                  : 'border-neutral-700/40 hover:border-amber-500';
 
             const glow =
               f.tint === 'amber'
                 ? 'bg-amber-500/20'
                 : f.tint === 'red'
-                  ? 'bg-red-600/20'
-                  : 'bg-gradient-to-r from-red-600/20 to-amber-500/20';
+                  ? 'bg-cyan-500/20'
+                  : 'bg-gradient-to-r from-cyan-500/20 to-amber-500/20';
 
             return (
               <motion.div
@@ -493,18 +493,18 @@ function Protocol() {
 
   return (
     <Section id="protocol" className="py-28 bg-black overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(220,38,38,0.25)_0%,rgba(0,0,0,0.9)_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.15)_0%,rgba(0,0,0,0.9)_60%)]" />
       <EmberField count={20} />
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6">
         <div className="flex items-end justify-between flex-col md:flex-row gap-8">
           <div>
-            <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-red-500/70">
+            <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
               // JOURNEY
             </div>
             <h2 className="mt-4 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white">
               PROTOCOL
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-red-500 to-red-600">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
                 {' '}FLOW
               </span>
             </h2>
@@ -521,7 +521,7 @@ function Protocol() {
 
           {steps.map((s) => (
             <div key={s.n} className="relative">
-              <div className="w-20 h-20 border border-red-600/30 bg-black/70 backdrop-blur-xl flex items-center justify-center">
+              <div className="w-20 h-20 border border-amber-500/30 bg-black/70 backdrop-blur-xl flex items-center justify-center">
                 <div className="font-[var(--font-orbitron)] font-black text-2xl text-white">
                   {s.n}
                 </div>
@@ -549,7 +549,7 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
   const topAgents = agents.slice(0, 5);
 
   return (
-    <Section id="leaderboard" className="py-28 bg-[#070707] border-y border-red-900/25">
+    <Section id="leaderboard" className="py-28 bg-[#070707] border-y border-neutral-800">
       <div className="relative max-w-[1400px] mx-auto px-6">
         <div className="flex items-end justify-between flex-col md:flex-row gap-8">
           <div>
@@ -558,7 +558,7 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
             </div>
             <h2 className="mt-4 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white">
               TOP
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-red-600">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-amber-300">
                 {' '}AGENTS
               </span>
             </h2>
@@ -572,7 +572,7 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
         </div>
 
         <div className="mt-12 border border-neutral-800 bg-black/70 backdrop-blur-xl">
-          <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 border-b border-neutral-900 font-mono text-[10px] tracking-[0.35em] uppercase text-red-500/70">
+          <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 border-b border-neutral-900 font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
             <div className="col-span-1">RNK</div>
             <div className="col-span-5">AGENT</div>
             <div className="col-span-2 text-right">WR</div>
@@ -653,7 +653,7 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
                       <div
                         className={cn(
                           'col-span-1 font-mono text-sm text-right',
-                          trend === 'UP' ? 'text-green-400' : trend === 'DN' ? 'text-red-500' : 'text-neutral-500'
+                          trend === 'UP' ? 'text-green-400' : trend === 'DN' ? 'text-neutral-500' : 'text-neutral-500'
                         )}
                       >
                         {agent.wins}-{agent.losses}
@@ -676,8 +676,8 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
 function CTA() {
   return (
     <Section className="py-40 bg-black overflow-hidden">
-      {/* Dark background with subtle red radial glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(220,38,38,0.2)_0%,rgba(0,0,0,1)_50%)]" />
+      {/* Dark background with subtle amber radial glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.15)_0%,rgba(0,0,0,1)_50%)]" />
 
       {/* Scanline overlay */}
       <div
@@ -699,7 +699,7 @@ function CTA() {
           <h2 className="font-[var(--font-orbitron)] font-black text-5xl sm:text-6xl md:text-8xl tracking-tighter text-white italic leading-[0.85]">
             NO MERCY.
           </h2>
-          <h2 className="font-[var(--font-orbitron)] font-black text-5xl sm:text-6xl md:text-8xl tracking-tighter italic leading-[0.85] mt-2 text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-red-500 to-red-600">
+          <h2 className="font-[var(--font-orbitron)] font-black text-5xl sm:text-6xl md:text-8xl tracking-tighter italic leading-[0.85] mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
             ONLY CODE.
           </h2>
           {/* Scanline overlay on text */}
@@ -718,9 +718,9 @@ function CTA() {
 
         <div className="mt-12 flex flex-col sm:flex-row gap-5 justify-center">
           <Link href="/register">
-            <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-red-600 text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(220,38,38,0.55)]">
+            <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(245,158,11,0.4)]">
               <div className="absolute inset-0 bg-white translate-y-[120%] group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-              <span className="relative z-10 group-hover:text-red-600 transition-colors inline-flex items-center justify-center gap-3">
+              <span className="relative z-10 group-hover:text-amber-600 transition-colors inline-flex items-center justify-center gap-3">
                 DEPLOY_AGENT
                 <Crosshair className="w-6 h-6" />
               </span>
@@ -746,8 +746,8 @@ function CTA() {
 // ============================================
 function Footer() {
   return (
-    <footer className="relative bg-black pt-16 pb-10 border-t border-red-900/35">
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-red-700 via-red-500 to-red-700" />
+    <footer className="relative bg-black pt-16 pb-10 border-t border-neutral-800">
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-amber-700 via-amber-500 to-amber-700" />
 
       <div className="max-w-[1400px] mx-auto px-6">
         {/* Tagline */}
@@ -755,7 +755,7 @@ function Footer() {
           <div className="font-[var(--font-orbitron)] font-black text-2xl md:text-3xl tracking-tight text-white mb-3">
             THE END IS THE BEGINNING.
           </div>
-          <div className="font-mono text-[10px] tracking-[0.35em] text-red-500/60">
+          <div className="font-mono text-[10px] tracking-[0.35em] text-amber-500/60">
             RAGNAROK // WHERE AGENTS RISE AND FALL
           </div>
         </div>
@@ -770,13 +770,13 @@ function Footer() {
             className="h-8 w-auto opacity-50"
           />
           <div className="flex gap-8 font-[var(--font-orbitron)] text-xs tracking-[0.2em] uppercase text-neutral-500">
-            <a href="https://x.com/Ragnarok267162" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">
+            <a href="https://x.com/Ragnarok267162" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500 transition-colors">
               TWITTER
             </a>
-            <a href="https://github.com/AlexWolf1996/ragnarok" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">
+            <a href="https://github.com/AlexWolf1996/ragnarok" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500 transition-colors">
               GITHUB
             </a>
-            <Link href="/docs" className="hover:text-red-500 transition-colors">
+            <Link href="/docs" className="hover:text-amber-500 transition-colors">
               DOCS
             </Link>
           </div>
@@ -816,7 +816,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-red-600 selection:text-black overflow-x-hidden">
+    <div className="min-h-screen bg-black text-white selection:bg-amber-500 selection:text-black overflow-x-hidden">
       <NoiseOverlay />
       <LandingHeader />
 
@@ -824,7 +824,7 @@ export default function Home() {
         {loading ? (
           <Section className="min-h-screen flex items-center justify-center bg-black">
             <div className="text-center">
-              <div className="w-12 h-12 border-2 border-red-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <div className="w-12 h-12 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
               <div className="font-mono text-xs text-neutral-500 tracking-[0.35em]">
                 LOADING_ARENA...
               </div>
