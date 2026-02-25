@@ -773,12 +773,12 @@ function Footer() {
             <a href="https://x.com/Ragnarok267162" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">
               TWITTER
             </a>
+            <a href="https://github.com/AlexWolf1996/ragnarok" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">
+              GITHUB
+            </a>
             <Link href="/docs" className="hover:text-red-500 transition-colors">
               DOCS
             </Link>
-            <a href="https://discord.com" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">
-              DISCORD
-            </a>
           </div>
         </div>
       </div>
