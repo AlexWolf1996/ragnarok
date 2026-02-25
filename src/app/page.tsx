@@ -188,6 +188,8 @@ function Hero({ agents, stats }: { agents: Agent[]; stats: { totalMatches: numbe
       {/* Floating Gold Relic - positioned in top-right empty space */}
       <motion.div
         style={{ y: yA }}
+        animate={{ x: [0, 30, 0], y: [0, -8, 0] }}
+        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
         className="absolute top-32 right-8 md:right-16 lg:right-24 z-10 pointer-events-none hidden md:block"
       >
         <Image
