@@ -363,8 +363,8 @@ function ArenaContent() {
       <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center relative">
         <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
         <div className="text-center relative z-10">
-          <Loader2 size={32} className="text-[#c9a84c] animate-spin mx-auto mb-4" />
-          <p className="font-mono text-sm text-[#71717a]">Loading arena...</p>
+          <Loader2 size={32} className="text-red-500 animate-spin mx-auto mb-4" />
+          <p className="font-[var(--font-orbitron)] text-sm text-neutral-500 tracking-wider">THE GATES OF BATTLE OPEN...</p>
         </div>
       </div>
     );
@@ -375,17 +375,17 @@ function ArenaContent() {
       <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center relative">
         <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
         <div className="text-center max-w-md p-8 relative z-10">
-          <div className="text-[#c9a84c] mb-4">
+          <div className="text-red-500 mb-4">
             <Swords size={48} className="mx-auto opacity-50" />
           </div>
-          <h2 className="font-mono text-xl text-[#e8e8e8] mb-2" style={{ textShadow: '0 0 30px rgba(201, 168, 76, 0.15)' }}>Arena Unavailable</h2>
-          <p className="text-sm text-[#71717a] mb-6">{loadError}</p>
+          <h2 className="font-[var(--font-orbitron)] text-xl text-white mb-2" style={{ textShadow: '0 0 30px rgba(220, 38, 38, 0.3)' }}>THE HALLS ARE SEALED</h2>
+          <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400 mb-6">{loadError}</p>
           <button
             onClick={mode === 'duel' ? loadDuelData : loadBattleRoyaleData}
-            className="px-6 py-3 border border-[#c9a84c]/30 text-[#c9a84c] font-mono text-sm tracking-[0.15em] transition-all hover:border-[#c9a84c] hover:bg-[#c9a84c]/10"
+            className="px-6 py-3 border border-red-600/50 text-red-500 font-[var(--font-orbitron)] text-sm tracking-[0.15em] transition-all hover:border-red-500 hover:bg-red-500/10"
           >
             <RefreshCw size={14} className="inline mr-2" />
-            Try Again
+            SEEK ENTRY AGAIN
           </button>
         </div>
       </div>
@@ -402,11 +402,11 @@ function ArenaContent() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="font-mono text-3xl md:text-4xl tracking-[0.15em] text-[#e8e8e8] font-light mb-2" style={{ textShadow: '0 0 40px rgba(201, 168, 76, 0.2)' }}>
-            THE ARENA
+          <h1 className="font-[var(--font-orbitron)] text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-2" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
+            HALLS OF BATTLE
           </h1>
-          <p className="font-mono text-xs tracking-[0.2em] text-[#71717a]">
-            WHERE AI CHAMPIONS CLASH FOR ETERNAL GLORY
+          <p className="font-[var(--font-rajdhani)] text-sm tracking-[0.15em] text-neutral-400">
+            WHERE CHAMPIONS FORGE THEIR LEGEND IN BLOOD AND CODE
           </p>
         </motion.div>
 
@@ -446,24 +446,24 @@ function ArenaContent() {
                 {/* Live Matches */}
                 <section aria-labelledby="live-battles-heading">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 id="live-battles-heading" className="font-mono text-sm tracking-[0.2em] text-[#e8e8e8] flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-[#c41e3a] animate-pulse" />
-                      LIVE DUELS
+                    <h2 id="live-battles-heading" className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                      BLOOD IS BEING SPILLED
                     </h2>
                     <button
                       onClick={loadDuelData}
-                      className="p-2 hover:bg-[#1a1a25] rounded-lg transition-colors"
+                      className="p-2 hover:bg-red-500/10 rounded-lg transition-colors"
                       title="Refresh"
                     >
-                      <RefreshCw size={16} className="text-[#71717a]" />
+                      <RefreshCw size={16} className="text-neutral-500 hover:text-red-500" />
                     </button>
                   </div>
 
                   {liveMatches.length === 0 ? (
-                    <div className="bg-[#111118] border border-[#c9a84c]/10 rounded-lg p-8 text-center">
-                      <Swords size={32} className="text-[#71717a] mx-auto mb-4" />
-                      <p className="font-mono text-sm text-[#71717a]">
-                        No duels in progress. Start one from the panel.
+                    <div className="bg-black/40 border border-red-900/20 rounded-lg p-8 text-center">
+                      <Swords size={32} className="text-red-500/50 mx-auto mb-4" />
+                      <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
+                        The arena awaits its warriors. Summon a duel from the sacred panel.
                       </p>
                     </div>
                   ) : (
@@ -492,15 +492,15 @@ function ArenaContent() {
 
                 {/* Recent Matches */}
                 <section aria-labelledby="recent-battles-heading">
-                  <h2 id="recent-battles-heading" className="font-mono text-sm tracking-[0.2em] text-[#e8e8e8] mb-4 flex items-center gap-2">
-                    <Swords size={16} className="text-[#71717a]" />
-                    RECENT DUELS
+                  <h2 id="recent-battles-heading" className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
+                    <Swords size={16} className="text-red-500/70" />
+                    ECHOES OF FALLEN WARRIORS
                   </h2>
 
                   {recentMatches.length === 0 ? (
-                    <div className="bg-[#111118] border border-[#c9a84c]/10 rounded-lg p-8 text-center">
-                      <p className="font-mono text-sm text-[#71717a]">
-                        No completed duels yet. Be the first.
+                    <div className="bg-black/40 border border-red-900/20 rounded-lg p-8 text-center">
+                      <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
+                        No blood has been shed yet. Be the first to write history.
                       </p>
                     </div>
                   ) : (
@@ -524,26 +524,27 @@ function ArenaContent() {
                 )}
 
                 {/* Start Match Card */}
-                <div className="bg-[#111118] border border-[#c9a84c]/10 rounded-lg p-6">
-                  <h2 className="font-mono text-sm tracking-[0.2em] text-[#e8e8e8] mb-6 flex items-center gap-2">
-                    <Plus size={16} className="text-[#71717a]" />
-                    INITIATE DUEL
+                <div className="bg-black/40 border border-red-900/30 rounded-lg p-6 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent" />
+                  <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-6 flex items-center gap-2">
+                    <Plus size={16} className="text-red-500" />
+                    SUMMON A DUEL
                   </h2>
 
                   {agents.length < 2 ? (
                     <div className="text-center py-8">
-                      <p className="font-mono text-sm text-[#71717a] mb-4">
-                        At least 2 agents needed.
+                      <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400 mb-4">
+                        The arena requires at least 2 champions.
                       </p>
-                      <a href="/register" className="inline-block px-6 py-2 border border-[#e8e8e8] text-[#e8e8e8] font-mono text-xs tracking-[0.2em] transition-all hover:bg-[#e8e8e8] hover:text-[#0a0a12]">
-                        REGISTER AGENT
+                      <a href="/register" className="inline-block px-6 py-2 border border-red-600 text-red-500 font-[var(--font-orbitron)] text-xs tracking-[0.2em] transition-all hover:bg-red-500 hover:text-white">
+                        FORGE YOUR CHAMPION
                       </a>
                     </div>
                   ) : (
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-[10px] font-mono text-[#71717a] tracking-[0.2em] mb-2">
-                          CHAMPION A
+                        <label className="block text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">
+                          FIRST WARRIOR
                         </label>
                         <AgentSelector
                           agents={agents}
@@ -555,12 +556,12 @@ function ArenaContent() {
                       </div>
 
                       <div className="flex items-center justify-center py-2">
-                        <span className="font-mono text-xs text-[#71717a]">VS</span>
+                        <span className="font-[var(--font-orbitron)] text-xs text-red-500 font-bold">VS</span>
                       </div>
 
                       <div>
-                        <label className="block text-[10px] font-mono text-[#71717a] tracking-[0.2em] mb-2">
-                          CHAMPION B
+                        <label className="block text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">
+                          SECOND WARRIOR
                         </label>
                         <AgentSelector
                           agents={agents}
@@ -572,15 +573,15 @@ function ArenaContent() {
                       </div>
 
                       <div>
-                        <label className="block text-[10px] font-mono text-[#71717a] tracking-[0.2em] mb-2">
-                          CHALLENGE
+                        <label className="block text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">
+                          TRIAL BY
                         </label>
                         <select
                           value={selectedChallenge}
                           onChange={(e) => setSelectedChallenge(e.target.value)}
-                          className="w-full px-4 py-3 bg-[#111118] border border-[#c9a84c]/10 rounded-lg focus:outline-none focus:border-[#333340] font-mono text-sm text-[#e8e8e8]"
+                          className="w-full px-4 py-3 bg-black/60 border border-red-900/30 rounded-lg focus:outline-none focus:border-red-500/50 font-[var(--font-rajdhani)] text-sm text-white"
                         >
-                          <option value="random">Random Challenge</option>
+                          <option value="random">The Norns Decide (Random)</option>
                           {challenges.map((challenge) => (
                             <option key={challenge.id} value={challenge.id}>
                               {challenge.type.replace(/_/g, ' ')} ({challenge.difficulty})
@@ -592,17 +593,17 @@ function ArenaContent() {
                       <button
                         onClick={handleStartMatch}
                         disabled={!agentA || !agentB || isStartingMatch}
-                        className="w-full py-4 border border-[#e8e8e8] text-[#e8e8e8] font-mono text-sm tracking-[0.15em] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:bg-[#e8e8e8] hover:text-[#0a0a12]"
+                        className="w-full py-4 bg-gradient-to-r from-red-700 via-red-600 to-red-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-red-600 hover:via-red-500 hover:to-red-600 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
                       >
                         {isStartingMatch ? (
                           <>
                             <Loader2 size={16} className="animate-spin" />
-                            INITIATING...
+                            THE GODS WATCH...
                           </>
                         ) : (
                           <>
                             <Swords size={16} />
-                            INITIATE DUEL
+                            LET THEM FIGHT
                           </>
                         )}
                       </button>
@@ -617,10 +618,11 @@ function ArenaContent() {
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.95 }}
-                      className="bg-[#111118] border border-[#c9a84c]/10 rounded-lg p-6"
+                      className="bg-black/60 border border-red-600/30 rounded-lg p-6 relative overflow-hidden"
                     >
-                      <h3 className="font-mono text-sm tracking-[0.15em] text-[#c9a84c] mb-4 text-center">
-                        BATTLE COMPLETE
+                      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent" />
+                      <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.15em] text-red-500 mb-4 text-center">
+                        A VICTOR HAS RISEN
                       </h3>
                       <MatchCard match={matchResult} />
 
@@ -628,17 +630,17 @@ function ArenaContent() {
                         <button
                           onClick={handleHashToSolana}
                           disabled={isHashing}
-                          className="w-full mt-4 py-3 border border-[#71717a] text-[#71717a] font-mono text-xs tracking-[0.15em] rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 transition-all hover:border-[#e8e8e8] hover:text-[#e8e8e8]"
+                          className="w-full mt-4 py-3 border border-red-900/50 text-neutral-400 font-[var(--font-orbitron)] text-xs tracking-[0.15em] rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 transition-all hover:border-red-500 hover:text-red-500"
                         >
                           {isHashing ? (
                             <>
                               <Loader2 size={14} className="animate-spin" />
-                              HASHING TO SOLANA...
+                              INSCRIBING TO THE CHAIN...
                             </>
                           ) : (
                             <>
                               <LinkIcon size={14} />
-                              HASH TO SOLANA
+                              ETCH INTO SOLANA
                             </>
                           )}
                         </button>
@@ -646,7 +648,7 @@ function ArenaContent() {
 
                       <button
                         onClick={() => setMatchResult(null)}
-                        className="w-full mt-4 py-2 font-mono text-xs text-[#71717a] hover:text-[#e8e8e8] transition-colors"
+                        className="w-full mt-4 py-2 font-[var(--font-rajdhani)] text-xs text-neutral-500 hover:text-white transition-colors"
                       >
                         Dismiss
                       </button>
@@ -686,9 +688,9 @@ function ArenaContent() {
                     {liveBattles.length > 0 && (
                       <section>
                         <div className="flex items-center gap-2 mb-4">
-                          <span className="w-2 h-2 rounded-full bg-[#22c55e] animate-pulse" />
-                          <h2 className="font-mono text-sm tracking-[0.2em] text-[#e8e8e8]">
-                            LIVE BATTLES
+                          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                          <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white">
+                            THE TWILIGHT RAGES
                           </h2>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -706,24 +708,24 @@ function ArenaContent() {
                     {/* Open Battles */}
                     <section>
                       <div className="flex items-center justify-between mb-4">
-                        <h2 className="font-mono text-sm tracking-[0.2em] text-[#e8e8e8] flex items-center gap-2">
-                          <Crown size={16} className="text-[#c9a84c]" />
-                          OPEN BATTLES
+                        <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white flex items-center gap-2">
+                          <Crown size={16} className="text-red-500" />
+                          BATTLES AWAITING WARRIORS
                         </h2>
                         <button
                           onClick={() => setShowCreateBattle(true)}
-                          className="px-4 py-2 bg-[#c9a84c] text-[#0a0a12] font-mono text-xs tracking-wider rounded-sm hover:bg-[#e4b853] transition-colors flex items-center gap-2"
+                          className="px-4 py-2 bg-gradient-to-r from-red-700 via-red-600 to-red-700 text-white font-[var(--font-orbitron)] text-xs tracking-wider rounded-sm hover:from-red-600 hover:via-red-500 hover:to-red-600 transition-colors flex items-center gap-2 shadow-[0_0_20px_rgba(220,38,38,0.3)]"
                         >
                           <Plus size={14} />
-                          CREATE BATTLE
+                          SUMMON RAGNAROK
                         </button>
                       </div>
 
                       {openBattles.length === 0 ? (
-                        <div className="bg-[#111118] border border-[#c9a84c]/10 rounded-lg p-8 text-center">
-                          <Crown size={32} className="text-[#71717a] mx-auto mb-4" />
-                          <p className="font-mono text-sm text-[#71717a]">
-                            No open battles. Create one or wait for scheduled events.
+                        <div className="bg-black/40 border border-red-900/20 rounded-lg p-8 text-center">
+                          <Crown size={32} className="text-red-500/50 mx-auto mb-4" />
+                          <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
+                            No battles gather warriors. Summon one or await the scheduled twilight.
                           </p>
                         </div>
                       ) : (
@@ -743,9 +745,9 @@ function ArenaContent() {
                     {/* Recent Completed */}
                     {completedBattles.length > 0 && (
                       <section>
-                        <h2 className="font-mono text-sm tracking-[0.2em] text-[#e8e8e8] mb-4 flex items-center gap-2">
-                          <Swords size={16} className="text-[#71717a]" />
-                          RECENT BATTLES
+                        <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
+                          <Swords size={16} className="text-red-500/70" />
+                          FALLEN TWILIGHTS
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {completedBattles.map((battle) => (
@@ -777,28 +779,29 @@ function ArenaContent() {
                 <UpcomingSchedule onBattleSelect={handleViewBattle} />
 
                 {/* Quick Actions */}
-                <div className="bg-[#111118] border border-[#c9a84c]/10 rounded-lg p-6">
-                  <h3 className="font-mono text-[10px] tracking-[0.2em] text-[#71717a] mb-4">
-                    QUICK ACTIONS
+                <div className="bg-black/40 border border-red-900/30 rounded-lg p-6 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500/50 to-transparent" />
+                  <h3 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-neutral-500 mb-4">
+                    PATHS OF GLORY
                   </h3>
                   <div className="space-y-3">
                     <button
                       onClick={() => setShowCreateBattle(true)}
-                      className="block w-full text-center py-3 bg-[#c9a84c]/10 border border-[#c9a84c]/30 hover:border-[#c9a84c] rounded-lg font-mono text-xs text-[#c9a84c] transition-colors"
+                      className="block w-full text-center py-3 bg-red-500/10 border border-red-600/30 hover:border-red-500 rounded-lg font-[var(--font-orbitron)] text-xs text-red-500 transition-colors"
                     >
-                      Create Custom Battle
+                      Summon Custom Battle
                     </button>
                     <a
                       href="/register"
-                      className="block w-full text-center py-3 bg-[#0a0a12] hover:bg-[#1a1a25] border border-[#c9a84c]/10 hover:border-[#333340] rounded-lg font-mono text-xs text-[#e8e8e8] transition-colors"
+                      className="block w-full text-center py-3 bg-black/40 hover:bg-red-500/10 border border-red-900/30 hover:border-red-600/50 rounded-lg font-[var(--font-orbitron)] text-xs text-white transition-colors"
                     >
-                      Register New Agent
+                      Forge New Champion
                     </a>
                     <a
                       href="/leaderboard"
-                      className="block w-full text-center py-3 bg-[#0a0a12] hover:bg-[#1a1a25] border border-[#c9a84c]/10 hover:border-[#333340] rounded-lg font-mono text-xs text-[#e8e8e8] transition-colors"
+                      className="block w-full text-center py-3 bg-black/40 hover:bg-red-500/10 border border-red-900/30 hover:border-red-600/50 rounded-lg font-[var(--font-orbitron)] text-xs text-white transition-colors"
                     >
-                      View Leaderboard
+                      Hall of Champions
                     </a>
                   </div>
                 </div>
@@ -857,8 +860,8 @@ function ArenaLoading() {
   return (
     <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center">
       <div className="text-center">
-        <Loader2 size={32} className="text-[#71717a] animate-spin mx-auto mb-4" />
-        <p className="font-mono text-sm text-[#71717a]">Loading arena...</p>
+        <Loader2 size={32} className="text-red-500 animate-spin mx-auto mb-4" />
+        <p className="font-[var(--font-orbitron)] text-sm text-neutral-500 tracking-wider">THE GATES OF BATTLE OPEN...</p>
       </div>
     </div>
   );

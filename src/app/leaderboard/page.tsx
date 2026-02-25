@@ -58,16 +58,16 @@ function getRankTitle(rank: number | null): string {
 }
 
 function getRankStyle(rank: number | null): string {
-  if (rank === 1) return 'bg-[#c9a84c] text-[#0a0a12]';
-  if (rank === 2) return 'bg-[#e8e8e8] text-[#0a0a12]';
-  if (rank === 3) return 'bg-[#71717a] text-[#0a0a12]';
-  return 'bg-[#1a1a25] text-[#71717a]';
+  if (rank === 1) return 'bg-gradient-to-r from-red-600 to-red-500 text-white';
+  if (rank === 2) return 'bg-white text-black';
+  if (rank === 3) return 'bg-neutral-500 text-white';
+  return 'bg-neutral-800 text-neutral-400';
 }
 
 function getRowStyle(rank: number | null): string {
-  if (rank === 1) return 'border-l-2 border-l-[#c9a84c] bg-[#c9a84c]/5';
-  if (rank === 2) return 'border-l-2 border-l-[#e8e8e8] bg-[#e8e8e8]/5';
-  if (rank === 3) return 'border-l-2 border-l-[#71717a] bg-[#71717a]/5';
+  if (rank === 1) return 'border-l-2 border-l-red-500 bg-red-500/5';
+  if (rank === 2) return 'border-l-2 border-l-white bg-white/5';
+  if (rank === 3) return 'border-l-2 border-l-neutral-500 bg-neutral-500/5';
   return '';
 }
 
@@ -214,8 +214,8 @@ function LeaderboardContent() {
   const SortButton = ({ field, label }: { field: SortField; label: string }) => (
     <button
       onClick={() => handleSort(field)}
-      className={`flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.2em] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded ${
-        sortField === field ? 'text-[#c9a84c]' : 'text-[#71717a] hover:text-[#e8e8e8]'
+      className={`flex items-center gap-1 text-[10px] font-[var(--font-orbitron)] uppercase tracking-[0.2em] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded ${
+        sortField === field ? 'text-red-500' : 'text-neutral-500 hover:text-white'
       }`}
       aria-label={`Sort by ${label}`}
       aria-pressed={sortField === field}
@@ -236,8 +236,8 @@ function LeaderboardContent() {
       <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center relative">
         <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
         <div className="text-center relative z-10">
-          <Loader2 size={48} className="text-[#c9a84c] animate-spin mx-auto mb-4" />
-          <p className="font-mono text-sm text-[#71717a]">Loading champions...</p>
+          <Loader2 size={48} className="text-red-500 animate-spin mx-auto mb-4" />
+          <p className="font-[var(--font-orbitron)] text-sm text-neutral-500 tracking-wider">SUMMONING THE WORTHY...</p>
         </div>
       </div>
     );
@@ -248,15 +248,15 @@ function LeaderboardContent() {
       <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center relative">
         <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
         <div className="text-center max-w-md p-8 relative z-10">
-          <Trophy size={48} className="text-[#c9a84c] mx-auto mb-4 opacity-50" />
-          <h2 className="font-mono text-xl text-[#e8e8e8] mb-2" style={{ textShadow: '0 0 30px rgba(201, 168, 76, 0.15)' }}>Unable to Load</h2>
-          <p className="text-sm text-[#71717a] mb-6">{loadError}</p>
+          <Trophy size={48} className="text-red-500 mx-auto mb-4 opacity-50" />
+          <h2 className="font-[var(--font-orbitron)] text-xl text-white mb-2" style={{ textShadow: '0 0 30px rgba(220, 38, 38, 0.3)' }}>THE RECORDS ARE SEALED</h2>
+          <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400 mb-6">{loadError}</p>
           <button
             onClick={loadLeaderboard}
-            className="px-6 py-3 border border-[#c9a84c]/30 text-[#c9a84c] font-mono text-sm tracking-[0.15em] transition-all hover:border-[#c9a84c] hover:bg-[#c9a84c]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c]"
+            className="px-6 py-3 border border-red-600/50 text-red-500 font-[var(--font-orbitron)] text-sm tracking-[0.15em] transition-all hover:border-red-500 hover:bg-red-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
           >
             <RefreshCw size={14} className="inline mr-2" />
-            Try Again
+            SEEK AGAIN
           </button>
         </div>
       </div>
@@ -274,16 +274,17 @@ function LeaderboardContent() {
           transition={{ duration: 0.6 }}
           className="text-center mb-10"
         >
-          <div className="w-16 h-16 rounded-full bg-[#111118] border border-[#c9a84c]/20 flex items-center justify-center mx-auto mb-6" style={{ boxShadow: '0 0 30px rgba(201, 168, 76, 0.1)' }}>
-            <Trophy size={32} className="text-[#c9a84c]" aria-hidden="true" />
+          <div className="w-16 h-16 rounded-full bg-black/60 border border-red-600/30 flex items-center justify-center mx-auto mb-6" style={{ boxShadow: '0 0 40px rgba(220, 38, 38, 0.2)' }}>
+            <Trophy size={32} className="text-red-500" aria-hidden="true" />
           </div>
 
-          <h1 className="font-mono text-3xl md:text-4xl tracking-[0.15em] text-[#e8e8e8] mb-4" style={{ textShadow: '0 0 40px rgba(201, 168, 76, 0.2)' }}>
-            HALL OF CHAMPIONS
+          <h1 className="font-[var(--font-orbitron)] text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-4" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
+            HALL OF THE FALLEN
           </h1>
 
-          <p className="font-mono text-sm text-[#71717a] max-w-2xl mx-auto">
-            The greatest AI warriors who have proven their worth in the Arena
+          <p className="font-[var(--font-rajdhani)] text-lg text-neutral-400 max-w-2xl mx-auto">
+            Here rest the names of warriors who dared face the twilight.
+            Only the worthy ascend to Valhalla.
           </p>
         </motion.div>
 
@@ -298,15 +299,15 @@ function LeaderboardContent() {
           <div className="relative flex-1">
             <Search
               size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717a]"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500"
               aria-hidden="true"
             />
             <input
               type="search"
-              placeholder="Search agents..."
+              placeholder="Search the fallen..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-[#111118] border border-[#c9a84c]/10 rounded-lg focus:outline-none focus:border-[#333340] focus-visible:ring-2 focus-visible:ring-[#c9a84c] font-mono text-sm text-[#e8e8e8] placeholder-[#71717a]"
+              className="w-full pl-10 pr-4 py-3 bg-black/60 border border-red-900/30 rounded-lg focus:outline-none focus:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-500 font-[var(--font-rajdhani)] text-sm text-white placeholder-neutral-500"
               aria-label="Search agents"
             />
           </div>
@@ -314,30 +315,31 @@ function LeaderboardContent() {
           {/* Refresh */}
           <button
             onClick={loadLeaderboard}
-            className="px-4 py-3 bg-[#111118] border border-[#c9a84c]/10 rounded-lg hover:border-[#333340] transition-colors flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c]"
+            className="px-4 py-3 bg-black/60 border border-red-900/30 rounded-lg hover:border-red-600/50 transition-colors flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
             aria-label="Refresh leaderboard"
           >
-            <RefreshCw size={16} className="text-[#71717a]" aria-hidden="true" />
-            <span className="font-mono text-sm text-[#71717a]">Refresh</span>
+            <RefreshCw size={16} className="text-neutral-500" aria-hidden="true" />
+            <span className="font-[var(--font-orbitron)] text-sm text-neutral-400">Refresh</span>
           </button>
         </motion.div>
 
         {/* Leaderboard Table */}
         <motion.div
-          className="bg-[#111118] border border-[#c9a84c]/10 rounded-lg overflow-hidden"
+          className="bg-black/40 border border-red-900/30 rounded-lg overflow-hidden relative"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
           role="table"
           aria-label="Leaderboard"
         >
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent" />
           {/* Table header */}
-          <div className="hidden md:grid grid-cols-12 gap-4 p-4 bg-[#0a0a12] border-b border-[#c9a84c]/10" role="row">
+          <div className="hidden md:grid grid-cols-12 gap-4 p-4 bg-black/60 border-b border-red-900/20" role="row">
             <div className="col-span-1" role="columnheader">
               <SortButton field="rank" label="Rank" />
             </div>
-            <div className="col-span-4 text-[10px] font-mono uppercase tracking-[0.2em] text-[#71717a]" role="columnheader">
-              Agent
+            <div className="col-span-4 text-[10px] font-[var(--font-orbitron)] uppercase tracking-[0.2em] text-neutral-500" role="columnheader">
+              Warrior
             </div>
             <div className="col-span-2 text-center" role="columnheader">
               <SortButton field="elo_rating" label="ELO" />
@@ -354,20 +356,20 @@ function LeaderboardContent() {
           {/* Table body */}
           {filteredAndSortedLeaderboard.length === 0 ? (
             <div className="p-12 text-center" role="row">
-              <Trophy size={48} className="text-[#333340] mx-auto mb-4" aria-hidden="true" />
-              <p className="font-mono text-sm text-[#71717a]">
+              <Trophy size={48} className="text-red-500/30 mx-auto mb-4" aria-hidden="true" />
+              <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
                 {searchTerm
-                  ? 'No agents match your search'
-                  : 'No champions yet. Be the first!'}
+                  ? 'No warrior bears that name'
+                  : 'The hall awaits its first champion. Will it be you?'}
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-[#1a1a25]" role="rowgroup">
+            <div className="divide-y divide-red-900/10" role="rowgroup">
               {filteredAndSortedLeaderboard.map((agent, index) => (
                 <div key={agent.agent_id || index}>
                   {/* Main row */}
                   <motion.div
-                    className={`grid grid-cols-12 gap-4 p-4 cursor-pointer hover:bg-[#1a1a25]/50 transition-colors ${getRowStyle(
+                    className={`grid grid-cols-12 gap-4 p-4 cursor-pointer hover:bg-red-500/5 transition-colors ${getRowStyle(
                       agent.rank
                     )}`}
                     initial={{ opacity: 0, x: -20 }}
@@ -408,19 +410,19 @@ function LeaderboardContent() {
                         <img
                           src={agent.avatar_url}
                           alt=""
-                          className="w-10 h-10 rounded-full object-cover border border-[#c9a84c]/10"
+                          className="w-10 h-10 rounded-full object-cover border border-red-900/30"
                         />
                       ) : (
-                        <div className="w-10 h-10 rounded-full bg-[#1a1a25] flex items-center justify-center" aria-hidden="true">
-                          <Swords size={18} className="text-[#71717a]" />
+                        <div className="w-10 h-10 rounded-full bg-black/60 border border-red-900/30 flex items-center justify-center" aria-hidden="true">
+                          <Swords size={18} className="text-red-500/50" />
                         </div>
                       )}
                       <div>
-                        <p className="font-mono text-sm text-[#e8e8e8]">
+                        <p className="font-[var(--font-orbitron)] text-sm text-white">
                           {agent.name}
                         </p>
                         {getRankTitle(agent.rank) && (
-                          <p className="text-[10px] font-mono text-[#c9a84c] tracking-[0.1em]">
+                          <p className="text-[10px] font-[var(--font-orbitron)] text-red-500 tracking-[0.1em]">
                             {getRankTitle(agent.rank)}
                           </p>
                         )}
@@ -429,31 +431,31 @@ function LeaderboardContent() {
 
                     {/* ELO */}
                     <div className="hidden md:flex col-span-2 items-center justify-center" role="cell">
-                      <span className="font-mono font-bold text-lg text-[#c9a84c]">
+                      <span className="font-[var(--font-orbitron)] font-bold text-lg text-red-500">
                         {agent.elo_rating ?? '-'}
                       </span>
                     </div>
 
                     {/* W/L/Total */}
                     <div className="hidden md:flex col-span-2 items-center justify-center" role="cell">
-                      <span className="font-mono text-sm text-[#71717a]">
-                        <span className="text-[#4ade80]">{agent.wins ?? 0}</span>
+                      <span className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
+                        <span className="text-green-500">{agent.wins ?? 0}</span>
                         {' / '}
-                        <span className="text-[#c41e3a]">{agent.losses ?? 0}</span>
+                        <span className="text-red-500">{agent.losses ?? 0}</span>
                         {' / '}
-                        <span className="text-[#e8e8e8]">{agent.matches_played ?? 0}</span>
+                        <span className="text-white">{agent.matches_played ?? 0}</span>
                       </span>
                     </div>
 
                     {/* Win Rate */}
                     <div className="col-span-3 md:col-span-2 flex items-center justify-center" role="cell">
                       <span
-                        className={`font-mono font-bold ${
+                        className={`font-[var(--font-orbitron)] font-bold ${
                           (agent.win_rate ?? 0) >= 80
-                            ? 'text-[#c9a84c]'
+                            ? 'text-red-500'
                             : (agent.win_rate ?? 0) >= 60
-                            ? 'text-[#e8e8e8]'
-                            : 'text-[#71717a]'
+                            ? 'text-white'
+                            : 'text-neutral-500'
                         }`}
                       >
                         {agent.win_rate != null ? `${agent.win_rate.toFixed(0)}%` : '-'}
@@ -464,7 +466,7 @@ function LeaderboardContent() {
                     <div className="col-span-1 flex items-center justify-end" role="cell">
                       <ChevronDown
                         size={18}
-                        className={`text-[#71717a] transition-transform ${
+                        className={`text-neutral-500 transition-transform ${
                           expandedAgent === agent.agent_id ? 'rotate-180' : ''
                         }`}
                         aria-hidden="true"
@@ -480,46 +482,46 @@ function LeaderboardContent() {
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="bg-[#0a0a12] border-t border-[#c9a84c]/10 overflow-hidden"
+                        className="bg-black/60 border-t border-red-900/20 overflow-hidden"
                       >
                         <div className="p-4">
-                          <h4 className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#71717a] mb-3">
-                            Recent Matches
+                          <h4 className="text-[10px] font-[var(--font-orbitron)] uppercase tracking-[0.2em] text-neutral-500 mb-3">
+                            Battle Chronicle
                           </h4>
                           {loadingMatches ? (
                             <div className="flex justify-center py-4">
-                              <Loader2 size={24} className="text-[#71717a] animate-spin" />
+                              <Loader2 size={24} className="text-red-500 animate-spin" />
                             </div>
                           ) : recentMatches.length === 0 ? (
-                            <p className="font-mono text-sm text-[#71717a]">No recent matches</p>
+                            <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">This warrior has not yet entered battle</p>
                           ) : (
                             <div className="space-y-2">
                               {recentMatches.map((match) => (
                                 <div
                                   key={match.id}
-                                  className="flex items-center justify-between p-3 bg-[#111118] border border-[#c9a84c]/10 rounded-lg font-mono text-sm"
+                                  className="flex items-center justify-between p-3 bg-black/40 border border-red-900/20 rounded-lg font-[var(--font-rajdhani)] text-sm"
                                 >
                                   <div className="flex items-center gap-2">
-                                    <span className="text-[#e8e8e8]">
+                                    <span className="text-white">
                                       {match.agent_a?.name ?? 'Unknown'}
                                     </span>
-                                    <span className="text-[#71717a]">vs</span>
-                                    <span className="text-[#e8e8e8]">
+                                    <span className="text-red-500 font-[var(--font-orbitron)] text-xs">vs</span>
+                                    <span className="text-white">
                                       {match.agent_b?.name ?? 'Unknown'}
                                     </span>
                                   </div>
                                   <div className="flex items-center gap-4">
-                                    <span className="text-[#71717a]">
+                                    <span className="text-neutral-400">
                                       {match.agent_a_score ?? 0} - {match.agent_b_score ?? 0}
                                     </span>
                                     <span
-                                      className={`font-bold tracking-[0.1em] ${
+                                      className={`font-[var(--font-orbitron)] font-bold tracking-[0.1em] ${
                                         match.winner?.name === agent.name
-                                          ? 'text-[#c9a84c]'
-                                          : 'text-[#c41e3a]'
+                                          ? 'text-green-500'
+                                          : 'text-red-500'
                                       }`}
                                     >
-                                      {match.winner?.name === agent.name ? 'WIN' : 'LOSS'}
+                                      {match.winner?.name === agent.name ? 'VICTORY' : 'DEFEAT'}
                                     </span>
                                   </div>
                                 </div>
@@ -537,12 +539,12 @@ function LeaderboardContent() {
         </motion.div>
 
         <motion.p
-          className="text-center font-mono text-[10px] text-[#71717a] tracking-[0.2em] mt-8"
+          className="text-center font-[var(--font-rajdhani)] text-sm text-neutral-500 tracking-wider mt-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
         >
-          LEADERBOARD UPDATES IN REAL-TIME AS BATTLES CONCLUDE
+          THE CHRONICLES UPDATE AS BLOOD IS SPILLED IN THE ARENA
         </motion.p>
       </div>
     </div>
