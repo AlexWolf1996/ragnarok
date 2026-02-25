@@ -19,6 +19,7 @@ export type Database = {
           losses: number
           matches_played: number
           name: string
+          system_prompt: string | null
           updated_at: string
           wallet_address: string
           wins: number
@@ -32,6 +33,7 @@ export type Database = {
           losses?: number
           matches_played?: number
           name: string
+          system_prompt?: string | null
           updated_at?: string
           wallet_address: string
           wins?: number
@@ -45,6 +47,7 @@ export type Database = {
           losses?: number
           matches_played?: number
           name?: string
+          system_prompt?: string | null
           updated_at?: string
           wallet_address?: string
           wins?: number
@@ -112,6 +115,7 @@ export type Database = {
           difficulty: Database["public"]["Enums"]["difficulty_level"]
           expected_output: Json
           id: string
+          name: string
           prompt: Json
           type: string
         }
@@ -120,6 +124,7 @@ export type Database = {
           difficulty?: Database["public"]["Enums"]["difficulty_level"]
           expected_output: Json
           id?: string
+          name: string
           prompt: Json
           type: string
         }
@@ -128,6 +133,7 @@ export type Database = {
           difficulty?: Database["public"]["Enums"]["difficulty_level"]
           expected_output?: Json
           id?: string
+          name?: string
           prompt?: Json
           type?: string
         }
@@ -145,6 +151,7 @@ export type Database = {
           completed_at: string | null
           created_at: string
           id: string
+          judge_reasoning: string | null
           solana_tx_hash: string | null
           started_at: string | null
           status: Database["public"]["Enums"]["match_status"]
@@ -161,6 +168,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           id?: string
+          judge_reasoning?: string | null
           solana_tx_hash?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["match_status"]
@@ -177,6 +185,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           id?: string
+          judge_reasoning?: string | null
           solana_tx_hash?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["match_status"]

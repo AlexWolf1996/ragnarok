@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
-import { Swords, Plus, RefreshCw, Loader2, Crown, Link as LinkIcon } from 'lucide-react';
+import { Swords, Plus, RefreshCw, Loader2, Crown, Link as LinkIcon, Zap, Trophy } from 'lucide-react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { Tables } from '@/lib/supabase/types';
 import {
@@ -105,6 +105,15 @@ function ArenaContent() {
 
   // On-chain hashing state
   const [isHashing, setIsHashing] = useState(false);
+
+  // Quick Battle state
+  const [isQuickBattling, setIsQuickBattling] = useState(false);
+  const [quickBattleResult, setQuickBattleResult] = useState<{
+    winner: { name: string; score: number; eloDelta: number };
+    loser: { name: string; score: number; eloDelta: number };
+    challenge: { name: string; type: string };
+    reasoning: string;
+  } | null>(null);
 
   // Betting state
   const [betMatch, setBetMatch] = useState<MatchWithRelations | null>(null);
@@ -333,6 +342,35 @@ function ArenaContent() {
       toast.error('Transaction Failed', errorMessage);
     } finally {
       setIsHashing(false);
+    }
+  };
+
+  const handleQuickBattle = async () => {
+    setIsQuickBattling(true);
+    setQuickBattleResult(null);
+
+    try {
+      const response = await fetch('/api/battles/quick');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Quick battle failed');
+      }
+
+      setQuickBattleResult({
+        winner: data.winner,
+        loser: data.loser,
+        challenge: data.challenge,
+        reasoning: data.reasoning,
+      });
+
+      toast.success('Battle Complete!', `${data.winner.name} defeats ${data.loser.name}!`);
+      await loadDuelData();
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      toast.error('Battle Failed', errorMessage);
+    } finally {
+      setIsQuickBattling(false);
     }
   };
 
@@ -610,6 +648,108 @@ function ArenaContent() {
                     </div>
                   )}
                 </div>
+
+                {/* Quick Battle Card */}
+                <div className="bg-black/40 border border-neutral-800 rounded-lg p-6 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
+                  <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
+                    <Zap size={16} className="text-cyan-500" />
+                    QUICK BATTLE
+                  </h2>
+                  <p className="font-[var(--font-rajdhani)] text-xs text-neutral-400 mb-4">
+                    Let the Norns choose two random warriors for instant combat. Witness real AI battle execution.
+                  </p>
+                  <button
+                    onClick={handleQuickBattle}
+                    disabled={isQuickBattling || agents.length < 2}
+                    className="w-full py-4 bg-gradient-to-r from-cyan-700 via-cyan-600 to-cyan-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-cyan-600 hover:via-cyan-500 hover:to-cyan-600 shadow-[0_0_30px_rgba(6,182,212,0.3)]"
+                  >
+                    {isQuickBattling ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        THE ALLFATHER JUDGES...
+                      </>
+                    ) : (
+                      <>
+                        <Zap size={16} />
+                        RANDOM BATTLE
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Quick Battle Result */}
+                <AnimatePresence>
+                  {quickBattleResult && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                      className="bg-black/60 border border-cyan-500/30 rounded-lg p-6 relative overflow-hidden"
+                    >
+                      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
+
+                      <div className="flex items-center justify-center gap-2 mb-4">
+                        <Trophy size={20} className="text-amber-500" />
+                        <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.15em] text-amber-500">
+                          BATTLE COMPLETE
+                        </h3>
+                      </div>
+
+                      <div className="space-y-3 mb-4">
+                        {/* Winner */}
+                        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="text-[10px] font-[var(--font-orbitron)] text-emerald-400 tracking-wider">VICTOR</span>
+                              <p className="font-[var(--font-rajdhani)] text-white font-bold">{quickBattleResult.winner.name}</p>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-lg font-bold text-emerald-400">{quickBattleResult.winner.score}</span>
+                              <p className="text-[10px] text-emerald-400/70">+{quickBattleResult.winner.eloDelta} ELO</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Loser */}
+                        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="text-[10px] font-[var(--font-orbitron)] text-red-400 tracking-wider">DEFEATED</span>
+                              <p className="font-[var(--font-rajdhani)] text-white font-bold">{quickBattleResult.loser.name}</p>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-lg font-bold text-red-400">{quickBattleResult.loser.score}</span>
+                              <p className="text-[10px] text-red-400/70">{quickBattleResult.loser.eloDelta} ELO</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Challenge Info */}
+                      <div className="bg-black/40 rounded-lg p-3 mb-4">
+                        <span className="text-[10px] font-[var(--font-orbitron)] text-amber-500/70 tracking-wider">CHALLENGE</span>
+                        <p className="font-[var(--font-rajdhani)] text-sm text-white">{quickBattleResult.challenge.name}</p>
+                        <span className="text-[10px] text-neutral-500">{quickBattleResult.challenge.type}</span>
+                      </div>
+
+                      {/* Judge Reasoning */}
+                      <div className="bg-black/40 rounded-lg p-3">
+                        <span className="text-[10px] font-[var(--font-orbitron)] text-cyan-500/70 tracking-wider">ALLFATHER&apos;S VERDICT</span>
+                        <p className="font-[var(--font-rajdhani)] text-xs text-neutral-300 mt-1 leading-relaxed">
+                          {quickBattleResult.reasoning}
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={() => setQuickBattleResult(null)}
+                        className="w-full mt-4 py-2 font-[var(--font-rajdhani)] text-xs text-neutral-500 hover:text-white transition-colors"
+                      >
+                        Dismiss
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {/* Match Result */}
                 <AnimatePresence>
