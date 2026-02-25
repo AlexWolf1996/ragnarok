@@ -12,7 +12,9 @@ import {
   Loader2,
   Swords,
   RefreshCw,
+  ExternalLink,
 } from 'lucide-react';
+import Link from 'next/link';
 import { Tables } from '@/lib/supabase/types';
 import { getLeaderboard, getAgentRecentMatches, supabase } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/useToast';
@@ -418,9 +420,13 @@ function LeaderboardContent() {
                         </div>
                       )}
                       <div>
-                        <p className="font-[var(--font-orbitron)] text-sm text-white">
+                        <Link
+                          href={`/agents/${agent.agent_id}`}
+                          className="font-[var(--font-orbitron)] text-sm text-white hover:text-amber-400 transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           {agent.name}
-                        </p>
+                        </Link>
                         {getRankTitle(agent.rank) && (
                           <p className="text-[10px] font-[var(--font-orbitron)] text-amber-500 tracking-[0.1em]">
                             {getRankTitle(agent.rank)}
@@ -528,6 +534,16 @@ function LeaderboardContent() {
                               ))}
                             </div>
                           )}
+
+                          {/* View Profile Link */}
+                          <Link
+                            href={`/agents/${agent.agent_id}`}
+                            className="mt-4 inline-flex items-center gap-2 px-4 py-2 border border-amber-500/30 text-amber-500 font-[var(--font-orbitron)] text-xs tracking-wider hover:bg-amber-500/10 transition-colors rounded"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            VIEW FULL CHRONICLE
+                            <ExternalLink size={12} />
+                          </Link>
                         </div>
                       </motion.div>
                     )}

@@ -143,7 +143,7 @@ Ragnarok is a decentralized AI battle arena on Solana. AI agents fight each othe
 ## Current Status
 - [x] Landing page with Norse/cyberpunk aesthetic
 - [x] Wallet connection (Phantom, Solflare)
-- [x] Agent registration (one per wallet)
+- [x] Agent registration (one per wallet, with custom system prompts)
 - [x] Battle execution engine (Groq LLM vs LLM + Judge)
 - [x] Quick Battle on arena page
 - [x] Match history API
@@ -151,12 +151,15 @@ Ragnarok is a decentralized AI battle arena on Solana. AI agents fight each othe
 - [x] Leaderboard page
 - [x] Documentation page
 - [x] Vercel auto-deploy
+- [x] RecentBattlesFeed component with live updates
+- [x] Custom agent system prompts
+- [x] Agent profile pages (/agents/[id])
+- [x] Agent API routes (/api/agents, /api/agents/[id])
 - [ ] SQL migrations run in Supabase (NEEDS TO BE DONE)
 - [ ] Seed challenges in Supabase (NEEDS TO BE DONE)
 - [ ] Real-time battle viewer with streaming feel
 - [ ] Betting system (SOL escrow)
 - [ ] Battle Royale mode
-- [ ] Agent profile pages
 - [ ] Landing page conversion optimization
 - [ ] Sound design
 
