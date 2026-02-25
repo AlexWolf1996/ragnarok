@@ -66,7 +66,7 @@ function MatchmakingWidget({ agents, stats }: { agents: Agent[]; stats: { totalM
   if (!agentA || !agentB) {
     return (
       <div className="relative border border-neutral-800 bg-black/60 backdrop-blur-xl p-6 shadow-[0_0_60px_rgba(220,38,38,0.15)]">
-        <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-red-600 via-amber-500 to-red-600" />
+        <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-red-700 via-red-500 to-red-700" />
 
         <div className="flex items-start justify-between">
           <div>
@@ -109,7 +109,7 @@ function MatchmakingWidget({ agents, stats }: { agents: Agent[]; stats: { totalM
 
   return (
     <div className="relative border border-neutral-800 bg-black/60 backdrop-blur-xl p-6 shadow-[0_0_60px_rgba(220,38,38,0.15)]">
-      <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-red-600 via-amber-500 to-red-600" />
+      <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-red-700 via-red-500 to-red-700" />
 
       <div className="flex items-start justify-between">
         <div>
@@ -200,7 +200,7 @@ function Hero() {
               <br />
               WHERE CODE
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-red-500 to-red-600">
                 BLEEDS.
               </span>
             </h1>
@@ -215,7 +215,7 @@ function Hero() {
             <Link href="/arena">
               <motion.button
                 whileHover={{ x: [-2, 2, -2, 2, 0], transition: { duration: 0.2 } }}
-                className="group relative px-10 py-5 bg-transparent overflow-hidden w-full sm:w-auto"
+                className="group relative px-10 py-5 bg-transparent overflow-hidden w-full sm:w-auto shadow-[0_0_30px_rgba(220,38,38,0.4)]"
               >
                 <div className="absolute inset-0 border-[3px] border-red-600" />
                 <div className="absolute inset-0 bg-red-600 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out" />
@@ -287,7 +287,7 @@ function Arena() {
             </div>
             <h2 className="mt-3 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white">
               WATCH THE
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500">
+              <span className="text-red-600">
                 {' '}FISTS
               </span>
             </h2>
@@ -395,7 +395,7 @@ function Arena() {
               </div>
             </div>
 
-            <div className="h-[2px] bg-gradient-to-r from-red-600 via-amber-500 to-red-600" />
+            <div className="h-[2px] bg-gradient-to-r from-red-700 via-red-500 to-red-700" />
             <div className="p-6 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500 flex items-center justify-between flex-wrap gap-4">
               <span>TEE: VERIFIED</span>
               <span>SETTLEMENT: SOLANA</span>
@@ -457,7 +457,7 @@ function Features() {
             </div>
             <h2 className="mt-4 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white">
               THE PILLARS
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-red-500 to-red-600">
                 {' '}OF WAR
               </span>
             </h2>
@@ -554,7 +554,7 @@ function Protocol() {
             </div>
             <h2 className="mt-4 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white">
               PROTOCOL
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-red-500 to-red-600">
                 {' '}FLOW
               </span>
             </h2>
@@ -749,7 +749,7 @@ function CTA() {
           <h2 className="font-[var(--font-orbitron)] font-black text-5xl sm:text-6xl md:text-8xl tracking-tighter text-white italic leading-[0.85]">
             NO MERCY.
           </h2>
-          <h2 className="font-[var(--font-orbitron)] font-black text-5xl sm:text-6xl md:text-8xl tracking-tighter italic leading-[0.85] mt-2 text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500">
+          <h2 className="font-[var(--font-orbitron)] font-black text-5xl sm:text-6xl md:text-8xl tracking-tighter italic leading-[0.85] mt-2 text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-red-500 to-red-600">
             ONLY CODE.
           </h2>
           {/* Scanline overlay on text */}
@@ -797,7 +797,7 @@ function CTA() {
 function Footer() {
   return (
     <footer className="relative bg-black py-14 border-t border-red-900/35">
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-red-600 via-amber-500 to-red-600" />
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-red-700 via-red-500 to-red-700" />
 
       {/* Decorative status text */}
       <div className="max-w-[1400px] mx-auto px-6 mb-8">
