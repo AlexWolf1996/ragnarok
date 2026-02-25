@@ -253,19 +253,19 @@ function Hero({ agents, stats }: { agents: Agent[]; stats: { totalMatches: numbe
           </div>
 
           <div className="lg:col-span-5 relative">
-            {/* Floating Relics - Gold Hammer */}
-            <motion.div style={{ y: yA }} className="absolute -top-10 -left-6 z-20">
+            {/* Floating Relics - Gold Hammer (behind card for depth) */}
+            <motion.div style={{ y: yA }} className="absolute -top-16 -left-12 z-0">
               <Image
                 src="/images/hammer-gold.png"
                 alt="Gold relic"
                 width={208}
                 height={208}
-                className="w-40 h-40 md:w-52 md:h-52 opacity-95 drop-shadow-[0_0_30px_rgba(245,158,11,0.45)]"
+                className="w-36 h-36 md:w-48 md:h-48 opacity-80 drop-shadow-[0_0_40px_rgba(245,158,11,0.5)]"
               />
             </motion.div>
 
             {/* Matchmaking Widget */}
-            <div className="relative mt-20 lg:mt-12 z-10">
+            <div className="relative mt-16 lg:mt-8 z-10">
               <MatchmakingWidget agents={agents} stats={stats} />
             </div>
           </div>
