@@ -9,9 +9,11 @@ import { createClient, SupabaseClient } from 'https://esm.sh/@supabase/supabase-
 // Environment & Configuration
 // =============================================================================
 
-const PRODUCTION_ORIGIN = 'https://ragnarok-n9qq.vercel.app';
+const CANONICAL_ORIGIN = 'https://theragnarok.fun';
 const ALLOWED_ORIGINS = [
-  PRODUCTION_ORIGIN,
+  CANONICAL_ORIGIN,
+  'https://www.theragnarok.fun',
+  'https://ragnarok-n9qq.vercel.app',
   'http://localhost:3000',
   'http://localhost:3001',
 ];
@@ -20,15 +22,15 @@ const ALLOWED_ORIGINS = [
  * Get the appropriate CORS origin based on the request
  */
 function getAllowedOrigin(requestOrigin: string | null): string {
-  if (!requestOrigin) return PRODUCTION_ORIGIN;
+  if (!requestOrigin) return CANONICAL_ORIGIN;
 
   // Check if the origin is in our allowed list
   if (ALLOWED_ORIGINS.includes(requestOrigin)) {
     return requestOrigin;
   }
 
-  // Default to production origin for security
-  return PRODUCTION_ORIGIN;
+  // Default to canonical origin for security
+  return CANONICAL_ORIGIN;
 }
 
 /**
@@ -46,10 +48,10 @@ export function getCorsHeaders(request: Request): Record<string, string> {
 
 /**
  * Legacy CORS headers for backwards compatibility
- * NOTE: These are more restrictive than before
+ * NOTE: These use the canonical origin
  */
 export const corsHeaders = {
-  'Access-Control-Allow-Origin': PRODUCTION_ORIGIN,
+  'Access-Control-Allow-Origin': CANONICAL_ORIGIN,
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-wallet-signature, x-wallet-message',
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 };
