@@ -178,7 +178,7 @@ function Hero() {
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black via-black/70 to-black" />
       <Sigils density={50} />
-      <EmberField count={40} />
+      <EmberField count={60} />
 
       <div className="relative z-10 px-6 pt-28 md:pt-32 max-w-[1400px] mx-auto">
         <div className="max-w-3xl mx-auto text-center">
@@ -196,7 +196,7 @@ function Hero() {
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
             />
 
-            <h1 className="font-[var(--font-orbitron)] font-black tracking-tighter leading-[0.78] text-white text-[12vw] sm:text-[10vw] lg:text-[6.5vw]">
+            <h1 className="font-[var(--font-orbitron)] font-black tracking-tighter leading-[0.88] text-white text-[10vw] sm:text-[8vw] lg:text-[5.5vw]">
               THE ARENA
               <br />
               WHERE CODE
@@ -278,7 +278,7 @@ function Arena() {
         }}
       />
       <div className="absolute inset-0 bg-black/80" />
-      <EmberField count={25} />
+      <EmberField count={50} />
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6">
         <div className="flex items-end justify-between gap-8 flex-col md:flex-row">
@@ -500,7 +500,7 @@ function Protocol() {
   return (
     <Section id="protocol" className="py-28 bg-black overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.15)_0%,rgba(0,0,0,0.9)_60%)]" />
-      <EmberField count={20} />
+      <EmberField count={40} />
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6">
         <div className="flex items-end justify-between flex-col md:flex-row gap-8">
@@ -693,7 +693,7 @@ function CTA() {
         }}
       />
 
-      <EmberField count={15} />
+      <EmberField count={40} />
 
       <div className="relative z-10 max-w-[1100px] mx-auto px-6 text-center">
         <div className="inline-flex items-center gap-3 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-400">
