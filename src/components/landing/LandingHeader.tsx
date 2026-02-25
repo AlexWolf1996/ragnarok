@@ -89,11 +89,11 @@ export default function LandingHeader() {
             />
           )}
           <Image
-            src="/images/logoecrit.svg"
+            src="/images/logotextevf.png"
             alt="Ragnarok"
-            width={160}
-            height={32}
-            className="h-7 md:h-8 w-auto opacity-90 group-hover:opacity-100 transition-opacity"
+            width={280}
+            height={70}
+            className="h-8 md:h-10 lg:h-12 w-auto opacity-90 group-hover:opacity-100 transition-opacity"
           />
         </Link>
 

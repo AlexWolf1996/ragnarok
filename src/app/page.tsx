@@ -763,11 +763,11 @@ function Footer() {
         {/* Links */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-neutral-800">
           <Image
-            src="/images/logoecrit.svg"
+            src="/images/logotextevf.png"
             alt="Ragnarok"
-            width={140}
-            height={28}
-            className="h-6 w-auto opacity-50"
+            width={160}
+            height={40}
+            className="h-8 w-auto opacity-50"
           />
           <div className="flex gap-8 font-[var(--font-orbitron)] text-xs tracking-[0.2em] uppercase text-neutral-500">
             <a href="https://x.com/Ragnarok267162" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">
