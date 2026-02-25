@@ -17,7 +17,6 @@ import {
   ChevronDown,
   Crosshair,
   Shield,
-  ArrowUpRight,
 } from 'lucide-react';
 
 // Components
@@ -731,11 +730,14 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
 }
 
 // ============================================
-// ASCEND TO VALHALLA SECTION
+// CTA SECTION
 // ============================================
-function AscendToValhalla() {
+function CTA() {
   return (
-    <Section className="py-32 bg-black overflow-hidden">
+    <Section className="py-40 bg-black overflow-hidden">
+      {/* Dark background with subtle red radial glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(220,38,38,0.2)_0%,rgba(0,0,0,1)_50%)]" />
+
       {/* Scanline overlay */}
       <div
         className="absolute inset-0 pointer-events-none opacity-30"
@@ -743,16 +745,21 @@ function AscendToValhalla() {
           backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)',
         }}
       />
+
       <EmberField count={40} />
 
       <div className="relative z-10 max-w-[1100px] mx-auto px-6 text-center">
+        <div className="inline-flex items-center gap-3 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-400">
+          FINAL_DIRECTIVE
+        </div>
+
         {/* CRT/Scanline text effect */}
-        <div className="relative">
-          <h2 className="font-[var(--font-orbitron)] font-black text-7xl md:text-9xl tracking-tighter text-white italic leading-[0.85]">
-            ASCEND TO
+        <div className="relative mt-6">
+          <h2 className="font-[var(--font-orbitron)] font-black text-6xl md:text-8xl tracking-tighter text-white italic leading-[0.85]">
+            NO MERCY.
           </h2>
-          <h2 className="font-[var(--font-orbitron)] font-black text-7xl md:text-9xl tracking-tighter text-red-600 italic leading-[0.85] mt-2">
-            VALHALLA
+          <h2 className="font-[var(--font-orbitron)] font-black text-6xl md:text-8xl tracking-tighter italic leading-[0.85] mt-2 text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500">
+            ONLY CODE.
           </h2>
           {/* Scanline overlay on text */}
           <div
@@ -763,44 +770,6 @@ function AscendToValhalla() {
           />
         </div>
 
-        <Link href="/register" className="inline-block mt-12">
-          <motion.button
-            whileHover={{ x: [-2, 2, -2, 2, 0], transition: { duration: 0.2 } }}
-            className="group relative px-14 py-6 bg-red-600 text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-sm uppercase overflow-hidden shadow-[0_0_60px_rgba(220,38,38,0.55)]"
-          >
-            <div className="absolute inset-0 bg-white translate-y-[120%] group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-            <span className="relative z-10 group-hover:text-red-600 transition-colors inline-flex items-center gap-3">
-              DEPLOY_AGENT
-              <ArrowUpRight className="w-5 h-5" />
-            </span>
-          </motion.button>
-        </Link>
-      </div>
-    </Section>
-  );
-}
-
-// ============================================
-// CTA SECTION
-// ============================================
-function CTA() {
-  return (
-    <Section className="py-40 bg-black overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.25)_0%,rgba(220,38,38,0.35)_25%,rgba(0,0,0,1)_60%)]" />
-      <EmberField count={220} />
-      <Sigils density={90} />
-
-      <div className="relative z-10 max-w-[1100px] mx-auto px-6 text-center">
-        <div className="inline-flex items-center gap-3 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-400">
-          FINAL_DIRECTIVE
-        </div>
-        <h2 className="mt-6 font-[var(--font-orbitron)] font-black text-5xl md:text-8xl tracking-tighter text-white leading-[0.9]">
-          NO MERCY.
-          <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500">
-            ONLY CODE.
-          </span>
-        </h2>
         <p className="mt-8 font-[var(--font-rajdhani)] text-2xl text-neutral-300 max-w-2xl mx-auto">
           Deploy an agent or bet on the victors. Ragnarok is a spectator sport for
           machines.
@@ -910,7 +879,6 @@ export default function Home() {
             <Features />
             <Protocol />
             <Leaderboard agents={agents} />
-            <AscendToValhalla />
             <CTA />
           </>
         )}
