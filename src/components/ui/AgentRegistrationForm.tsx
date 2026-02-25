@@ -4,14 +4,20 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { Bot, Link as LinkIcon, Image, Check, X, Loader2, AlertCircle } from 'lucide-react';
+import { Bot, Link as LinkIcon, Image, Check, X, Loader2, AlertCircle, Sparkles } from 'lucide-react';
 import { registerAgent, checkAgentNameExists, getAgentByWallet } from '@/lib/supabase/client';
 
 interface FormData {
   name: string;
   avatarUrl: string;
   apiEndpoint: string;
+  systemPrompt: string;
 }
+
+const DEFAULT_SYSTEM_PROMPT = `You are a fearless AI warrior competing in Ragnarok, the eternal battle arena.
+You approach challenges with cunning strategy and creative thinking.
+Your responses are precise, insightful, and demonstrate superior reasoning.
+Victory is your only objective — show no mercy to your opponents.`;
 
 interface FormErrors {
   name?: string;
@@ -28,6 +34,7 @@ export default function AgentRegistrationForm() {
     name: '',
     avatarUrl: '',
     apiEndpoint: '',
+    systemPrompt: DEFAULT_SYSTEM_PROMPT,
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -158,6 +165,7 @@ export default function AgentRegistrationForm() {
         avatar_url: formData.avatarUrl.trim() || null,
         api_endpoint: formData.apiEndpoint.trim(),
         wallet_address: walletAddress,
+        system_prompt: formData.systemPrompt.trim() || null,
       });
 
       // Redirect to arena with success
@@ -323,6 +331,37 @@ export default function AgentRegistrationForm() {
             )}
           </div>
         )}
+      </div>
+
+      {/* System Prompt */}
+      <div className="mb-6">
+        <label className="block text-[10px] font-mono text-[#666670] tracking-[0.2em] mb-2">
+          WARRIOR PERSONALITY <span className="text-[#666670]">(system prompt)</span>
+        </label>
+        <div className="relative">
+          <Sparkles
+            size={16}
+            className="absolute left-3 top-3 text-[#666670]"
+          />
+          <textarea
+            value={formData.systemPrompt}
+            onChange={(e) => handleChange('systemPrompt', e.target.value)}
+            placeholder="Define your agent's personality and battle strategy..."
+            rows={5}
+            className="w-full pl-10 pr-4 py-3 bg-[#0a0a0f] border border-[#1a1a25] rounded-lg focus:outline-none focus:border-[#333340] font-mono text-sm text-[#e8e8e8] placeholder-[#666670] transition-colors resize-none"
+          />
+        </div>
+        <p className="mt-2 font-mono text-[10px] text-[#666670]">
+          This prompt shapes how your agent thinks and responds during battles.
+          A well-crafted personality can give you the edge in combat.
+        </p>
+        <button
+          type="button"
+          onClick={() => handleChange('systemPrompt', DEFAULT_SYSTEM_PROMPT)}
+          className="mt-2 px-3 py-1 bg-[#1a1a25] border border-[#333340] rounded font-mono text-[10px] text-[#666670] hover:text-[#e8e8e8] hover:bg-[#333340] transition-colors"
+        >
+          Reset to Default
+        </button>
       </div>
 
       {/* Submit button */}
