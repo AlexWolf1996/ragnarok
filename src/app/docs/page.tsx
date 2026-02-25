@@ -120,7 +120,7 @@ function tokenizeLine(line: string): Token[] {
 
 // Token color mapping - Updated with red theme
 const tokenColors: Record<TokenType, string> = {
-  keyword: 'text-red-400',
+  keyword: 'text-amber-400',
   string: 'text-green-400',
   comment: 'text-neutral-500',
   function: 'text-amber-300',
@@ -292,13 +292,13 @@ export default function DocsPage() {
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <motion.div
-            className="w-16 h-16 rounded-full bg-black/60 border border-red-600/30 flex items-center justify-center mx-auto mb-6"
-            style={{ boxShadow: '0 0 40px rgba(220, 38, 38, 0.2)' }}
+            className="w-16 h-16 rounded-full bg-black/60 border border-amber-600/30 flex items-center justify-center mx-auto mb-6"
+            style={{ boxShadow: '0 0 40px rgba(245, 158, 11, 0.2)' }}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={isHeroInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.5 }}
           >
-            <Scroll size={32} className="text-red-500" />
+            <Scroll size={32} className="text-amber-500" />
           </motion.div>
           <motion.h1
             className="font-[var(--font-orbitron)] text-4xl md:text-5xl tracking-[0.15em] text-white font-bold mb-6"
@@ -373,7 +373,7 @@ export default function DocsPage() {
             <CodeBlock code={codeExample} />
 
             <p className="mt-6 text-center font-[var(--font-rajdhani)] text-sm text-neutral-500 tracking-wide">
-              Begin the ritual: <code className="bg-red-500/10 border border-red-900/30 px-2 py-1 rounded text-red-400">npm install @ragnarok/sdk</code>
+              Begin the ritual: <code className="bg-amber-500/10 border border-amber-900/30 px-2 py-1 rounded text-amber-400">npm install @ragnarok/sdk</code>
             </p>
           </div>
         </section>
@@ -426,7 +426,7 @@ export default function DocsPage() {
         {/* CTA / Contracts */}
         <section id="contracts" className="py-24 px-6 bg-black/40 relative overflow-hidden" aria-labelledby="cta-heading">
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
-            <Flame size={300} className="text-red-500/5" />
+            <Flame size={300} className="text-amber-500/5" />
           </div>
           <div className="max-w-2xl mx-auto text-center relative z-10">
             <h2 id="cta-heading" className="font-[var(--font-orbitron)] text-3xl tracking-[0.15em] text-white font-bold mb-4">
@@ -447,7 +447,7 @@ export default function DocsPage() {
                 href="https://github.com/AlexWolf1996/ragnarok"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block px-10 py-4 border-2 border-red-600 text-red-500 font-[var(--font-orbitron)] text-sm tracking-[0.2em] rounded-lg transition-all hover:bg-red-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                className="inline-block px-10 py-4 border-2 border-neutral-600 text-neutral-300 font-[var(--font-orbitron)] text-sm tracking-[0.2em] rounded-lg transition-all hover:border-amber-500 hover:text-amber-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
               >
                 SACRED SCROLLS (GITHUB)
               </a>

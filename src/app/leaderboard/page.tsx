@@ -274,8 +274,8 @@ function LeaderboardContent() {
           transition={{ duration: 0.6 }}
           className="text-center mb-10"
         >
-          <div className="w-16 h-16 rounded-full bg-black/60 border border-red-600/30 flex items-center justify-center mx-auto mb-6" style={{ boxShadow: '0 0 40px rgba(220, 38, 38, 0.2)' }}>
-            <Trophy size={32} className="text-red-500" aria-hidden="true" />
+          <div className="w-16 h-16 rounded-full bg-black/60 border border-amber-600/30 flex items-center justify-center mx-auto mb-6" style={{ boxShadow: '0 0 40px rgba(245, 158, 11, 0.2)' }}>
+            <Trophy size={32} className="text-amber-500" aria-hidden="true" />
           </div>
 
           <h1 className="font-[var(--font-orbitron)] text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-4" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
@@ -332,7 +332,7 @@ function LeaderboardContent() {
           role="table"
           aria-label="Leaderboard"
         >
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
           {/* Table header */}
           <div className="hidden md:grid grid-cols-12 gap-4 p-4 bg-black/60 border-b border-neutral-800" role="row">
             <div className="col-span-1" role="columnheader">

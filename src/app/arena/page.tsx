@@ -375,14 +375,14 @@ function ArenaContent() {
       <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center relative">
         <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
         <div className="text-center max-w-md p-8 relative z-10">
-          <div className="text-red-500 mb-4">
+          <div className="text-amber-500 mb-4">
             <Swords size={48} className="mx-auto opacity-50" />
           </div>
           <h2 className="font-[var(--font-orbitron)] text-xl text-white mb-2" style={{ textShadow: '0 0 30px rgba(220, 38, 38, 0.3)' }}>THE HALLS ARE SEALED</h2>
           <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400 mb-6">{loadError}</p>
           <button
             onClick={mode === 'duel' ? loadDuelData : loadBattleRoyaleData}
-            className="px-6 py-3 border border-red-600/50 text-red-500 font-[var(--font-orbitron)] text-sm tracking-[0.15em] transition-all hover:border-red-500 hover:bg-red-500/10"
+            className="px-6 py-3 border border-neutral-700 text-neutral-400 font-[var(--font-orbitron)] text-sm tracking-[0.15em] transition-all hover:border-amber-500 hover:text-amber-500"
           >
             <RefreshCw size={14} className="inline mr-2" />
             SEEK ENTRY AGAIN
@@ -525,7 +525,7 @@ function ArenaContent() {
 
                 {/* Start Match Card */}
                 <div className="bg-black/40 border border-neutral-800 rounded-lg p-6 relative overflow-hidden">
-                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent" />
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
                   <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-6 flex items-center gap-2">
                     <Plus size={16} className="text-amber-500" />
                     SUMMON A DUEL
@@ -618,10 +618,10 @@ function ArenaContent() {
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.95 }}
-                      className="bg-black/60 border border-red-600/30 rounded-lg p-6 relative overflow-hidden"
+                      className="bg-black/60 border border-neutral-800 rounded-lg p-6 relative overflow-hidden"
                     >
-                      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent" />
-                      <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.15em] text-red-500 mb-4 text-center">
+                      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+                      <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.15em] text-amber-500 mb-4 text-center">
                         A VICTOR HAS RISEN
                       </h3>
                       <MatchCard match={matchResult} />
@@ -780,14 +780,14 @@ function ArenaContent() {
 
                 {/* Quick Actions */}
                 <div className="bg-black/40 border border-neutral-800 rounded-lg p-6 relative overflow-hidden">
-                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500/50 to-transparent" />
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
                   <h3 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-amber-500/70 mb-4">
                     PATHS OF GLORY
                   </h3>
                   <div className="space-y-3">
                     <button
                       onClick={() => setShowCreateBattle(true)}
-                      className="block w-full text-center py-3 bg-red-500/10 border border-red-600/30 hover:border-red-500 rounded-lg font-[var(--font-orbitron)] text-xs text-red-500 transition-colors"
+                      className="block w-full text-center py-3 bg-amber-500/10 border border-amber-600/30 hover:border-amber-500 rounded-lg font-[var(--font-orbitron)] text-xs text-amber-500 transition-colors"
                     >
                       Summon Custom Battle
                     </button>

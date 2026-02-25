@@ -62,7 +62,7 @@ export default function LandingHeader() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-black/95 backdrop-blur-md border-b border-red-900/20'
+          ? 'bg-black/95 backdrop-blur-md border-b border-neutral-800'
           : 'bg-transparent'
       }`}
       role="banner"
@@ -74,7 +74,7 @@ export default function LandingHeader() {
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded"
+          className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
           aria-label="Ragnarok - Home"
         >
           {!logoError && (
@@ -103,7 +103,7 @@ export default function LandingHeader() {
             <Link
               key={link.href}
               href={link.href}
-              className="font-[var(--font-orbitron)] font-semibold text-[11px] tracking-[0.2em] text-neutral-400 hover:text-red-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded px-1"
+              className="font-[var(--font-orbitron)] font-semibold text-[11px] tracking-[0.2em] text-neutral-400 hover:text-amber-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded px-1"
               role="menuitem"
             >
               {link.label}
@@ -120,7 +120,7 @@ export default function LandingHeader() {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-white p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded"
+          className="md:hidden text-white p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
           onClick={toggleMobileMenu}
           aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={mobileMenuOpen}
@@ -151,7 +151,7 @@ export default function LandingHeader() {
             {/* Menu panel */}
             <motion.div
               id="mobile-menu"
-              className="md:hidden absolute top-20 left-0 right-0 bg-black/95 backdrop-blur-md border-b border-red-900/20 z-50"
+              className="md:hidden absolute top-20 left-0 right-0 bg-black/95 backdrop-blur-md border-b border-neutral-800 z-50"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -164,7 +164,7 @@ export default function LandingHeader() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="block font-[var(--font-orbitron)] font-semibold text-sm tracking-[0.2em] text-neutral-400 hover:text-red-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded px-1"
+                    className="block font-[var(--font-orbitron)] font-semibold text-sm tracking-[0.2em] text-neutral-400 hover:text-amber-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded px-1"
                     onClick={closeMobileMenu}
                     role="menuitem"
                     tabIndex={mobileMenuOpen ? 0 : -1}
@@ -172,7 +172,7 @@ export default function LandingHeader() {
                     {link.label}
                   </Link>
                 ))}
-                <div className="pt-6 border-t border-red-900/20">
+                <div className="pt-6 border-t border-neutral-800">
                   <div className="landing-wallet-btn">
                     <WalletMultiButton />
                   </div>

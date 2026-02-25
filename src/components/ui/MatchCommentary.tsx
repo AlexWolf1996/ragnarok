@@ -348,7 +348,7 @@ export default function MatchCommentary({
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" aria-hidden="true" />
+            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" aria-hidden="true" />
             <span className="text-xs font-bold text-gray-400 tracking-wider">
               HEIMDALL&apos;S SIGHT
             </span>
