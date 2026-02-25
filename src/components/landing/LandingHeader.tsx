@@ -79,16 +79,16 @@ export default function LandingHeader() {
         >
           {!logoError ? (
             <Image
-              src="/images/3.svg"
+              src="/images/ragnaroklogovf.svg"
               alt=""
-              width={42}
-              height={42}
-              className="opacity-80 group-hover:opacity-100 transition-opacity"
+              width={32}
+              height={32}
+              className="opacity-90 group-hover:opacity-100 transition-opacity"
               onError={() => setLogoError(true)}
               aria-hidden="true"
             />
           ) : (
-            <span className="font-mono text-2xl text-[#8a8a95] group-hover:text-[#e8e8e8] transition-colors" aria-hidden="true">
+            <span className="font-mono text-2xl text-[#c9a84c] group-hover:text-[#e8e8e8] transition-colors" aria-hidden="true">
               R
             </span>
           )}
@@ -103,7 +103,7 @@ export default function LandingHeader() {
             <Link
               key={link.href}
               href={link.href}
-              className="font-mono text-xs tracking-[0.3em] text-[#8a8a95] hover:text-[#e8e8e8] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4a843] rounded px-1"
+              className="font-mono text-xs tracking-[0.3em] text-[#71717a] hover:text-[#c9a84c] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded px-1"
               role="menuitem"
             >
               {link.label}
@@ -164,7 +164,7 @@ export default function LandingHeader() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="block font-mono text-sm tracking-[0.3em] text-[#8a8a95] hover:text-[#e8e8e8] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4a843] rounded px-1"
+                    className="block font-mono text-sm tracking-[0.3em] text-[#71717a] hover:text-[#c9a84c] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded px-1"
                     onClick={closeMobileMenu}
                     role="menuitem"
                     tabIndex={mobileMenuOpen ? 0 : -1}

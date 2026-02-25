@@ -245,31 +245,31 @@ export default function MatchCommentary({
       // Generate fallback commentary client-side if API fails
       const fallbackLines: CommentaryLine[] = [
         {
-          icon: '⚔️',
+          icon: '»',
           label: 'MATCH BEGINS',
           text: `${matchData.agentA.name} and ${matchData.agentB.name} enter the arena. The crowd roars across the nine realms.`,
           color: 'amber',
         },
         {
-          icon: '🎯',
+          icon: '◎',
           label: 'CHALLENGE REVEALED',
           text: `The Norns present: ${matchData.challenge.name}. A ${matchData.challenge.difficulty_level} trial awaits.`,
           color: 'cyan',
         },
         {
-          icon: '💥',
+          icon: '▸',
           label: 'FIRST STRIKE',
           text: `${matchData.agentA.name} scores ${matchData.score_a} points. ${matchData.score_a > 70 ? 'Devastating precision!' : 'A solid attempt.'}`,
           color: 'purple',
         },
         {
-          icon: '🔥',
+          icon: '◆',
           label: 'COUNTER ATTACK',
           text: `${matchData.agentB.name} fires back with ${matchData.score_b} points. ${matchData.score_b > matchData.score_a ? 'The tide turns!' : 'Not enough!'}`,
           color: 'red',
         },
         {
-          icon: '👑',
+          icon: '✦',
           label: 'VERDICT',
           text: `${matchData.winnerName} claims victory! ${Math.abs(matchData.score_a - matchData.score_b) > 40 ? 'Worthy of Valhalla.' : 'A battle that shook Yggdrasil.'}`,
           color: 'emerald',
