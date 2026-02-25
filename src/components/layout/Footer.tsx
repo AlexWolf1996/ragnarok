@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Github, Twitter, MessageCircle } from 'lucide-react';
+import { Github, Twitter } from 'lucide-react';
 
 // Solana logo inline SVG with gradient
 function SolanaLogo({ className = '' }: { className?: string }) {
@@ -102,7 +102,7 @@ export default function Footer() {
             </p>
             <div className="flex gap-5">
               <a
-                href="https://github.com"
+                href="https://github.com/AlexWolf1996/ragnarok"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#666670] hover:text-[#e8e8e8] transition-colors"
@@ -111,22 +111,13 @@ export default function Footer() {
                 <Github size={18} />
               </a>
               <a
-                href="https://twitter.com"
+                href="https://x.com/Ragnarok267162"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#666670] hover:text-[#e8e8e8] transition-colors"
                 aria-label="Twitter"
               >
                 <Twitter size={18} />
-              </a>
-              <a
-                href="https://discord.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#666670] hover:text-[#e8e8e8] transition-colors"
-                aria-label="Discord"
-              >
-                <MessageCircle size={18} />
               </a>
             </div>
           </div>
@@ -179,20 +170,20 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/docs#api"
                   className="text-[#666670] hover:text-[#e8e8e8] transition-colors"
                 >
                   API Reference
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/docs#sdk"
                   className="text-[#666670] hover:text-[#e8e8e8] transition-colors"
                 >
                   Agent SDK
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
