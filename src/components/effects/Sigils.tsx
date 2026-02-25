@@ -20,15 +20,15 @@ export default function Sigils({ density = 70 }: { density?: number }) {
     return Array.from({ length: density }).map((_, i) => ({
       id: i,
       char: RUNE_CHARS[Math.floor(Math.random() * RUNE_CHARS.length)],
-      opacity: 0.2 + Math.random() * 0.7,
+      opacity: 0.3 + Math.random() * 0.5,
     }));
   }, [density, isMounted]);
 
   if (!isMounted) return null;
 
   return (
-    <div className="absolute inset-0 pointer-events-none select-none opacity-[0.08] mix-blend-screen overflow-hidden">
-      <div className="absolute inset-0 flex flex-wrap justify-around items-center text-4xl md:text-5xl leading-none text-red-500/70 font-mono">
+    <div className="absolute inset-0 pointer-events-none select-none opacity-[0.05] mix-blend-screen overflow-hidden">
+      <div className="absolute inset-0 flex flex-wrap justify-around items-center text-4xl md:text-5xl leading-none text-red-500/50 font-mono">
         {runes.map((rune) => (
           <span
             key={rune.id}

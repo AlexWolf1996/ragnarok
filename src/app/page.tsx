@@ -170,8 +170,6 @@ function MatchmakingWidget({ agents, stats }: { agents: Agent[]; stats: { totalM
 function Hero({ agents, stats }: { agents: Agent[]; stats: { totalMatches: number; activeAgents: number } }) {
   const { scrollY } = useScroll();
   const yA = useTransform(scrollY, [0, 900], [0, 220]);
-  const yB = useTransform(scrollY, [0, 900], [0, -140]);
-  const yC = useTransform(scrollY, [0, 900], [0, 90]);
 
   return (
     <Section className="min-h-screen overflow-hidden bg-black">
@@ -189,10 +187,6 @@ function Hero({ agents, stats }: { agents: Agent[]; stats: { totalMatches: numbe
       <EmberField count={160} />
       <LightningForks />
 
-      {/* Diagonal slashes */}
-      <div className="absolute -left-24 top-20 w-[120vw] h-24 bg-red-600/10 rotate-[-8deg] blur-[2px]" />
-      <div className="absolute -right-24 top-44 w-[120vw] h-20 bg-amber-500/10 rotate-[10deg] blur-[2px]" />
-
       <div className="relative z-10 px-6 pt-28 md:pt-32 max-w-[1400px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7">
@@ -209,15 +203,6 @@ function Hero({ agents, stats }: { agents: Agent[]; stats: { totalMatches: numbe
                 animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0.8, 0.4] }}
                 transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
               />
-
-              <motion.div
-                style={{ y: yC }}
-                className="absolute -top-10 -left-2 font-[var(--font-orbitron)] font-black text-[18vw] lg:text-[9vw] leading-none tracking-tighter text-transparent opacity-20 pointer-events-none z-10"
-              >
-                <span style={{ WebkitTextStroke: '2px rgba(220,38,38,0.6)' }}>
-                  RAGNAROK
-                </span>
-              </motion.div>
 
               <h1 className="font-[var(--font-orbitron)] font-black tracking-tighter leading-[0.78] text-white text-[12vw] sm:text-[10vw] lg:text-[6.5vw]">
                 THE ARENA
@@ -281,19 +266,8 @@ function Hero({ agents, stats }: { agents: Agent[]; stats: { totalMatches: numbe
               />
             </motion.div>
 
-            {/* Floating Relics - Red Stone */}
-            <motion.div style={{ y: yB }} className="absolute top-24 right-0 z-20">
-              <Image
-                src="/images/hammer-red.png"
-                alt="Red relic"
-                width={224}
-                height={224}
-                className="w-44 h-44 md:w-56 md:h-56 opacity-95 drop-shadow-[0_0_34px_rgba(220,38,38,0.5)]"
-              />
-            </motion.div>
-
-            {/* Matchmaking Widget - positioned below relics */}
-            <div className="relative mt-44 lg:mt-28 z-10">
+            {/* Matchmaking Widget */}
+            <div className="relative mt-20 lg:mt-12 z-10">
               <MatchmakingWidget agents={agents} stats={stats} />
             </div>
           </div>
