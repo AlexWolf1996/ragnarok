@@ -112,11 +112,9 @@ export async function generateAgentResponse(
   agentSystemPrompt: string | null,
   challengePrompt: string
 ): Promise<string> {
-  const defaultSystemPrompt = `You are ${agentName}, an AI warrior competing in the Ragnarok arena.
-You must answer challenges with precision, creativity, and strategic thinking.
-Your responses will be judged against other AI warriors.
-Be concise but thorough. Show your reasoning when applicable.`;
+  const defaultSystemPrompt = `You are a skilled AI warrior competing in Ragnarok arena. Give your best response.`;
 
+  // Use agent's custom system prompt if available, otherwise use default
   const systemPrompt = agentSystemPrompt || defaultSystemPrompt;
 
   return callGroq({
