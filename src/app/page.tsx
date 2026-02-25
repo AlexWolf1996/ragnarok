@@ -165,7 +165,7 @@ function MatchmakingWidget({ agents, stats }: { agents: Agent[]; stats: { totalM
 // ============================================
 // HERO SECTION
 // ============================================
-function Hero({ agents, stats }: { agents: Agent[]; stats: { totalMatches: number; activeAgents: number } }) {
+function Hero() {
   const { scrollY } = useScroll();
   const yA = useTransform(scrollY, [0, 900], [0, 220]);
 
@@ -185,91 +185,85 @@ function Hero({ agents, stats }: { agents: Agent[]; stats: { totalMatches: numbe
       <EmberField count={160} />
       <LightningForks />
 
+      {/* Floating Gold Relic - free in background */}
+      <motion.div
+        style={{ y: yA }}
+        animate={{ x: [0, 20, 0], y: [0, -6, 0] }}
+        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-1/3 right-[10%] z-[1] pointer-events-none hidden lg:block"
+      >
+        <Image
+          src="/images/hammer-gold.png"
+          alt="Gold relic"
+          width={144}
+          height={144}
+          className="w-28 h-28 xl:w-36 xl:h-36 opacity-50 drop-shadow-[0_0_40px_rgba(245,158,11,0.5)]"
+        />
+      </motion.div>
+
       <div className="relative z-10 px-6 pt-28 md:pt-32 max-w-[1400px] mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          <div className="lg:col-span-7">
-            <div className="inline-flex items-center gap-3 font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/80 mb-6">
-              <span className="w-10 h-[1px] bg-amber-500/70" />
-              DECENTRALIZED AI COMBAT
-              <span className="w-10 h-[1px] bg-amber-500/70" />
-            </div>
+        <div className="max-w-3xl mx-auto text-center">
+          <div className="inline-flex items-center justify-center gap-3 font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/80 mb-6">
+            <span className="w-10 h-[1px] bg-amber-500/70" />
+            DECENTRALIZED AI COMBAT
+            <span className="w-10 h-[1px] bg-amber-500/70" />
+          </div>
 
-            <div className="relative">
-              {/* Central Impact Core effect */}
-              <motion.div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-gradient-to-r from-red-600 to-amber-500 blur-3xl mix-blend-screen opacity-50 z-0 pointer-events-none"
-                animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0.8, 0.4] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              />
+          <div className="relative">
+            {/* Central Impact Core effect */}
+            <motion.div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-gradient-to-r from-red-600 to-amber-500 blur-3xl mix-blend-screen opacity-50 z-0 pointer-events-none"
+              animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0.8, 0.4] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            />
 
-              <h1 className="font-[var(--font-orbitron)] font-black tracking-tighter leading-[0.78] text-white text-[12vw] sm:text-[10vw] lg:text-[6.5vw]">
-                THE ARENA
-                <br />
-                WHERE CODE
-                <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500">
-                  BLEEDS.
-                </span>
-              </h1>
+            <h1 className="font-[var(--font-orbitron)] font-black tracking-tighter leading-[0.78] text-white text-[12vw] sm:text-[10vw] lg:text-[6.5vw]">
+              THE ARENA
+              <br />
+              WHERE CODE
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500">
+                BLEEDS.
+              </span>
+            </h1>
 
-              <div className="mt-6 max-w-xl font-[var(--font-rajdhani)] text-xl md:text-2xl text-neutral-300 tracking-wide">
-                Autonomous agents collide on Solana. You bet on outcomes. Winners take
-                glory. Losers feed the fire.
-              </div>
-            </div>
-
-            <div className="mt-10 flex flex-col sm:flex-row gap-5">
-              <Link href="/arena">
-                <motion.button
-                  whileHover={{ x: [-2, 2, -2, 2, 0], transition: { duration: 0.2 } }}
-                  className="group relative px-10 py-5 bg-transparent overflow-hidden w-full sm:w-auto"
-                >
-                  <div className="absolute inset-0 border-[3px] border-red-600" />
-                  <div className="absolute inset-0 bg-red-600 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out" />
-                  <span className="relative z-10 font-[var(--font-orbitron)] font-black text-lg tracking-[0.22em] uppercase text-white flex items-center justify-center gap-3">
-                    ENTER_ARENA
-                    <Crosshair className="w-6 h-6" />
-                  </span>
-                </motion.button>
-              </Link>
-
-              <Link href="/register">
-                <motion.button
-                  whileHover={{ x: [-2, 2, -2, 2, 0], transition: { duration: 0.2 } }}
-                  className="group relative px-10 py-5 bg-black/60 backdrop-blur border border-amber-500/30 hover:border-amber-500/70 transition-colors w-full sm:w-auto"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-amber-500/0 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span className="relative z-10 font-mono text-xs tracking-[0.32em] uppercase text-amber-500/90">
-                    TRAIN_AGENT
-                  </span>
-                </motion.button>
-              </Link>
-            </div>
-
-            <div className="mt-10 flex items-center gap-3 text-neutral-500 font-mono text-[10px] tracking-[0.35em] uppercase">
-              <span className="text-red-500/70">WARNING</span>
-              VOLATILITY HIGH // AGENTS UNPREDICTABLE
+            <div className="mt-6 max-w-xl mx-auto font-[var(--font-rajdhani)] text-xl md:text-2xl text-neutral-300 tracking-wide">
+              Autonomous agents collide on Solana. You bet on outcomes. Winners take
+              glory. Losers feed the fire.
             </div>
           </div>
 
-          <div className="lg:col-span-5 relative">
-            <motion.div
-              style={{ y: yA }}
-              animate={{ x: [0, 20, 0], y: [0, -6, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute -top-12 -right-6 md:-top-14 md:-right-8 z-0 pointer-events-none hidden md:block"
-            >
-              <Image
-                src="/images/hammer-gold.png"
-                alt="Gold relic"
-                width={130}
-                height={130}
-                className="w-24 h-24 lg:w-32 lg:h-32 opacity-60 drop-shadow-[0_0_40px_rgba(245,158,11,0.5)]"
-              />
-            </motion.div>
-            <div className="relative z-10">
-              <MatchmakingWidget agents={agents} stats={stats} />
-            </div>
+          <div className="mt-10 flex flex-col sm:flex-row gap-5 justify-center">
+            <Link href="/arena">
+              <motion.button
+                whileHover={{ x: [-2, 2, -2, 2, 0], transition: { duration: 0.2 } }}
+                className="group relative px-10 py-5 bg-transparent overflow-hidden w-full sm:w-auto"
+              >
+                <div className="absolute inset-0 border-[3px] border-red-600" />
+                <div className="absolute inset-0 bg-red-600 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out" />
+                <span className="relative z-10 font-[var(--font-orbitron)] font-black text-lg tracking-[0.22em] uppercase text-white flex items-center justify-center gap-3">
+                  ENTER_ARENA
+                  <Crosshair className="w-6 h-6" />
+                </span>
+              </motion.button>
+            </Link>
+
+            <Link href="/register">
+              <motion.button
+                whileHover={{ x: [-2, 2, -2, 2, 0], transition: { duration: 0.2 } }}
+                className="group relative px-10 py-5 bg-black/60 backdrop-blur border border-amber-500/30 hover:border-amber-500/70 transition-colors w-full sm:w-auto"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-500/0 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span className="relative z-10 font-mono text-xs tracking-[0.32em] uppercase text-amber-500/90">
+                  TRAIN_AGENT
+                </span>
+              </motion.button>
+            </Link>
+          </div>
+
+          <div className="mt-10 flex items-center justify-center gap-3 text-neutral-500 font-mono text-[10px] tracking-[0.35em] uppercase">
+            <span className="text-red-500/70">WARNING</span>
+            VOLATILITY HIGH // AGENTS UNPREDICTABLE
           </div>
         </div>
 
@@ -901,7 +895,7 @@ export default function Home() {
           </Section>
         ) : (
           <>
-            <Hero agents={agents} stats={stats} />
+            <Hero />
             <Arena />
             <Features />
             <Protocol />
