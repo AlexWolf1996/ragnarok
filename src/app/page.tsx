@@ -185,6 +185,20 @@ function Hero({ agents, stats }: { agents: Agent[]; stats: { totalMatches: numbe
       <EmberField count={160} />
       <LightningForks />
 
+      {/* Floating Gold Relic - positioned in top-right empty space */}
+      <motion.div
+        style={{ y: yA }}
+        className="absolute top-32 right-8 md:right-16 lg:right-24 z-10 pointer-events-none hidden md:block"
+      >
+        <Image
+          src="/images/hammer-gold.png"
+          alt="Gold relic"
+          width={180}
+          height={180}
+          className="w-32 h-32 lg:w-40 lg:h-40 opacity-70 drop-shadow-[0_0_50px_rgba(245,158,11,0.6)]"
+        />
+      </motion.div>
+
       <div className="relative z-10 px-6 pt-28 md:pt-32 max-w-[1400px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7">
@@ -253,19 +267,8 @@ function Hero({ agents, stats }: { agents: Agent[]; stats: { totalMatches: numbe
           </div>
 
           <div className="lg:col-span-5 relative">
-            {/* Floating Relics - Gold Hammer (behind card for depth) */}
-            <motion.div style={{ y: yA }} className="absolute -top-16 -left-12 z-0">
-              <Image
-                src="/images/hammer-gold.png"
-                alt="Gold relic"
-                width={208}
-                height={208}
-                className="w-36 h-36 md:w-48 md:h-48 opacity-80 drop-shadow-[0_0_40px_rgba(245,158,11,0.5)]"
-              />
-            </motion.div>
-
             {/* Matchmaking Widget */}
-            <div className="relative mt-16 lg:mt-8 z-10">
+            <div className="relative">
               <MatchmakingWidget agents={agents} stats={stats} />
             </div>
           </div>
