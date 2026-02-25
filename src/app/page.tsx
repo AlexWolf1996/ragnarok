@@ -765,9 +765,9 @@ function Footer() {
           <Image
             src="/images/logoecrit.svg"
             alt="Ragnarok"
-            width={120}
-            height={20}
-            className="h-4 w-auto opacity-50"
+            width={140}
+            height={28}
+            className="h-6 w-auto opacity-50"
           />
           <div className="flex gap-8 font-[var(--font-orbitron)] text-xs tracking-[0.2em] uppercase text-neutral-500">
             <a href="https://x.com/Ragnarok267162" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">
