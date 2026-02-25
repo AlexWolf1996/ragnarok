@@ -23,16 +23,16 @@ interface StatCardProps {
 function StatCard({ icon, label, value, subValue, delay }: StatCardProps) {
   return (
     <motion.div
-      className="flex items-center gap-3 px-4 py-3 bg-[#111118] rounded-lg border border-[#1a1a25]"
+      className="flex items-center gap-3 px-4 py-3 bg-[#111118] rounded-lg border border-[#c9a84c]/10"
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay }}
     >
-      <div className="text-[#666670]">{icon}</div>
+      <div className="text-[#c9a84c]">{icon}</div>
       <div>
-        <p className="text-[10px] font-mono text-[#666670] uppercase tracking-[0.2em]">{label}</p>
+        <p className="text-[10px] font-mono text-[#71717a] uppercase tracking-[0.2em]">{label}</p>
         <p className="font-mono text-sm text-[#e8e8e8]">{value}</p>
-        {subValue && <p className="text-[10px] font-mono text-[#666670]">{subValue}</p>}
+        {subValue && <p className="text-[10px] font-mono text-[#c9a84c]">{subValue}</p>}
       </div>
     </motion.div>
   );

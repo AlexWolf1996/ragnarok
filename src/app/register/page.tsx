@@ -36,24 +36,25 @@ export default function RegisterPage() {
   // If user already has an agent, show message
   if (connected && hasAgent) {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] py-20 px-4">
+      <div className="min-h-screen bg-[#0a0a12] py-20 px-4" style={{ background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)' }}>
         <div className="max-w-lg mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-[#111118] border border-[#1a1a25] rounded-lg p-8"
+            className="bg-[#111118] border border-[#c9a84c]/15 rounded-lg p-8"
+            style={{ boxShadow: '0 0 30px rgba(201, 168, 76, 0.05)' }}
           >
-            <AlertCircle size={48} className="text-[#d4a843] mx-auto mb-4" />
-            <h2 className="font-mono text-xl tracking-[0.1em] text-[#e8e8e8] mb-4">
+            <AlertCircle size={48} className="text-[#c9a84c] mx-auto mb-4" />
+            <h2 className="font-mono text-xl tracking-[0.1em] text-[#e8e8e8] mb-4" style={{ textShadow: '0 0 30px rgba(201, 168, 76, 0.15)' }}>
               AGENT ALREADY REGISTERED
             </h2>
-            <p className="font-mono text-sm text-[#8a8a95] mb-6">
+            <p className="font-mono text-sm text-[#71717a] mb-6">
               You already have an agent registered with this wallet. Each wallet
               can only have one agent.
             </p>
             <button
               onClick={() => router.push('/arena')}
-              className="px-6 py-3 border border-[#e8e8e8] text-[#e8e8e8] font-mono text-sm tracking-[0.15em] rounded-lg hover:bg-[#e8e8e8] hover:text-[#0a0a0f] transition-all"
+              className="px-6 py-3 bg-[#c9a84c] text-black font-mono text-sm tracking-[0.15em] rounded-lg hover:scale-105 hover:shadow-[0_0_30px_rgba(201,168,76,0.4)] transition-all"
             >
               GO TO ARENA
             </button>
@@ -64,7 +65,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] py-20 px-4">
+    <div className="min-h-screen bg-[#0a0a12] py-20 px-4" style={{ background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)' }}>
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <motion.div
@@ -72,13 +73,13 @@ export default function RegisterPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="w-16 h-16 rounded-full bg-[#111118] border border-[#1a1a25] flex items-center justify-center mx-auto mb-6">
-            <Bot size={32} className="text-[#8a8a95]" />
+          <div className="w-16 h-16 rounded-full bg-[#111118] border border-[#c9a84c]/20 flex items-center justify-center mx-auto mb-6" style={{ boxShadow: '0 0 30px rgba(201, 168, 76, 0.1)' }}>
+            <Bot size={32} className="text-[#c9a84c]" />
           </div>
-          <h1 className="font-mono text-3xl md:text-4xl tracking-[0.15em] text-[#e8e8e8] mb-4">
+          <h1 className="font-mono text-3xl md:text-4xl tracking-[0.15em] text-[#e8e8e8] mb-4" style={{ textShadow: '0 0 40px rgba(201, 168, 76, 0.2)' }}>
             FORGE YOUR CHAMPION
           </h1>
-          <p className="font-mono text-sm text-[#8a8a95] max-w-2xl mx-auto">
+          <p className="font-mono text-sm text-[#71717a] max-w-2xl mx-auto">
             Register your AI agent to compete in the arena. Connect your wallet
             and prepare for battle.
           </p>
@@ -87,16 +88,16 @@ export default function RegisterPage() {
         {/* Not connected state */}
         {!connected && (
           <motion.div
-            className="bg-[#111118] border border-[#1a1a25] rounded-lg p-8 max-w-lg mx-auto text-center"
+            className="bg-[#111118] border border-[#c9a84c]/10 rounded-lg p-8 max-w-lg mx-auto text-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Shield size={48} className="text-[#8a8a95] mx-auto mb-4" />
+            <Shield size={48} className="text-[#71717a] mx-auto mb-4" />
             <h2 className="font-mono text-lg tracking-[0.1em] text-[#e8e8e8] mb-4">
               CONNECT YOUR WALLET
             </h2>
-            <p className="font-mono text-sm text-[#8a8a95] mb-6">
+            <p className="font-mono text-sm text-[#71717a] mb-6">
               Connect your Solana wallet to register an agent. Your wallet
               address will be linked to your agent.
             </p>
@@ -109,7 +110,7 @@ export default function RegisterPage() {
         {/* Loading state */}
         {connected && checking && (
           <div className="flex items-center justify-center py-12">
-            <Loader2 size={32} className="text-[#8a8a95] animate-spin" />
+            <Loader2 size={32} className="text-[#71717a] animate-spin" />
           </div>
         )}
 
@@ -123,34 +124,34 @@ export default function RegisterPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <div className="bg-[#111118] border border-[#1a1a25] rounded-lg p-6 text-center">
-            <Bot size={24} className="text-[#8a8a95] mx-auto mb-3" />
+          <div className="bg-[#111118] border border-[#c9a84c]/10 rounded-lg p-6 text-center hover:border-[#c9a84c]/25 transition-all">
+            <Bot size={24} className="text-[#c9a84c] mx-auto mb-3" />
             <h3 className="font-mono text-sm tracking-[0.1em] text-[#e8e8e8] mb-2">
               YOUR AI CHAMPION
             </h3>
-            <p className="font-mono text-xs text-[#8a8a95]">
+            <p className="font-mono text-xs text-[#71717a]">
               Deploy your custom AI agent with a unique strategy to compete
               against others.
             </p>
           </div>
 
-          <div className="bg-[#111118] border border-[#1a1a25] rounded-lg p-6 text-center">
-            <Zap size={24} className="text-[#8a8a95] mx-auto mb-3" />
+          <div className="bg-[#111118] border border-[#c9a84c]/10 rounded-lg p-6 text-center hover:border-[#c9a84c]/25 transition-all">
+            <Zap size={24} className="text-[#c9a84c] mx-auto mb-3" />
             <h3 className="font-mono text-sm tracking-[0.1em] text-[#e8e8e8] mb-2">
               REAL-TIME BATTLES
             </h3>
-            <p className="font-mono text-xs text-[#8a8a95]">
+            <p className="font-mono text-xs text-[#71717a]">
               Your agent will receive challenges and must respond with answers
               to score points.
             </p>
           </div>
 
-          <div className="bg-[#111118] border border-[#1a1a25] rounded-lg p-6 text-center">
-            <Shield size={24} className="text-[#d4a843] mx-auto mb-3" />
+          <div className="bg-[#111118] border border-[#c9a84c]/10 rounded-lg p-6 text-center hover:border-[#c9a84c]/25 transition-all">
+            <Shield size={24} className="text-[#c9a84c] mx-auto mb-3" />
             <h3 className="font-mono text-sm tracking-[0.1em] text-[#e8e8e8] mb-2">
               EARN GLORY
             </h3>
-            <p className="font-mono text-xs text-[#8a8a95]">
+            <p className="font-mono text-xs text-[#71717a]">
               Win matches to increase your ELO rating and climb the leaderboard
               to Valhalla.
             </p>

@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  /* Backgrounds - Updated for editorial palette */
-  --bg-primary: #0a0a0f;
+  /* Backgrounds - Updated for cosmic palette */
+  --bg-primary: #0a0a12;
   --bg-secondary: #111118;
-  --bg-tertiary: #16161f;
+  --bg-tertiary: #0d0d16;
 
   /* Text - Improved for better readability */
   --text-primary: #f0f0f2;
@@ -18,7 +18,7 @@
   /* Accents */
   --accent-red: #c41e3a;
   --accent-cyan: #4fc3f7;
-  --accent-gold: #d4a843;
+  --accent-gold: #c9a84c;
 
   /* Legacy color names for compatibility */
   --fire-red: #c41e3a;
@@ -27,7 +27,7 @@
   --frost-blue: #4fc3f7;
   --pale-cyan: #b3e5fc;
   --ice-white: #e0f7fa;
-  --gold: #d4a843;
+  --gold: #c9a84c;
   --gold-light: #f0d78c;
   --gold-dark: #a88734;
 
@@ -35,7 +35,7 @@
   --gradient-fire: linear-gradient(135deg, #c41e3a 0%, #e8590c 50%, #ffa500 100%);
   --gradient-ice: linear-gradient(135deg, #4fc3f7 0%, #b3e5fc 50%, #e0f7fa 100%);
   --gradient-fire-ice: linear-gradient(135deg, #c41e3a 0%, #e8590c 25%, #4fc3f7 75%, #b3e5fc 100%);
-  --gradient-gold: linear-gradient(135deg, #a88734 0%, #d4a843 50%, #f0d78c 100%);
+  --gradient-gold: linear-gradient(135deg, #a88734 0%, #c9a84c 50%, #f0d78c 100%);
 
   /* Shadows */
   --shadow-fire: 0 0 20px rgba(196, 30, 58, 0.5), 0 0 40px rgba(232, 89, 12, 0.3);
@@ -146,7 +146,7 @@ body {
   --landing-border: #1a1a25;
   --landing-accent-red: #c41e3a;
   --landing-accent-cyan: #4fc3f7;
-  --landing-accent-gold: #d4a843;
+  --landing-accent-gold: #c9a84c;
 }
 
 .landing-page h1,
@@ -518,7 +518,7 @@ body {
 }
 
 .border-gold-glow {
-  border-color: #d4a843;
+  border-color: #c9a84c;
   box-shadow: inset 0 0 20px rgba(212, 168, 67, 0.1), 0 0 15px rgba(212, 168, 67, 0.2);
 }
 

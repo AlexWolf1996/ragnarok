@@ -74,7 +74,7 @@ export default function LandingHeader() {
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4a843] rounded"
+          className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded"
           aria-label="Ragnarok - Home"
         >
           {!logoError ? (
@@ -120,7 +120,7 @@ export default function LandingHeader() {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-[#e8e8e8] p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4a843] rounded"
+          className="md:hidden text-[#e8e8e8] p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded"
           onClick={toggleMobileMenu}
           aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={mobileMenuOpen}

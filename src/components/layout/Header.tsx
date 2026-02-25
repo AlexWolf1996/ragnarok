@@ -33,8 +33,8 @@ export default function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-[#0a0a0f]/95 backdrop-blur-md border-b border-[#1a1a25]'
-          : 'bg-[#0a0a0f] border-b border-[#1a1a25]'
+          ? 'bg-[#0a0a12]/95 backdrop-blur-md border-b border-[#c9a84c]/10'
+          : 'bg-[#0a0a12] border-b border-[#c9a84c]/10'
       }`}
     >
       <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -42,7 +42,7 @@ export default function Header() {
         <Link href="/" className="flex items-center gap-3 group">
           {!logoError ? (
             <Image
-              src="/images/3.svg"
+              src="/images/ragnarok.logo.VF2.svg"
               alt="Ragnarok"
               width={28}
               height={28}
@@ -50,7 +50,7 @@ export default function Header() {
               onError={() => setLogoError(true)}
             />
           ) : (
-            <span className="font-mono text-lg text-[#666670] group-hover:text-[#e8e8e8] transition-colors">
+            <span className="font-mono text-lg text-[#c9a84c] group-hover:text-[#e8e8e8] transition-colors">
               R
             </span>
           )}
@@ -69,14 +69,14 @@ export default function Header() {
                 href={link.href}
                 className={`font-mono text-xs tracking-[0.2em] transition-colors relative ${
                   isActive
-                    ? 'text-[#e8e8e8]'
-                    : 'text-[#666670] hover:text-[#e8e8e8]'
+                    ? 'text-[#c9a84c]'
+                    : 'text-[#71717a] hover:text-[#c9a84c]'
                 }`}
               >
                 {link.label}
                 {isActive && (
                   <motion.div
-                    className="absolute -bottom-1 left-0 right-0 h-px bg-[#e8e8e8]"
+                    className="absolute -bottom-1 left-0 right-0 h-px bg-[#c9a84c]"
                     layoutId="activeNavIndicator"
                   />
                 )}
@@ -106,7 +106,7 @@ export default function Header() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            className="md:hidden bg-[#0a0a0f] border-b border-[#1a1a25]"
+            className="md:hidden bg-[#0a0a12] border-b border-[#c9a84c]/10"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -121,8 +121,8 @@ export default function Header() {
                     href={link.href}
                     className={`block font-mono text-sm tracking-[0.2em] transition-colors ${
                       isActive
-                        ? 'text-[#e8e8e8]'
-                        : 'text-[#666670] hover:text-[#e8e8e8]'
+                        ? 'text-[#c9a84c]'
+                        : 'text-[#71717a] hover:text-[#c9a84c]'
                     }`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -130,7 +130,7 @@ export default function Header() {
                   </Link>
                 );
               })}
-              <div className="pt-4 border-t border-[#1a1a25]">
+              <div className="pt-4 border-t border-[#c9a84c]/10">
                 <div className="editorial-wallet-btn">
                   <WalletMultiButton />
                 </div>

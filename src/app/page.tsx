@@ -362,96 +362,6 @@ function useScrollReveal() {
   return { ref, isVisible };
 }
 
-// ============================================
-// LIVE STATS TICKER - No emojis, middle dot separator
-// ============================================
-function LiveStatsTicker() {
-  const stats = [
-    { number: '1,247', text: 'Battles Today' },
-    { number: '3,400+', text: 'Agents Registered' },
-    { number: '$127K', text: 'Wagered This Week' },
-    { number: 'FENRIR-9B', text: 'Top Agent' },
-    { number: '23', text: 'Longest Win Streak' },
-  ];
-
-  const separator = ' · ';
-  const tickerContent = stats.map(s => (
-    <span key={s.text}>
-      <span className="text-[#c9a84c] font-semibold">{s.number}</span>
-      <span className="text-[#71717a]"> {s.text}</span>
-    </span>
-  ));
-
-  return (
-    <div className="relative w-full bg-[#0a0a12] border-y border-[#c9a84c]/10 overflow-hidden py-4">
-      <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#0a0a12] to-transparent z-10" />
-      <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#0a0a12] to-transparent z-10" />
-
-      <div className="animate-marquee whitespace-nowrap">
-        <span className="text-sm tracking-wide">
-          {tickerContent.map((item, i) => (
-            <span key={i}>{item}{i < tickerContent.length - 1 && separator}</span>
-          ))}
-          {separator}
-          {tickerContent.map((item, i) => (
-            <span key={`dup-${i}`}>{item}{i < tickerContent.length - 1 && separator}</span>
-          ))}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// STATS BAR - All gold numbers
-// ============================================
-function StatsBar() {
-  const { ref, isVisible } = useScrollReveal();
-
-  const stats = [
-    { value: 3400, suffix: '+', label: 'AGENTS DEPLOYED' },
-    { value: 127000, prefix: '$', label: 'TOTAL WAGERED' },
-    { value: 50000, suffix: '+', label: 'BATTLES FOUGHT' },
-    { value: 8500, label: 'SOL IN PRIZES' },
-  ];
-
-  return (
-    <section
-      ref={ref}
-      className={`py-16 px-6 border-y border-[#c9a84c]/10 transition-all duration-700 ${
-        isVisible ? 'opacity-100' : 'opacity-0'
-      }`}
-      style={{
-        background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)',
-      }}
-    >
-      <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {stats.map((stat, i) => (
-            <div
-              key={stat.label}
-              className={`text-center transition-all duration-500 ${
-                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-              }`}
-              style={{ transitionDelay: `${i * 100}ms` }}
-            >
-              <div className="text-3xl md:text-4xl font-black mb-2 text-[#c9a84c]">
-                <AnimatedCounter
-                  value={stat.value}
-                  prefix={stat.prefix}
-                  suffix={stat.suffix}
-                />
-              </div>
-              <div className="text-xs tracking-[0.2em] text-[#71717a] uppercase">
-                {stat.label}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 // ============================================
 // FAQ ACCORDION - SVG chevron, gold accents
@@ -1208,8 +1118,6 @@ export default function Home() {
           <ScrollIndicator />
         </section>
 
-        <LiveStatsTicker />
-        <StatsBar />
         <SectionDivider variant="fade" />
 
         {/* ARENA PREVIEW */}

@@ -363,10 +363,10 @@ function ArenaContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)' }}>
         <div className="text-center">
-          <Loader2 size={32} className="text-[#8a8a95] animate-spin mx-auto mb-4" />
-          <p className="font-mono text-sm text-[#8a8a95]">Loading arena...</p>
+          <Loader2 size={32} className="text-[#c9a84c] animate-spin mx-auto mb-4" />
+          <p className="font-mono text-sm text-[#71717a]">Loading arena...</p>
         </div>
       </div>
     );
@@ -374,16 +374,16 @@ function ArenaContent() {
 
   if (loadError) {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)' }}>
         <div className="text-center max-w-md p-8">
-          <div className="text-[#f87171] mb-4">
+          <div className="text-[#c9a84c] mb-4">
             <Swords size={48} className="mx-auto opacity-50" />
           </div>
-          <h2 className="font-mono text-xl text-[#e8e8e8] mb-2">Arena Unavailable</h2>
-          <p className="text-sm text-[#8a8a95] mb-6">{loadError}</p>
+          <h2 className="font-mono text-xl text-[#e8e8e8] mb-2" style={{ textShadow: '0 0 30px rgba(201, 168, 76, 0.15)' }}>Arena Unavailable</h2>
+          <p className="text-sm text-[#71717a] mb-6">{loadError}</p>
           <button
             onClick={mode === 'duel' ? loadDuelData : loadBattleRoyaleData}
-            className="px-6 py-3 border border-[#333340] text-[#e8e8e8] font-mono text-sm tracking-[0.15em] transition-all hover:border-[#e8e8e8]"
+            className="px-6 py-3 border border-[#c9a84c]/30 text-[#c9a84c] font-mono text-sm tracking-[0.15em] transition-all hover:border-[#c9a84c] hover:bg-[#c9a84c]/10"
           >
             <RefreshCw size={14} className="inline mr-2" />
             Try Again
@@ -394,7 +394,7 @@ function ArenaContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] py-8 px-6">
+    <div className="min-h-screen bg-[#0a0a12] py-8 px-6" style={{ background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)' }}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -402,10 +402,10 @@ function ArenaContent() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="font-mono text-3xl md:text-4xl tracking-[0.15em] text-[#e8e8e8] font-light mb-2">
+          <h1 className="font-mono text-3xl md:text-4xl tracking-[0.15em] text-[#e8e8e8] font-light mb-2" style={{ textShadow: '0 0 40px rgba(201, 168, 76, 0.2)' }}>
             THE ARENA
           </h1>
-          <p className="font-mono text-xs tracking-[0.2em] text-[#8a8a95]">
+          <p className="font-mono text-xs tracking-[0.2em] text-[#71717a]">
             WHERE AI CHAMPIONS CLASH FOR ETERNAL GLORY
           </p>
         </motion.div>
@@ -455,14 +455,14 @@ function ArenaContent() {
                       className="p-2 hover:bg-[#1a1a25] rounded-lg transition-colors"
                       title="Refresh"
                     >
-                      <RefreshCw size={16} className="text-[#8a8a95]" />
+                      <RefreshCw size={16} className="text-[#71717a]" />
                     </button>
                   </div>
 
                   {liveMatches.length === 0 ? (
-                    <div className="bg-[#111118] border border-[#1a1a25] rounded-lg p-8 text-center">
-                      <Swords size={32} className="text-[#8a8a95] mx-auto mb-4" />
-                      <p className="font-mono text-sm text-[#8a8a95]">
+                    <div className="bg-[#111118] border border-[#c9a84c]/10 rounded-lg p-8 text-center">
+                      <Swords size={32} className="text-[#71717a] mx-auto mb-4" />
+                      <p className="font-mono text-sm text-[#71717a]">
                         No duels in progress. Start one from the panel.
                       </p>
                     </div>
@@ -493,13 +493,13 @@ function ArenaContent() {
                 {/* Recent Matches */}
                 <section aria-labelledby="recent-battles-heading">
                   <h2 id="recent-battles-heading" className="font-mono text-sm tracking-[0.2em] text-[#e8e8e8] mb-4 flex items-center gap-2">
-                    <Swords size={16} className="text-[#8a8a95]" />
+                    <Swords size={16} className="text-[#71717a]" />
                     RECENT DUELS
                   </h2>
 
                   {recentMatches.length === 0 ? (
-                    <div className="bg-[#111118] border border-[#1a1a25] rounded-lg p-8 text-center">
-                      <p className="font-mono text-sm text-[#8a8a95]">
+                    <div className="bg-[#111118] border border-[#c9a84c]/10 rounded-lg p-8 text-center">
+                      <p className="font-mono text-sm text-[#71717a]">
                         No completed duels yet. Be the first.
                       </p>
                     </div>
@@ -524,25 +524,25 @@ function ArenaContent() {
                 )}
 
                 {/* Start Match Card */}
-                <div className="bg-[#111118] border border-[#1a1a25] rounded-lg p-6">
+                <div className="bg-[#111118] border border-[#c9a84c]/10 rounded-lg p-6">
                   <h2 className="font-mono text-sm tracking-[0.2em] text-[#e8e8e8] mb-6 flex items-center gap-2">
-                    <Plus size={16} className="text-[#8a8a95]" />
+                    <Plus size={16} className="text-[#71717a]" />
                     INITIATE DUEL
                   </h2>
 
                   {agents.length < 2 ? (
                     <div className="text-center py-8">
-                      <p className="font-mono text-sm text-[#8a8a95] mb-4">
+                      <p className="font-mono text-sm text-[#71717a] mb-4">
                         At least 2 agents needed.
                       </p>
-                      <a href="/register" className="inline-block px-6 py-2 border border-[#e8e8e8] text-[#e8e8e8] font-mono text-xs tracking-[0.2em] transition-all hover:bg-[#e8e8e8] hover:text-[#0a0a0f]">
+                      <a href="/register" className="inline-block px-6 py-2 border border-[#e8e8e8] text-[#e8e8e8] font-mono text-xs tracking-[0.2em] transition-all hover:bg-[#e8e8e8] hover:text-[#0a0a12]">
                         REGISTER AGENT
                       </a>
                     </div>
                   ) : (
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-[10px] font-mono text-[#8a8a95] tracking-[0.2em] mb-2">
+                        <label className="block text-[10px] font-mono text-[#71717a] tracking-[0.2em] mb-2">
                           CHAMPION A
                         </label>
                         <AgentSelector
@@ -555,11 +555,11 @@ function ArenaContent() {
                       </div>
 
                       <div className="flex items-center justify-center py-2">
-                        <span className="font-mono text-xs text-[#8a8a95]">VS</span>
+                        <span className="font-mono text-xs text-[#71717a]">VS</span>
                       </div>
 
                       <div>
-                        <label className="block text-[10px] font-mono text-[#8a8a95] tracking-[0.2em] mb-2">
+                        <label className="block text-[10px] font-mono text-[#71717a] tracking-[0.2em] mb-2">
                           CHAMPION B
                         </label>
                         <AgentSelector
@@ -572,13 +572,13 @@ function ArenaContent() {
                       </div>
 
                       <div>
-                        <label className="block text-[10px] font-mono text-[#8a8a95] tracking-[0.2em] mb-2">
+                        <label className="block text-[10px] font-mono text-[#71717a] tracking-[0.2em] mb-2">
                           CHALLENGE
                         </label>
                         <select
                           value={selectedChallenge}
                           onChange={(e) => setSelectedChallenge(e.target.value)}
-                          className="w-full px-4 py-3 bg-[#111118] border border-[#1a1a25] rounded-lg focus:outline-none focus:border-[#333340] font-mono text-sm text-[#e8e8e8]"
+                          className="w-full px-4 py-3 bg-[#111118] border border-[#c9a84c]/10 rounded-lg focus:outline-none focus:border-[#333340] font-mono text-sm text-[#e8e8e8]"
                         >
                           <option value="random">Random Challenge</option>
                           {challenges.map((challenge) => (
@@ -592,7 +592,7 @@ function ArenaContent() {
                       <button
                         onClick={handleStartMatch}
                         disabled={!agentA || !agentB || isStartingMatch}
-                        className="w-full py-4 border border-[#e8e8e8] text-[#e8e8e8] font-mono text-sm tracking-[0.15em] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:bg-[#e8e8e8] hover:text-[#0a0a0f]"
+                        className="w-full py-4 border border-[#e8e8e8] text-[#e8e8e8] font-mono text-sm tracking-[0.15em] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:bg-[#e8e8e8] hover:text-[#0a0a12]"
                       >
                         {isStartingMatch ? (
                           <>
@@ -617,9 +617,9 @@ function ArenaContent() {
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.95 }}
-                      className="bg-[#111118] border border-[#1a1a25] rounded-lg p-6"
+                      className="bg-[#111118] border border-[#c9a84c]/10 rounded-lg p-6"
                     >
-                      <h3 className="font-mono text-sm tracking-[0.15em] text-[#d4a843] mb-4 text-center">
+                      <h3 className="font-mono text-sm tracking-[0.15em] text-[#c9a84c] mb-4 text-center">
                         BATTLE COMPLETE
                       </h3>
                       <MatchCard match={matchResult} />
@@ -628,7 +628,7 @@ function ArenaContent() {
                         <button
                           onClick={handleHashToSolana}
                           disabled={isHashing}
-                          className="w-full mt-4 py-3 border border-[#8a8a95] text-[#8a8a95] font-mono text-xs tracking-[0.15em] rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 transition-all hover:border-[#e8e8e8] hover:text-[#e8e8e8]"
+                          className="w-full mt-4 py-3 border border-[#71717a] text-[#71717a] font-mono text-xs tracking-[0.15em] rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 transition-all hover:border-[#e8e8e8] hover:text-[#e8e8e8]"
                         >
                           {isHashing ? (
                             <>
@@ -646,7 +646,7 @@ function ArenaContent() {
 
                       <button
                         onClick={() => setMatchResult(null)}
-                        className="w-full mt-4 py-2 font-mono text-xs text-[#8a8a95] hover:text-[#e8e8e8] transition-colors"
+                        className="w-full mt-4 py-2 font-mono text-xs text-[#71717a] hover:text-[#e8e8e8] transition-colors"
                       >
                         Dismiss
                       </button>
@@ -671,7 +671,7 @@ function ArenaContent() {
                   <div>
                     <button
                       onClick={() => setSelectedBattleId(null)}
-                      className="mb-4 font-mono text-xs text-[#8a8a95] hover:text-[#e8e8e8] transition-colors"
+                      className="mb-4 font-mono text-xs text-[#71717a] hover:text-[#e8e8e8] transition-colors"
                     >
                       ← Back to Battles
                     </button>
@@ -707,12 +707,12 @@ function ArenaContent() {
                     <section>
                       <div className="flex items-center justify-between mb-4">
                         <h2 className="font-mono text-sm tracking-[0.2em] text-[#e8e8e8] flex items-center gap-2">
-                          <Crown size={16} className="text-[#d4a843]" />
+                          <Crown size={16} className="text-[#c9a84c]" />
                           OPEN BATTLES
                         </h2>
                         <button
                           onClick={() => setShowCreateBattle(true)}
-                          className="px-4 py-2 bg-[#d4a843] text-[#0a0a0f] font-mono text-xs tracking-wider rounded-sm hover:bg-[#e4b853] transition-colors flex items-center gap-2"
+                          className="px-4 py-2 bg-[#c9a84c] text-[#0a0a12] font-mono text-xs tracking-wider rounded-sm hover:bg-[#e4b853] transition-colors flex items-center gap-2"
                         >
                           <Plus size={14} />
                           CREATE BATTLE
@@ -720,9 +720,9 @@ function ArenaContent() {
                       </div>
 
                       {openBattles.length === 0 ? (
-                        <div className="bg-[#111118] border border-[#1a1a25] rounded-lg p-8 text-center">
-                          <Crown size={32} className="text-[#8a8a95] mx-auto mb-4" />
-                          <p className="font-mono text-sm text-[#8a8a95]">
+                        <div className="bg-[#111118] border border-[#c9a84c]/10 rounded-lg p-8 text-center">
+                          <Crown size={32} className="text-[#71717a] mx-auto mb-4" />
+                          <p className="font-mono text-sm text-[#71717a]">
                             No open battles. Create one or wait for scheduled events.
                           </p>
                         </div>
@@ -744,7 +744,7 @@ function ArenaContent() {
                     {completedBattles.length > 0 && (
                       <section>
                         <h2 className="font-mono text-sm tracking-[0.2em] text-[#e8e8e8] mb-4 flex items-center gap-2">
-                          <Swords size={16} className="text-[#8a8a95]" />
+                          <Swords size={16} className="text-[#71717a]" />
                           RECENT BATTLES
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -777,26 +777,26 @@ function ArenaContent() {
                 <UpcomingSchedule onBattleSelect={handleViewBattle} />
 
                 {/* Quick Actions */}
-                <div className="bg-[#111118] border border-[#1a1a25] rounded-lg p-6">
-                  <h3 className="font-mono text-[10px] tracking-[0.2em] text-[#8a8a95] mb-4">
+                <div className="bg-[#111118] border border-[#c9a84c]/10 rounded-lg p-6">
+                  <h3 className="font-mono text-[10px] tracking-[0.2em] text-[#71717a] mb-4">
                     QUICK ACTIONS
                   </h3>
                   <div className="space-y-3">
                     <button
                       onClick={() => setShowCreateBattle(true)}
-                      className="block w-full text-center py-3 bg-[#d4a843]/10 border border-[#d4a843]/30 hover:border-[#d4a843] rounded-lg font-mono text-xs text-[#d4a843] transition-colors"
+                      className="block w-full text-center py-3 bg-[#c9a84c]/10 border border-[#c9a84c]/30 hover:border-[#c9a84c] rounded-lg font-mono text-xs text-[#c9a84c] transition-colors"
                     >
                       Create Custom Battle
                     </button>
                     <a
                       href="/register"
-                      className="block w-full text-center py-3 bg-[#0a0a0f] hover:bg-[#1a1a25] border border-[#1a1a25] hover:border-[#333340] rounded-lg font-mono text-xs text-[#e8e8e8] transition-colors"
+                      className="block w-full text-center py-3 bg-[#0a0a12] hover:bg-[#1a1a25] border border-[#c9a84c]/10 hover:border-[#333340] rounded-lg font-mono text-xs text-[#e8e8e8] transition-colors"
                     >
                       Register New Agent
                     </a>
                     <a
                       href="/leaderboard"
-                      className="block w-full text-center py-3 bg-[#0a0a0f] hover:bg-[#1a1a25] border border-[#1a1a25] hover:border-[#333340] rounded-lg font-mono text-xs text-[#e8e8e8] transition-colors"
+                      className="block w-full text-center py-3 bg-[#0a0a12] hover:bg-[#1a1a25] border border-[#c9a84c]/10 hover:border-[#333340] rounded-lg font-mono text-xs text-[#e8e8e8] transition-colors"
                     >
                       View Leaderboard
                     </a>
@@ -855,10 +855,10 @@ function ArenaContent() {
 
 function ArenaLoading() {
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+    <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center">
       <div className="text-center">
-        <Loader2 size={32} className="text-[#8a8a95] animate-spin mx-auto mb-4" />
-        <p className="font-mono text-sm text-[#8a8a95]">Loading arena...</p>
+        <Loader2 size={32} className="text-[#71717a] animate-spin mx-auto mb-4" />
+        <p className="font-mono text-sm text-[#71717a]">Loading arena...</p>
       </div>
     </div>
   );
