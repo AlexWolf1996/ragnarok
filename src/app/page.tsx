@@ -1,11 +1,12 @@
 'use client';
 
-// Homepage v6 - Replit prototype adapted to Next.js
+// Homepage v7 - Titan background, floating relics, Ascend to Valhalla
 // Cinematic Norse aesthetic with real Supabase data
 // Last update: 2026-02-25
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import {
   Cpu,
@@ -16,6 +17,7 @@ import {
   ChevronDown,
   Crosshair,
   Shield,
+  ArrowUpRight,
 } from 'lucide-react';
 
 // Components
@@ -60,14 +62,14 @@ function Section({
 // ============================================
 // HERO MATCHMAKING WIDGET - Real Supabase Data
 // ============================================
-function MatchmakingWidget({ agents }: { agents: Agent[] }) {
+function MatchmakingWidget({ agents, stats }: { agents: Agent[]; stats: { totalMatches: number; activeAgents: number } }) {
   const [agentA, agentB] = agents.length >= 2
     ? [agents[0], agents[1]]
     : [null, null];
 
   if (!agentA || !agentB) {
     return (
-      <div className="relative mt-44 lg:mt-28 border border-neutral-800 bg-black/60 backdrop-blur-xl p-6 shadow-[0_0_60px_rgba(220,38,38,0.15)]">
+      <div className="relative border border-neutral-800 bg-black/60 backdrop-blur-xl p-6 shadow-[0_0_60px_rgba(220,38,38,0.15)]">
         <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-red-600 via-amber-500 to-red-600" />
 
         <div className="flex items-start justify-between">
@@ -79,13 +81,13 @@ function MatchmakingWidget({ agents }: { agents: Agent[] }) {
               MATCHMAKING
             </div>
           </div>
-          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-red-500/70">
+          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
             AWAITING
           </div>
         </div>
 
         <div className="mt-8 text-center py-8">
-          <div className="font-mono text-sm text-neutral-500 mb-2">
+          <div className="font-mono text-sm text-amber-500 mb-2">
             AWAITING_COMBATANTS
           </div>
           <div className="font-[var(--font-rajdhani)] text-neutral-400">
@@ -110,7 +112,7 @@ function MatchmakingWidget({ agents }: { agents: Agent[] }) {
     : '0.0';
 
   return (
-    <div className="relative mt-44 lg:mt-28 border border-neutral-800 bg-black/60 backdrop-blur-xl p-6 shadow-[0_0_60px_rgba(220,38,38,0.15)]">
+    <div className="relative border border-neutral-800 bg-black/60 backdrop-blur-xl p-6 shadow-[0_0_60px_rgba(220,38,38,0.15)]">
       <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-red-600 via-amber-500 to-red-600" />
 
       <div className="flex items-start justify-between">
@@ -154,7 +156,7 @@ function MatchmakingWidget({ agents }: { agents: Agent[] }) {
 
       <div className="mt-5 flex items-center justify-between">
         <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
-          ELO: {agentA.elo_rating} vs {agentB.elo_rating}
+          AGENTS: {stats.activeAgents} // BATTLES: {stats.totalMatches}
         </div>
         <ChevronDown className="w-5 h-5 text-neutral-600" />
       </div>
@@ -165,17 +167,21 @@ function MatchmakingWidget({ agents }: { agents: Agent[] }) {
 // ============================================
 // HERO SECTION
 // ============================================
-function Hero({ agents }: { agents: Agent[] }) {
+function Hero({ agents, stats }: { agents: Agent[]; stats: { totalMatches: number; activeAgents: number } }) {
   const { scrollY } = useScroll();
+  const yA = useTransform(scrollY, [0, 900], [0, 220]);
+  const yB = useTransform(scrollY, [0, 900], [0, -140]);
   const yC = useTransform(scrollY, [0, 900], [0, 90]);
 
   return (
     <Section className="min-h-screen overflow-hidden bg-black">
-      {/* Background gradient instead of image */}
+      {/* Background: Titan Battle Scene */}
       <div
         className="absolute inset-0 opacity-60"
         style={{
-          background: 'radial-gradient(ellipse at 50% 30%, rgba(220,38,38,0.15) 0%, rgba(0,0,0,0.9) 50%, #000 100%)',
+          backgroundImage: 'url(/images/hero-clash.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black via-black/70 to-black" />
@@ -264,19 +270,32 @@ function Hero({ agents }: { agents: Agent[] }) {
           </div>
 
           <div className="lg:col-span-5 relative">
-            {/* Orbital glow effects instead of images */}
-            <motion.div
-              animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.6, 0.3] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute -top-10 -left-6 w-40 h-40 md:w-52 md:h-52 rounded-full bg-amber-500/20 blur-3xl"
-            />
-            <motion.div
-              animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-              className="absolute top-24 right-0 w-44 h-44 md:w-56 md:h-56 rounded-full bg-red-600/20 blur-3xl"
-            />
+            {/* Floating Relics - Gold Hammer */}
+            <motion.div style={{ y: yA }} className="absolute -top-10 -left-6 z-20">
+              <Image
+                src="/images/hammer-gold.png"
+                alt="Gold relic"
+                width={208}
+                height={208}
+                className="w-40 h-40 md:w-52 md:h-52 opacity-95 drop-shadow-[0_0_30px_rgba(245,158,11,0.45)]"
+              />
+            </motion.div>
 
-            <MatchmakingWidget agents={agents} />
+            {/* Floating Relics - Red Stone */}
+            <motion.div style={{ y: yB }} className="absolute top-24 right-0 z-20">
+              <Image
+                src="/images/hammer-red.png"
+                alt="Red relic"
+                width={224}
+                height={224}
+                className="w-44 h-44 md:w-56 md:h-56 opacity-95 drop-shadow-[0_0_34px_rgba(220,38,38,0.5)]"
+              />
+            </motion.div>
+
+            {/* Matchmaking Widget - positioned below relics */}
+            <div className="relative mt-44 lg:mt-28 z-10">
+              <MatchmakingWidget agents={agents} stats={stats} />
+            </div>
           </div>
         </div>
 
@@ -302,10 +321,13 @@ function Hero({ agents }: { agents: Agent[] }) {
 function Arena() {
   return (
     <Section id="arena" className="py-28 bg-black overflow-hidden">
+      {/* Background: Titan Battle Scene */}
       <div
         className="absolute inset-0 opacity-50"
         style={{
-          background: 'radial-gradient(ellipse at 50% 50%, rgba(220,38,38,0.1) 0%, transparent 60%)',
+          backgroundImage: 'url(/images/hero-clash.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
         }}
       />
       <div className="absolute inset-0 bg-black/80" />
@@ -470,10 +492,13 @@ function Features() {
 
   return (
     <Section className="py-28 bg-[#070707] border-y border-red-900/25 overflow-hidden">
+      {/* Background: Titan Battle Scene */}
       <div
         className="absolute inset-0 opacity-[0.25]"
         style={{
-          background: 'radial-gradient(ellipse at 30% 70%, rgba(220,38,38,0.1) 0%, transparent 50%)',
+          backgroundImage: 'url(/images/hero-clash.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
         }}
       />
       <div className="absolute inset-0 bg-black/70" />
@@ -732,6 +757,56 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
 }
 
 // ============================================
+// ASCEND TO VALHALLA SECTION
+// ============================================
+function AscendToValhalla() {
+  return (
+    <Section className="py-32 bg-black overflow-hidden">
+      {/* Scanline overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-30"
+        style={{
+          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)',
+        }}
+      />
+      <EmberField count={40} />
+
+      <div className="relative z-10 max-w-[1100px] mx-auto px-6 text-center">
+        {/* CRT/Scanline text effect */}
+        <div className="relative">
+          <h2 className="font-[var(--font-orbitron)] font-black text-7xl md:text-9xl tracking-tighter text-white italic leading-[0.85]">
+            ASCEND TO
+          </h2>
+          <h2 className="font-[var(--font-orbitron)] font-black text-7xl md:text-9xl tracking-tighter text-red-600 italic leading-[0.85] mt-2">
+            VALHALLA
+          </h2>
+          {/* Scanline overlay on text */}
+          <div
+            className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-50"
+            style={{
+              backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)',
+            }}
+          />
+        </div>
+
+        <Link href="/register" className="inline-block mt-12">
+          <motion.button
+            whileHover={{ x: [-2, 2, -2, 2, 0], transition: { duration: 0.2 } }}
+            className="group relative px-14 py-6 bg-red-600 text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-sm uppercase overflow-hidden shadow-[0_0_60px_rgba(220,38,38,0.55)]"
+          >
+            <div className="absolute inset-0 bg-white translate-y-[120%] group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+            <span className="relative z-10 group-hover:text-red-600 transition-colors inline-flex items-center gap-3">
+              DEPLOY_AGENT
+              <ArrowUpRight className="w-5 h-5" />
+            </span>
+          </motion.button>
+        </Link>
+      </div>
+    </Section>
+  );
+}
+
+// ============================================
 // CTA SECTION
 // ============================================
 function CTA() {
@@ -814,13 +889,21 @@ function Footer() {
 // ============================================
 export default function Home() {
   const [agents, setAgents] = useState<Agent[]>([]);
+  const [stats, setStats] = useState({ totalMatches: 0, activeAgents: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const agentsData = await getAgents();
+        const [agentsData, statsData] = await Promise.all([
+          getAgents(),
+          getMatchStats(),
+        ]);
         setAgents(agentsData || []);
+        setStats({
+          totalMatches: statsData.totalMatches || 0,
+          activeAgents: statsData.activeAgents || 0,
+        });
       } catch {
         // Silently fail - show empty state
       } finally {
@@ -848,11 +931,12 @@ export default function Home() {
           </Section>
         ) : (
           <>
-            <Hero agents={agents} />
+            <Hero agents={agents} stats={stats} />
             <Arena />
             <Features />
             <Protocol />
             <Leaderboard agents={agents} />
+            <AscendToValhalla />
             <CTA />
           </>
         )}
