@@ -7,6 +7,7 @@
 
 ## Git & Deployment
 - **GitHub repo**: `AlexWolf1996/ragnarok` (public)
+- **Git remote origin**: `https://AlexWolf1996@github.com/AlexWolf1996/ragnarok.git`
 - **Branch**: `main`
 - **Vercel project**: `ragnarok-n9qq` on ferdinand-9583's personal Vercel account
 - **Live URL**: https://ragnarok-n9qq.vercel.app
