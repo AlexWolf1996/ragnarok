@@ -102,7 +102,8 @@ export default function AgentSelector({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute z-50 w-full mt-2 bg-[#111118] border border-[#1a1a25] rounded-lg shadow-lg overflow-hidden"
+            className="absolute z-[100] w-full mt-2 bg-[#111118] border border-[#1a1a25] rounded-lg shadow-2xl"
+            style={{ maxHeight: 'calc(100vh - 200px)' }}
           >
             {/* Search input */}
             <div className="p-2 border-b border-[#1a1a25]">
@@ -119,7 +120,7 @@ export default function AgentSelector({
             </div>
 
             {/* Agent list */}
-            <div className="max-h-60 overflow-y-auto">
+            <div className="max-h-[50vh] overflow-y-auto overscroll-contain">
               {filteredAgents.length === 0 ? (
                 <div className="p-4 text-center font-mono text-sm text-[#666670]">
                   No agents found

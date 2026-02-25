@@ -302,20 +302,34 @@ export async function getChallengeById(id: string) {
 }
 
 // ============================================================================
-// Match Execution (Edge Function)
+// Match Execution (API Route)
 // ============================================================================
 
 export async function runMatch(agentAId: string, agentBId: string, challengeId?: string) {
-  const { data, error } = await supabase.functions.invoke('run-match', {
-    body: {
-      agent_a_id: agentAId,
-      agent_b_id: agentBId,
-      challenge_id: challengeId,
+  const response = await fetch('/api/battles/execute', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
     },
+    body: JSON.stringify({
+      agentAId,
+      agentBId,
+      challengeId,
+    }),
   });
 
-  if (error) throw error;
-  return data;
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || data.error || 'Battle execution failed');
+  }
+
+  // Return in format expected by arena page
+  return {
+    match_id: data.matchId,
+    winner_id: data.winner?.id,
+    ...data,
+  };
 }
 
 export async function updateMatchSolanaTxHash(matchId: string, txHash: string) {
