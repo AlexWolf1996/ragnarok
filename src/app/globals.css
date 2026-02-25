@@ -359,9 +359,227 @@ body {
 }
 
 /* ============================================
-   GLITCH TEXT EFFECT
+   NORDIC TITLE EFFECT - Aurora Glow + Lightning
    ============================================ */
 
+.nordic-title-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.nordic-title {
+  position: relative;
+  color: #e8e8e8;
+  animation: nordic-aurora-glow 8s ease-in-out infinite;
+}
+
+/* Aurora glow layers using pseudo-elements */
+.nordic-title::before,
+.nordic-title::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Gold/amber glow layer */
+.nordic-title::before {
+  color: transparent;
+  text-shadow:
+    0 0 30px rgba(212, 168, 67, 0.6),
+    0 0 60px rgba(212, 168, 67, 0.4),
+    0 0 100px rgba(212, 168, 67, 0.2);
+  animation: nordic-gold-pulse 8s ease-in-out infinite;
+  z-index: -1;
+}
+
+/* Frost blue glow layer */
+.nordic-title::after {
+  color: transparent;
+  text-shadow:
+    0 0 40px rgba(74, 158, 191, 0.5),
+    0 0 80px rgba(74, 158, 191, 0.3),
+    0 0 120px rgba(74, 158, 191, 0.15);
+  animation: nordic-frost-pulse 8s ease-in-out infinite;
+  animation-delay: -4s;
+  z-index: -2;
+}
+
+/* Slow aurora-like gold pulse */
+@keyframes nordic-gold-pulse {
+  0%, 100% {
+    opacity: 0.7;
+    text-shadow:
+      0 0 30px rgba(212, 168, 67, 0.6),
+      0 0 60px rgba(212, 168, 67, 0.4),
+      0 0 100px rgba(212, 168, 67, 0.2);
+  }
+  25% {
+    opacity: 1;
+    text-shadow:
+      0 0 40px rgba(212, 168, 67, 0.8),
+      0 0 80px rgba(212, 168, 67, 0.5),
+      0 0 120px rgba(212, 168, 67, 0.3),
+      0 0 160px rgba(232, 220, 200, 0.1);
+  }
+  50% {
+    opacity: 0.5;
+    text-shadow:
+      0 0 20px rgba(212, 168, 67, 0.4),
+      0 0 40px rgba(212, 168, 67, 0.2);
+  }
+  75% {
+    opacity: 0.9;
+    text-shadow:
+      0 0 35px rgba(212, 168, 67, 0.7),
+      0 0 70px rgba(212, 168, 67, 0.45),
+      0 0 110px rgba(212, 168, 67, 0.25);
+  }
+}
+
+/* Slow aurora-like frost pulse - offset timing for wave effect */
+@keyframes nordic-frost-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    text-shadow:
+      0 0 40px rgba(74, 158, 191, 0.4),
+      0 0 80px rgba(74, 158, 191, 0.2);
+  }
+  25% {
+    opacity: 0.6;
+    text-shadow:
+      0 0 50px rgba(74, 158, 191, 0.6),
+      0 0 100px rgba(74, 158, 191, 0.35),
+      0 0 140px rgba(74, 158, 191, 0.15);
+  }
+  50% {
+    opacity: 0.8;
+    text-shadow:
+      0 0 60px rgba(74, 158, 191, 0.7),
+      0 0 120px rgba(74, 158, 191, 0.4),
+      0 0 180px rgba(232, 220, 200, 0.1);
+  }
+  75% {
+    opacity: 0.3;
+    text-shadow:
+      0 0 30px rgba(74, 158, 191, 0.3),
+      0 0 60px rgba(74, 158, 191, 0.15);
+  }
+}
+
+/* Main text subtle glow animation */
+@keyframes nordic-aurora-glow {
+  0%, 100% {
+    text-shadow:
+      0 0 10px rgba(232, 220, 200, 0.3),
+      0 0 20px rgba(212, 168, 67, 0.2);
+  }
+  33% {
+    text-shadow:
+      0 0 15px rgba(232, 220, 200, 0.4),
+      0 0 30px rgba(212, 168, 67, 0.3),
+      0 0 45px rgba(74, 158, 191, 0.1);
+  }
+  66% {
+    text-shadow:
+      0 0 12px rgba(232, 220, 200, 0.35),
+      0 0 25px rgba(74, 158, 191, 0.2),
+      0 0 40px rgba(212, 168, 67, 0.15);
+  }
+}
+
+/* Lightning flash background */
+.lightning-flash {
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(212, 168, 67, 0.15) 0%,
+    rgba(212, 168, 67, 0.08) 30%,
+    transparent 70%
+  );
+  animation: lightning-flash-anim 0.4s ease-out forwards;
+}
+
+@keyframes lightning-flash-anim {
+  0% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Lightning bolt animation */
+.lightning-bolt {
+  animation: lightning-strike 0.4s ease-out forwards;
+  filter: drop-shadow(0 0 8px rgba(212, 168, 67, 0.8))
+          drop-shadow(0 0 16px rgba(212, 168, 67, 0.5))
+          drop-shadow(0 0 24px rgba(212, 168, 67, 0.3));
+}
+
+@keyframes lightning-strike {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8) rotate(var(--rotation, 0deg));
+  }
+  10% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1) rotate(var(--rotation, 0deg));
+  }
+  30% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1) rotate(var(--rotation, 0deg));
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95) rotate(var(--rotation, 0deg));
+  }
+}
+
+/* Electric arc effect */
+.electric-arc {
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(212, 168, 67, 0.8) 20%,
+    rgba(245, 230, 184, 1) 50%,
+    rgba(212, 168, 67, 0.8) 80%,
+    transparent 100%
+  );
+  filter: blur(1px);
+  animation: electric-arc-anim 0.3s ease-out forwards;
+  transform: translateY(-50%);
+  box-shadow:
+    0 0 4px rgba(212, 168, 67, 0.8),
+    0 0 8px rgba(212, 168, 67, 0.5),
+    0 0 12px rgba(212, 168, 67, 0.3);
+}
+
+@keyframes electric-arc-anim {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) scaleX(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-50%) scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) scaleX(0.8);
+  }
+}
+
+/* Legacy glitch classes for backwards compatibility */
 .glitch-wrapper {
   position: relative;
   display: inline-block;
@@ -369,91 +587,6 @@ body {
 
 .glitch-text {
   position: relative;
-}
-
-.glitch-text::before,
-.glitch-text::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-}
-
-.glitch-text::before {
-  color: #c41e3a;
-  z-index: -1;
-}
-
-.glitch-text::after {
-  color: #4fc3f7;
-  z-index: -2;
-}
-
-.glitch-text.glitching::before {
-  animation: glitch-clip 0.3s linear;
-  opacity: 0.8;
-}
-
-.glitch-text.glitching::after {
-  animation: glitch-shift 0.3s linear;
-  opacity: 0.8;
-}
-
-@keyframes glitch-clip {
-  0% {
-    clip-path: inset(40% 0 60% 0);
-    transform: translate(-2px, 0);
-  }
-  20% {
-    clip-path: inset(10% 0 85% 0);
-    transform: translate(2px, 0);
-  }
-  40% {
-    clip-path: inset(70% 0 5% 0);
-    transform: translate(-1px, 0);
-  }
-  60% {
-    clip-path: inset(30% 0 50% 0);
-    transform: translate(1px, 0);
-  }
-  80% {
-    clip-path: inset(60% 0 20% 0);
-    transform: translate(-2px, 0);
-  }
-  100% {
-    clip-path: inset(0% 0 100% 0);
-    transform: translate(0, 0);
-  }
-}
-
-@keyframes glitch-shift {
-  0% {
-    clip-path: inset(60% 0 40% 0);
-    transform: translate(2px, 0);
-  }
-  20% {
-    clip-path: inset(85% 0 10% 0);
-    transform: translate(-2px, 0);
-  }
-  40% {
-    clip-path: inset(5% 0 70% 0);
-    transform: translate(1px, 0);
-  }
-  60% {
-    clip-path: inset(50% 0 30% 0);
-    transform: translate(-1px, 0);
-  }
-  80% {
-    clip-path: inset(20% 0 60% 0);
-    transform: translate(2px, 0);
-  }
-  100% {
-    clip-path: inset(100% 0 0% 0);
-    transform: translate(0, 0);
-  }
 }
 
 /* ============================================

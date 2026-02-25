@@ -201,7 +201,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <GlitchText text="RAGNAROK" />
+          <GlitchText text="RAGNARÖK" />
         </motion.h1>
 
         {/* Subtitles with staggered word reveal */}
