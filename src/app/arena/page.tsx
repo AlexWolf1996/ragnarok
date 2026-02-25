@@ -43,6 +43,7 @@ import {
   CreateBattleRoyale,
   BettingModal,
   UpcomingSchedule,
+  RecentBattlesFeed,
 } from '@/components/arena';
 
 type Agent = Tables<'agents'>;
@@ -528,26 +529,17 @@ function ArenaContent() {
                   />
                 )}
 
-                {/* Recent Matches */}
+                {/* Recent Battles Feed */}
                 <section aria-labelledby="recent-battles-heading">
                   <h2 id="recent-battles-heading" className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
                     <Swords size={16} className="text-amber-500/70" />
                     ECHOES OF FALLEN WARRIORS
                   </h2>
-
-                  {recentMatches.length === 0 ? (
-                    <div className="bg-black/40 border border-neutral-800 rounded-lg p-8 text-center">
-                      <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
-                        No blood has been shed yet. Be the first to write history.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {recentMatches.map((match) => (
-                        <MatchCard key={match.id} match={match} />
-                      ))}
-                    </div>
-                  )}
+                  <RecentBattlesFeed
+                    limit={10}
+                    autoRefresh={true}
+                    refreshInterval={15000}
+                  />
                 </section>
               </div>
 

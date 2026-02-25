@@ -1,0 +1,334 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Swords, Clock, Trophy, Skull, ChevronRight, RefreshCw } from 'lucide-react';
+
+interface BattleHistoryItem {
+  id: string;
+  status: string;
+  createdAt: string;
+  completedAt: string | null;
+  challenge: {
+    id: string;
+    name: string;
+    type: string;
+    difficulty: string;
+  };
+  agentA: {
+    id: string;
+    name: string;
+    score: number | null;
+    avatarUrl: string | null;
+  };
+  agentB: {
+    id: string;
+    name: string;
+    score: number | null;
+    avatarUrl: string | null;
+  };
+  winner: {
+    id: string;
+    name: string;
+  } | null;
+  reasoning: string | null;
+}
+
+interface RecentBattlesFeedProps {
+  limit?: number;
+  autoRefresh?: boolean;
+  refreshInterval?: number;
+  onBattleClick?: (battleId: string) => void;
+}
+
+function getRelativeTime(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSecs = Math.floor(diffMs / 1000);
+  const diffMins = Math.floor(diffSecs / 60);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffSecs < 60) return 'just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString();
+}
+
+function getDifficultyColor(difficulty: string): string {
+  switch (difficulty) {
+    case 'easy':
+    case 'bifrost':
+      return 'text-emerald-400';
+    case 'medium':
+    case 'midgard':
+      return 'text-amber-400';
+    case 'hard':
+    case 'asgard':
+      return 'text-red-400';
+    default:
+      return 'text-neutral-400';
+  }
+}
+
+function getChallengeTypeIcon(type: string): string {
+  switch (type) {
+    case 'reasoning':
+      return '🧠';
+    case 'creative':
+      return '🎨';
+    case 'strategy':
+      return '♟️';
+    case 'code':
+      return '💻';
+    case 'knowledge':
+      return '📚';
+    default:
+      return '⚔️';
+  }
+}
+
+export default function RecentBattlesFeed({
+  limit = 10,
+  autoRefresh = true,
+  refreshInterval = 30000,
+  onBattleClick,
+}: RecentBattlesFeedProps) {
+  const [battles, setBattles] = useState<BattleHistoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [expandedBattleId, setExpandedBattleId] = useState<string | null>(null);
+
+  const fetchBattles = useCallback(async (showRefreshIndicator = false) => {
+    if (showRefreshIndicator) setIsRefreshing(true);
+
+    try {
+      const response = await fetch(`/api/battles/history?limit=${limit}&status=completed`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch battles');
+      }
+
+      setBattles(data.matches || []);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load battles');
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
+  }, [limit]);
+
+  useEffect(() => {
+    fetchBattles();
+  }, [fetchBattles]);
+
+  useEffect(() => {
+    if (!autoRefresh) return;
+
+    const interval = setInterval(() => {
+      fetchBattles(true);
+    }, refreshInterval);
+
+    return () => clearInterval(interval);
+  }, [autoRefresh, refreshInterval, fetchBattles]);
+
+  const handleBattleClick = (battleId: string) => {
+    if (onBattleClick) {
+      onBattleClick(battleId);
+    } else {
+      setExpandedBattleId(expandedBattleId === battleId ? null : battleId);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-black/40 border border-neutral-800 rounded-lg p-8">
+        <div className="flex items-center justify-center gap-3">
+          <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+          <span className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
+            Loading battle history...
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-black/40 border border-red-500/20 rounded-lg p-6 text-center">
+        <Skull size={24} className="text-red-500/50 mx-auto mb-2" />
+        <p className="font-[var(--font-rajdhani)] text-sm text-red-400">{error}</p>
+        <button
+          onClick={() => fetchBattles()}
+          className="mt-3 px-4 py-2 text-xs font-[var(--font-orbitron)] text-neutral-400 hover:text-amber-500 transition-colors"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
+  if (battles.length === 0) {
+    return (
+      <div className="bg-black/40 border border-neutral-800 rounded-lg p-8 text-center">
+        <Swords size={32} className="text-amber-500/30 mx-auto mb-4" />
+        <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
+          No battles have been fought yet. Be the first to write history.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {/* Header with refresh */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+          <span className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-amber-500/70">
+            LIVE FEED
+          </span>
+        </div>
+        <button
+          onClick={() => fetchBattles(true)}
+          disabled={isRefreshing}
+          className="p-1.5 hover:bg-amber-500/10 rounded transition-colors disabled:opacity-50"
+          title="Refresh"
+        >
+          <RefreshCw
+            size={14}
+            className={`text-neutral-500 hover:text-amber-500 ${isRefreshing ? 'animate-spin' : ''}`}
+          />
+        </button>
+      </div>
+
+      {/* Battles list */}
+      <div className="space-y-2">
+        <AnimatePresence mode="popLayout">
+          {battles.map((battle, index) => {
+            const isWinnerA = battle.winner?.id === battle.agentA.id;
+            const isWinnerB = battle.winner?.id === battle.agentB.id;
+            const isExpanded = expandedBattleId === battle.id;
+
+            return (
+              <motion.div
+                key={battle.id}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ delay: index * 0.05 }}
+                layout
+              >
+                <button
+                  onClick={() => handleBattleClick(battle.id)}
+                  className="w-full text-left bg-black/40 border border-neutral-800 hover:border-amber-500/30 rounded-lg p-3 transition-all group"
+                >
+                  {/* Main row */}
+                  <div className="flex items-center gap-3">
+                    {/* Challenge type icon */}
+                    <div className="w-8 h-8 bg-black/60 rounded-lg flex items-center justify-center text-lg flex-shrink-0">
+                      {getChallengeTypeIcon(battle.challenge.type)}
+                    </div>
+
+                    {/* Battle info */}
+                    <div className="flex-1 min-w-0">
+                      {/* Agents */}
+                      <div className="flex items-center gap-2 text-sm">
+                        <span
+                          className={`font-[var(--font-rajdhani)] font-bold truncate ${
+                            isWinnerA ? 'text-amber-400' : 'text-neutral-400'
+                          }`}
+                        >
+                          {isWinnerA && <Trophy size={12} className="inline mr-1" />}
+                          {battle.agentA.name}
+                        </span>
+                        <span className="text-neutral-600 text-xs">vs</span>
+                        <span
+                          className={`font-[var(--font-rajdhani)] font-bold truncate ${
+                            isWinnerB ? 'text-amber-400' : 'text-neutral-400'
+                          }`}
+                        >
+                          {isWinnerB && <Trophy size={12} className="inline mr-1" />}
+                          {battle.agentB.name}
+                        </span>
+                      </div>
+
+                      {/* Challenge name & time */}
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="font-[var(--font-rajdhani)] text-xs text-neutral-500 truncate">
+                          {battle.challenge.name}
+                        </span>
+                        <span className={`text-[10px] ${getDifficultyColor(battle.challenge.difficulty)}`}>
+                          {battle.challenge.difficulty.toUpperCase()}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Scores */}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="text-right">
+                        <span
+                          className={`font-mono text-sm font-bold ${
+                            isWinnerA ? 'text-emerald-400' : 'text-neutral-500'
+                          }`}
+                        >
+                          {battle.agentA.score ?? '-'}
+                        </span>
+                        <span className="text-neutral-600 mx-1">:</span>
+                        <span
+                          className={`font-mono text-sm font-bold ${
+                            isWinnerB ? 'text-emerald-400' : 'text-neutral-500'
+                          }`}
+                        >
+                          {battle.agentB.score ?? '-'}
+                        </span>
+                      </div>
+                      <ChevronRight
+                        size={14}
+                        className={`text-neutral-600 transition-transform ${
+                          isExpanded ? 'rotate-90' : ''
+                        } group-hover:text-amber-500`}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Time */}
+                  <div className="flex items-center gap-1 mt-2 text-[10px] text-neutral-600">
+                    <Clock size={10} />
+                    <span>{getRelativeTime(battle.completedAt || battle.createdAt)}</span>
+                  </div>
+
+                  {/* Expanded details */}
+                  <AnimatePresence>
+                    {isExpanded && battle.reasoning && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="mt-3 pt-3 border-t border-neutral-800">
+                          <span className="text-[10px] font-[var(--font-orbitron)] text-cyan-500/70 tracking-wider">
+                            JUDGE VERDICT
+                          </span>
+                          <p className="font-[var(--font-rajdhani)] text-xs text-neutral-400 mt-1 leading-relaxed">
+                            {battle.reasoning}
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </button>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}

@@ -11,3 +11,4 @@ export { default as MatchmakingQueue } from './MatchmakingQueue';
 export { default as CreateBattleRoyale } from './CreateBattleRoyale';
 export { default as BettingModal } from './BettingModal';
 export { default as UpcomingSchedule } from './UpcomingSchedule';
+export { default as RecentBattlesFeed } from './RecentBattlesFeed';
