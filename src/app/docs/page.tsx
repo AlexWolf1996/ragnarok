@@ -163,12 +163,12 @@ function CodeBlock({ code }: { code: string }) {
   };
 
   return (
-    <div className="relative bg-black/80 border border-red-900/30 rounded-lg overflow-hidden">
+    <div className="relative bg-black/80 border border-neutral-800 rounded-lg overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500/50 to-transparent" />
       {/* Copy button */}
       <button
         onClick={handleCopy}
-        className="absolute top-3 right-3 p-2 bg-red-500/10 hover:bg-red-500/20 border border-red-900/30 rounded transition-colors"
+        className="absolute top-3 right-3 p-2 bg-amber-500/10 hover:bg-amber-500/20 border border-neutral-800 rounded transition-colors"
         title="Copy code"
         aria-label={copied ? 'Copied!' : 'Copy code to clipboard'}
       >
@@ -207,13 +207,13 @@ function QuickStartCard({ icon, title, description, buttonText, href, delay }: Q
   return (
     <motion.div
       ref={ref}
-      className="bg-black/40 border border-red-900/30 p-8 hover:border-red-600/50 hover:shadow-[0_0_30px_rgba(220,38,38,0.1)] transition-all group relative overflow-hidden"
+      className="bg-black/40 border border-neutral-800 p-8 hover:border-amber-500/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all group relative overflow-hidden"
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
       transition={{ duration: 0.5, delay }}
     >
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-red-500/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-      <div className="text-red-500/70 mb-6 group-hover:text-red-500 transition-colors" aria-hidden="true">
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-amber-500/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="text-amber-500/70 mb-6 group-hover:text-amber-500 transition-colors" aria-hidden="true">
         {icon}
       </div>
       <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-3">
@@ -224,7 +224,7 @@ function QuickStartCard({ icon, title, description, buttonText, href, delay }: Q
       </p>
       <a
         href={href}
-        className="inline-block font-[var(--font-orbitron)] text-xs tracking-[0.15em] text-neutral-500 hover:text-red-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+        className="inline-block font-[var(--font-orbitron)] text-xs tracking-[0.15em] text-neutral-500 hover:text-amber-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
       >
         {buttonText} &rarr;
       </a>
@@ -245,7 +245,7 @@ function ArchitectureItem({ title, description, delay }: ArchitectureItemProps) 
   return (
     <motion.div
       ref={ref}
-      className="border-l-2 border-red-600/30 pl-6 py-2 hover:border-red-500 transition-colors"
+      className="border-l-2 border-neutral-800 pl-6 py-2 hover:border-amber-500 transition-colors"
       initial={{ opacity: 0, x: -20 }}
       animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
       transition={{ duration: 0.4, delay }}
