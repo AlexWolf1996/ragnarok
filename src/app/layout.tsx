@@ -5,6 +5,7 @@ import LayoutWrapper from '@/components/layout/LayoutWrapper';
 import { ToastProvider } from '@/hooks/useToast';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import './globals.css';
 
 const spaceGrotesk = Space_Grotesk({
@@ -141,6 +142,7 @@ export default function RootLayout({
           </WalletProvider>
         </ErrorBoundary>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
