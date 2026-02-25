@@ -28,12 +28,10 @@ export async function hashMatchToSolana(
   walletAdapter: WalletAdapter
 ): Promise<string | null> {
   if (!walletAdapter.publicKey) {
-    console.error('Wallet not connected');
     return null;
   }
 
   if (!walletAdapter.signTransaction) {
-    console.error('Wallet does not support signing transactions');
     return null;
   }
 
@@ -79,10 +77,8 @@ export async function hashMatchToSolana(
       lastValidBlockHeight,
     }, 'confirmed');
 
-    console.log('Match hashed to Solana:', txHash);
     return txHash;
-  } catch (error) {
-    console.error('Failed to hash match to Solana:', error);
+  } catch {
     return null;
   }
 }

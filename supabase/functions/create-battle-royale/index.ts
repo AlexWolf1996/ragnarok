@@ -79,7 +79,6 @@ Deno.serve(async (req) => {
       .single();
 
     if (error) {
-      console.error('Error creating battle:', error);
       return errorResponse('Failed to create battle: ' + error.message);
     }
 
@@ -88,8 +87,7 @@ Deno.serve(async (req) => {
       battle_id: battle.id,
       message: `Battle "${name}" created successfully`,
     });
-  } catch (err) {
-    console.error('Unexpected error:', err);
+  } catch {
     return errorResponse('Internal server error', 500);
   }
 });

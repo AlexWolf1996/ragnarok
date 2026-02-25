@@ -1,41 +1,126 @@
 /**
  * Place Battle Bet Edge Function
  * Places a spectator bet on a battle royale participant
+ *
+ * SECURITY: Requires valid Solana transaction and optional wallet signature
  */
 
-import { getSupabaseClient, corsHeaders, jsonResponse, errorResponse } from '../_shared/supabase.ts';
+import {
+  getSupabaseClient,
+  getCorsHeaders,
+  jsonResponse,
+  errorResponse,
+  optionsResponse,
+  isValidWalletAddress,
+  isValidUUID,
+  isValidBetAmount,
+  sanitizeError,
+} from '../_shared/supabase.ts';
+import {
+  verifyTransaction,
+  verifyWalletSignature,
+  checkAndStoreTransaction,
+} from '../_shared/solana.ts';
 
 interface PlaceBetRequest {
   battle_id: string;
   agent_id: string;
   amount_sol: number;
   wallet_address: string;
+  transaction_signature: string;
+  // Optional: wallet signature for enhanced security
+  wallet_signature?: string;
+  signed_message?: string;
 }
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+    return optionsResponse(req);
   }
 
   try {
     const body: PlaceBetRequest = await req.json();
 
+    // ==========================================================================
+    // Input Validation
+    // ==========================================================================
+
     // Validate required fields
-    if (!body.battle_id || !body.agent_id || !body.amount_sol || !body.wallet_address) {
-      return errorResponse('Missing required fields');
+    if (!body.battle_id || !body.agent_id || !body.amount_sol || !body.wallet_address || !body.transaction_signature) {
+      return errorResponse('Missing required fields: battle_id, agent_id, amount_sol, wallet_address, transaction_signature', 400, req);
+    }
+
+    // Validate battle_id format (UUID)
+    if (!isValidUUID(body.battle_id)) {
+      return errorResponse('Invalid battle_id format', 400, req);
+    }
+
+    // Validate agent_id format (UUID)
+    if (!isValidUUID(body.agent_id)) {
+      return errorResponse('Invalid agent_id format', 400, req);
+    }
+
+    // Validate wallet address format
+    if (!isValidWalletAddress(body.wallet_address)) {
+      return errorResponse('Invalid wallet address format', 400, req);
     }
 
     // Validate amount
-    if (body.amount_sol <= 0) {
-      return errorResponse('Bet amount must be positive');
+    if (typeof body.amount_sol !== 'number' || isNaN(body.amount_sol)) {
+      return errorResponse('Invalid bet amount', 400, req);
     }
 
-    if (body.amount_sol > 10) {
-      return errorResponse('Maximum bet is 10 SOL');
+    if (!isValidBetAmount(body.amount_sol, 10)) {
+      return errorResponse('Bet amount must be between 0.01 and 10 SOL', 400, req);
+    }
+
+    // ==========================================================================
+    // Wallet Signature Verification (if provided)
+    // ==========================================================================
+
+    if (body.wallet_signature && body.signed_message) {
+      const sigResult = await verifyWalletSignature(
+        body.wallet_address,
+        body.signed_message,
+        body.wallet_signature
+      );
+
+      if (!sigResult.success) {
+        return errorResponse(`Wallet verification failed: ${sigResult.error}`, 401, req);
+      }
+    }
+
+    // ==========================================================================
+    // Solana Transaction Verification
+    // ==========================================================================
+
+    const txResult = await verifyTransaction(
+      body.transaction_signature,
+      body.amount_sol,
+      body.wallet_address
+    );
+
+    if (!txResult.success) {
+      return errorResponse(`Transaction verification failed: ${txResult.error}`, 400, req);
     }
 
     const supabase = getSupabaseClient();
+
+    // Check if transaction was already used (prevent double-spending)
+    const txCheck = await checkAndStoreTransaction(
+      supabase,
+      body.transaction_signature,
+      'bet'
+    );
+
+    if (txCheck.alreadyUsed) {
+      return errorResponse('Transaction has already been used', 400, req);
+    }
+
+    // ==========================================================================
+    // Battle Validation
+    // ==========================================================================
 
     // Get the battle
     const { data: battle, error: battleError } = await supabase
@@ -45,17 +130,17 @@ Deno.serve(async (req) => {
       .single();
 
     if (battleError || !battle) {
-      return errorResponse('Battle not found');
+      return errorResponse('Battle not found', 404, req);
     }
 
     // Check battle accepts bets (open or just started)
     if (battle.status === 'completed' || battle.status === 'cancelled') {
-      return errorResponse('Battle is no longer accepting bets');
+      return errorResponse('Battle is no longer accepting bets', 400, req);
     }
 
     // Check if in middle of battle - only allow bets before round 2
     if (battle.status === 'in_progress' && battle.current_round > 1) {
-      return errorResponse('Betting closed after round 1');
+      return errorResponse('Betting closed after round 1', 400, req);
     }
 
     // Check agent is a participant
@@ -67,7 +152,7 @@ Deno.serve(async (req) => {
       .single();
 
     if (participantError || !participant) {
-      return errorResponse('Agent is not a participant in this battle');
+      return errorResponse('Agent is not a participant in this battle', 400, req);
     }
 
     // Check user hasn't exceeded bet limit for this battle
@@ -78,18 +163,18 @@ Deno.serve(async (req) => {
       .eq('wallet_address', body.wallet_address);
 
     if (betsError) {
-      return errorResponse('Failed to check existing bets');
+      return errorResponse('Failed to check existing bets', 500, req);
     }
 
     const totalExisting = existingBets?.reduce((sum, b) => sum + b.amount_sol, 0) || 0;
     if (totalExisting + body.amount_sol > 25) {
-      return errorResponse('Maximum total bets per battle is 25 SOL');
+      return errorResponse('Maximum total bets per battle is 25 SOL', 400, req);
     }
 
-    // TODO: Verify Solana transaction for bet amount
-    // For now, we trust the client has made the payment
+    // ==========================================================================
+    // Place the Bet
+    // ==========================================================================
 
-    // Place the bet
     const { data: bet, error: betError } = await supabase
       .from('battle_royale_bets')
       .insert({
@@ -99,13 +184,13 @@ Deno.serve(async (req) => {
         amount_sol: body.amount_sol,
         status: 'pending',
         payout_sol: 0,
+        transaction_signature: body.transaction_signature,
       })
       .select()
       .single();
 
     if (betError) {
-      console.error('Error placing bet:', betError);
-      return errorResponse('Failed to place bet: ' + betError.message);
+      return errorResponse(sanitizeError(betError), 500, req);
     }
 
     // Calculate current odds
@@ -124,10 +209,11 @@ Deno.serve(async (req) => {
       success: true,
       bet_id: bet.id,
       current_odds: Math.min(Math.max(currentOdds, 1.1), 50),
-      message: `Bet of ${body.amount_sol} SOL placed`,
-    });
+      verified_amount: txResult.amountSol,
+      message: `Bet of ${body.amount_sol} SOL placed and verified`,
+    }, 200, req);
+
   } catch (err) {
-    console.error('Unexpected error:', err);
-    return errorResponse('Internal server error', 500);
+    return errorResponse('Internal server error', 500, req);
   }
 });

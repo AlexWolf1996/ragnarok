@@ -137,8 +137,8 @@ function ArenaContent() {
         try {
           const agent = await getAgentByWallet(wallet.publicKey.toString());
           setUserAgent(agent);
-        } catch (err) {
-          console.error('Error loading user agent:', err);
+        } catch {
+          // Failed to load user agent
         }
       } else {
         setUserAgent(null);
@@ -174,7 +174,6 @@ function ArenaContent() {
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load arena data';
-      console.error('Failed to load arena data:', err);
       setLoadError(errorMessage);
       toast.error('Load Failed', 'Could not load arena data. Please try again.');
     } finally {
@@ -193,8 +192,7 @@ function ArenaContent() {
       setOpenBattles(openData);
       setLiveBattles(liveData);
       setCompletedBattles(completedData);
-    } catch (err) {
-      console.error('Failed to load battle royale data:', err);
+    } catch {
       toast.error('Load Failed', 'Could not load battle data.');
     }
   }, [tier, toast]);
@@ -295,7 +293,6 @@ function ArenaContent() {
       setSelectedChallenge('random');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      console.error('Failed to start match:', err);
       toast.error('Battle Failed', `Could not start match: ${errorMessage}`);
     } finally {
       setIsStartingMatch(false);
@@ -333,7 +330,6 @@ function ArenaContent() {
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Transaction failed';
-      console.error('Failed to hash match to Solana:', err);
       toast.error('Transaction Failed', errorMessage);
     } finally {
       setIsHashing(false);

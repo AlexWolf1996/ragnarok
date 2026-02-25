@@ -1,4 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { commentaryRequestSchema, validateRequest, sanitizeErrorMessage } from '@/lib/validation';
+
+interface CommentaryLine {
+  icon: string;
+  label: string;
+  text: string;
+  color: 'amber' | 'cyan' | 'red' | 'emerald' | 'purple';
+}
 
 interface MatchData {
   agentA: { name: string; elo_rating: number };
@@ -8,13 +16,6 @@ interface MatchData {
   score_b: number;
   winner_id: string | null;
   winnerName: string;
-}
-
-interface CommentaryLine {
-  icon: string;
-  label: string;
-  text: string;
-  color: 'amber' | 'cyan' | 'red' | 'emerald' | 'purple';
 }
 
 function generateFallbackCommentary(data: MatchData): CommentaryLine[] {
@@ -56,8 +57,28 @@ function generateFallbackCommentary(data: MatchData): CommentaryLine[] {
 
 export async function POST(request: NextRequest) {
   try {
-    const data: MatchData = await request.json();
+    // Parse request body
+    let rawData: unknown;
+    try {
+      rawData = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid JSON body' },
+        { status: 400 }
+      );
+    }
 
+    // Validate input using zod schema
+    const validation = validateRequest(commentaryRequestSchema, rawData);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: `Validation failed: ${validation.error}` },
+        { status: 400 }
+      );
+    }
+
+    const data = validation.data;
     const apiKey = process.env.ANTHROPIC_API_KEY;
 
     // If no API key, use fallback templates
@@ -112,7 +133,7 @@ Keep it entertaining, dramatic, specific about scores. Reference Norse mythology
     });
 
     if (!response.ok) {
-      console.error('Anthropic API error:', response.status, response.statusText);
+      // Use fallback on API error
       return NextResponse.json({
         lines: generateFallbackCommentary(data),
         source: 'fallback',
@@ -142,17 +163,16 @@ Keep it entertaining, dramatic, specific about scores. Reference Norse mythology
         lines,
         source: 'ai',
       });
-    } catch (parseError) {
-      console.error('Failed to parse AI response:', parseError);
+    } catch {
+      // Use fallback on parse error
       return NextResponse.json({
         lines: generateFallbackCommentary(data),
         source: 'fallback',
       });
     }
   } catch (error) {
-    console.error('Commentary API error:', error);
     return NextResponse.json(
-      { error: 'Failed to generate commentary' },
+      { error: sanitizeErrorMessage(error) },
       { status: 500 }
     );
   }

@@ -91,7 +91,6 @@ function LeaderboardContent() {
       setLeaderboard(data || []);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      console.error('Failed to load leaderboard:', err);
       setLoadError(errorMessage);
       toast.error('Load Failed', 'Could not load leaderboard data.');
     } finally {
@@ -134,11 +133,9 @@ function LeaderboardContent() {
       if (isValidRecentMatchArray(matches)) {
         setRecentMatches(matches);
       } else {
-        console.warn('Invalid match data received');
         setRecentMatches([]);
       }
-    } catch (err) {
-      console.error('Failed to load recent matches:', err);
+    } catch {
       setRecentMatches([]);
     } finally {
       setLoadingMatches(false);

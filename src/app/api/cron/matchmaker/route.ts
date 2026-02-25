@@ -28,7 +28,6 @@ export async function GET(request: Request) {
     });
 
     if (error) {
-      console.error('Matchmaker error:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
@@ -37,8 +36,7 @@ export async function GET(request: Request) {
       timestamp: new Date().toISOString(),
       results: data,
     });
-  } catch (err) {
-    console.error('CRON matchmaker error:', err);
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

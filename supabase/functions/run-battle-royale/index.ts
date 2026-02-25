@@ -288,8 +288,7 @@ Deno.serve(async (req) => {
         payout_sol: i === 0 ? payouts.first : i === 1 ? payouts.second : i === 2 ? payouts.third : 0,
       })),
     });
-  } catch (err) {
-    console.error('Unexpected error:', err);
+  } catch {
     return errorResponse('Internal server error', 500);
   }
 });

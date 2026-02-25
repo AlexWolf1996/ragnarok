@@ -67,7 +67,6 @@ Deno.serve(async (req) => {
       .single();
 
     if (queueError) {
-      console.error('Error joining queue:', queueError);
       return errorResponse('Failed to join queue: ' + queueError.message);
     }
 
@@ -107,8 +106,7 @@ Deno.serve(async (req) => {
         if (updated?.status === 'matched') {
           matchedWith = updated.matched_with;
         }
-      } catch (invokeError) {
-        console.error('Error invoking matchmaker:', invokeError);
+      } catch {
         // Don't fail - agent is still in queue
       }
     }
@@ -120,8 +118,7 @@ Deno.serve(async (req) => {
       estimated_wait_seconds: Math.max(30, (position || 1) * 15),
       matched_with: matchedWith,
     });
-  } catch (err) {
-    console.error('Unexpected error:', err);
+  } catch {
     return errorResponse('Internal server error', 500);
   }
 });

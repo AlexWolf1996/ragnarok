@@ -96,7 +96,6 @@ Deno.serve(async (req) => {
       .insert(rounds);
 
     if (roundsError) {
-      console.error('Error creating rounds:', roundsError);
       return errorResponse('Failed to create battle rounds');
     }
 
@@ -111,7 +110,6 @@ Deno.serve(async (req) => {
       .eq('id', body.battle_id);
 
     if (updateError) {
-      console.error('Error starting battle:', updateError);
       return errorResponse('Failed to start battle');
     }
 
@@ -122,8 +120,7 @@ Deno.serve(async (req) => {
       await supabase.functions.invoke('run-battle-royale', {
         body: { battle_id: body.battle_id },
       });
-    } catch (invokeError) {
-      console.error('Error invoking battle runner:', invokeError);
+    } catch {
       // Don't fail - the battle is started, runner can be triggered separately
     }
 
@@ -133,8 +130,7 @@ Deno.serve(async (req) => {
       num_rounds: battle.num_rounds,
       participant_count: battle.participant_count,
     });
-  } catch (err) {
-    console.error('Unexpected error:', err);
+  } catch {
     return errorResponse('Internal server error', 500);
   }
 });

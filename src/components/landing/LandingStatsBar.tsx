@@ -78,8 +78,7 @@ export default function LandingStatsBar() {
           battles: totalBattles,
           prizePool: totalWagered,
         });
-      } catch (err) {
-        console.error('Failed to load stats:', err);
+      } catch {
         // Keep zeros on error
       } finally {
         setLoaded(true);

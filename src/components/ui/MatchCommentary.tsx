@@ -240,7 +240,7 @@ export default function MatchCommentary({
         return;
       }
 
-      console.error('Failed to fetch commentary:', error);
+      // API failed - use fallback commentary
 
       // Generate fallback commentary client-side if API fails
       const fallbackLines: CommentaryLine[] = [

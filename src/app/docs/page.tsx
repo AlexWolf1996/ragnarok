@@ -159,7 +159,6 @@ function CodeBlock({ code }: { code: string }) {
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Fallback for browsers without clipboard API
-      console.error('Failed to copy to clipboard');
     }
   };
 

@@ -33,9 +33,7 @@ export async function GET(request: Request) {
       .eq('status', 'expired')
       .lt('queued_at', oneDayAgo.toISOString());
 
-    if (queueError) {
-      console.error('Queue cleanup error:', queueError);
-    }
+    // Queue cleanup silently continues on error
 
     // Clean up matched queue entries older than 1 day
     const { error: matchedError } = await supabase
@@ -44,9 +42,7 @@ export async function GET(request: Request) {
       .eq('status', 'matched')
       .lt('queued_at', oneDayAgo.toISOString());
 
-    if (matchedError) {
-      console.error('Matched cleanup error:', matchedError);
-    }
+    // Matched cleanup silently continues on error
 
     // Cancel stale open battles (registration closed but never started)
     const { data: staleBattles, error: staleError } = await supabase
@@ -55,9 +51,7 @@ export async function GET(request: Request) {
       .eq('status', 'open')
       .lt('registration_closes_at', oneDayAgo.toISOString());
 
-    if (staleError) {
-      console.error('Stale battles error:', staleError);
-    } else if (staleBattles && staleBattles.length > 0) {
+    if (!staleError && staleBattles && staleBattles.length > 0) {
       await supabase
         .from('battle_royales')
         .update({ status: 'cancelled' })
@@ -70,9 +64,7 @@ export async function GET(request: Request) {
       .delete()
       .lt('completed_at', oneWeekAgo.toISOString());
 
-    if (roundsError) {
-      console.error('Rounds cleanup error:', roundsError);
-    }
+    // Rounds cleanup silently continues on error
 
     return NextResponse.json({
       success: true,
@@ -81,8 +73,7 @@ export async function GET(request: Request) {
         stale_battles_cancelled: staleBattles?.length || 0,
       },
     });
-  } catch (err) {
-    console.error('CRON cleanup error:', err);
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

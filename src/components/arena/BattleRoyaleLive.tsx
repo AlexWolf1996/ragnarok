@@ -59,8 +59,8 @@ export default function BattleRoyaleLive({ battleId, onBet }: BattleRoyaleLivePr
         setBattle(battleData);
         setParticipants(participantsData);
         setRounds(roundsData);
-      } catch (err) {
-        console.error('Error loading battle:', err);
+      } catch {
+        // Load failed - battle will show as not found
       } finally {
         setLoading(false);
       }

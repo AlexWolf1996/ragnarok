@@ -62,7 +62,6 @@ Deno.serve(async (req) => {
       .eq('is_active', true);
 
     if (eventsError) {
-      console.error('Error fetching scheduled events:', eventsError);
       return errorResponse('Failed to fetch scheduled events');
     }
 
@@ -117,7 +116,6 @@ Deno.serve(async (req) => {
         .single();
 
       if (battleError) {
-        console.error(`Error creating battle for ${event.name}:`, battleError);
         continue;
       }
 
@@ -151,8 +149,8 @@ Deno.serve(async (req) => {
                 wallet_address: 'scheduled-auto-start',
               },
             });
-          } catch (startError) {
-            console.error(`Error auto-starting battle ${battle.id}:`, startError);
+          } catch {
+            // Auto-start failed - battle will remain open
           }
         } else {
           // Not enough participants - cancel
@@ -172,8 +170,7 @@ Deno.serve(async (req) => {
       created_battles: created,
       auto_started: pendingBattles?.length || 0,
     });
-  } catch (err) {
-    console.error('Unexpected error:', err);
+  } catch {
     return errorResponse('Internal server error', 500);
   }
 });

@@ -27,8 +27,8 @@ export default function MatchmakingQueue({ agentId, onMatched }: MatchmakingQueu
       try {
         const stats = await getQueueStats();
         setQueueStats(stats);
-      } catch (err) {
-        console.error('Error loading queue stats:', err);
+      } catch {
+        // Stats refresh failed - continue with existing data
       }
     };
 
@@ -47,8 +47,8 @@ export default function MatchmakingQueue({ agentId, onMatched }: MatchmakingQueu
           setQueueId(entry.id);
           setSelectedTier(entry.tier);
         }
-      } catch (err) {
-        console.error('Error checking queue:', err);
+      } catch {
+        // Queue check failed - continue without queue status
       }
     };
 
@@ -89,8 +89,8 @@ export default function MatchmakingQueue({ agentId, onMatched }: MatchmakingQueu
         setQueueId(null);
         setPosition(null);
       }
-    } catch (err) {
-      console.error('Error leaving queue:', err);
+    } catch {
+      // Leave queue failed silently - user can retry
     } finally {
       setLoading(false);
     }

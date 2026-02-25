@@ -72,8 +72,7 @@ export default function BettingModal({
         setBattle(battleData);
         setParticipants(participantsData);
         setBets(betsData);
-      } catch (err) {
-        console.error('Error loading battle:', err);
+      } catch {
         setError('Failed to load battle data');
       } finally {
         setLoading(false);

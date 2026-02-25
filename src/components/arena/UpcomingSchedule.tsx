@@ -26,8 +26,8 @@ export default function UpcomingSchedule({ onBattleSelect }: UpcomingSchedulePro
       try {
         const data = await getUpcomingBattles(selectedTier || undefined, 10);
         setBattles(data);
-      } catch (err) {
-        console.error('Error loading upcoming battles:', err);
+      } catch {
+        // Load failed - continue with empty battles
       } finally {
         setLoading(false);
       }

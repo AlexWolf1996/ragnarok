@@ -40,7 +40,6 @@ Deno.serve(async (req) => {
         .order('queued_at', { ascending: true });
 
       if (queueError || !waitingAgents) {
-        console.error(`Error getting queue for ${tier}:`, queueError);
         continue;
       }
 
@@ -57,7 +56,6 @@ Deno.serve(async (req) => {
           .single();
 
         if (!challenge) {
-          console.error('No challenges available');
           break;
         }
 
@@ -73,7 +71,6 @@ Deno.serve(async (req) => {
           .single();
 
         if (matchError) {
-          console.error('Error creating match:', matchError);
           continue;
         }
 
@@ -105,8 +102,8 @@ Deno.serve(async (req) => {
               challenge_id: challenge.id,
             },
           });
-        } catch (runError) {
-          console.error('Error running match:', runError);
+        } catch {
+          // Match run failed - continue with next match
         }
 
         matched += 2;
@@ -149,7 +146,7 @@ Deno.serve(async (req) => {
           .single();
 
         if (battleError) {
-          console.error('Error creating battle:', battleError);
+          // Battle creation failed - skip
         } else {
           battlesCreated++;
 
@@ -174,8 +171,8 @@ Deno.serve(async (req) => {
                 .eq('id', queueEntry.id);
 
               matched++;
-            } catch (joinError) {
-              console.error('Error auto-joining agent:', joinError);
+            } catch {
+              // Auto-join failed - continue with next agent
             }
           }
         }
@@ -198,8 +195,7 @@ Deno.serve(async (req) => {
       success: true,
       results,
     });
-  } catch (err) {
-    console.error('Unexpected error:', err);
+  } catch {
     return errorResponse('Internal server error', 500);
   }
 });

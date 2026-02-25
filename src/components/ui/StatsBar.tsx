@@ -53,8 +53,8 @@ export default function StatsBar() {
     try {
       const data = await getMatchStats();
       setStats(data);
-    } catch (err) {
-      console.error('Failed to load stats:', err);
+    } catch {
+      // Stats load failed - continue with existing data
     } finally {
       setLoading(false);
     }

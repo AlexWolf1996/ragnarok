@@ -58,7 +58,7 @@ export default function BetPanel({ match, isOpen, onClose, onBetPlaced }: BetPan
         .reduce((sum, b) => sum + b.amount_sol, 0);
       setBetPools({ agentA: agentAPool, agentB: agentBPool });
     } catch {
-      console.error('Failed to load bet pools');
+      // Failed to load bet pools - continue with defaults
     }
   }
 
