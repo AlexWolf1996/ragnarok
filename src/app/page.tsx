@@ -185,22 +185,6 @@ function Hero({ agents, stats }: { agents: Agent[]; stats: { totalMatches: numbe
       <EmberField count={160} />
       <LightningForks />
 
-      {/* Floating Gold Relic - positioned in top-right empty space */}
-      <motion.div
-        style={{ y: yA }}
-        animate={{ x: [0, 30, 0], y: [0, -8, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-32 right-8 md:right-16 lg:right-24 z-10 pointer-events-none hidden md:block"
-      >
-        <Image
-          src="/images/hammer-gold.png"
-          alt="Gold relic"
-          width={180}
-          height={180}
-          className="w-32 h-32 lg:w-40 lg:h-40 opacity-70 drop-shadow-[0_0_50px_rgba(245,158,11,0.6)]"
-        />
-      </motion.div>
-
       <div className="relative z-10 px-6 pt-28 md:pt-32 max-w-[1400px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7">
@@ -269,8 +253,21 @@ function Hero({ agents, stats }: { agents: Agent[]; stats: { totalMatches: numbe
           </div>
 
           <div className="lg:col-span-5 relative">
-            {/* Matchmaking Widget */}
-            <div className="relative">
+            <motion.div
+              style={{ y: yA }}
+              animate={{ x: [0, 20, 0], y: [0, -6, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute -top-12 -right-6 md:-top-14 md:-right-8 z-0 pointer-events-none hidden md:block"
+            >
+              <Image
+                src="/images/hammer-gold.png"
+                alt="Gold relic"
+                width={130}
+                height={130}
+                className="w-24 h-24 lg:w-32 lg:h-32 opacity-60 drop-shadow-[0_0_40px_rgba(245,158,11,0.5)]"
+              />
+            </motion.div>
+            <div className="relative z-10">
               <MatchmakingWidget agents={agents} stats={stats} />
             </div>
           </div>
@@ -596,8 +593,8 @@ function Protocol() {
         <div className="mt-14 grid grid-cols-1 md:grid-cols-4 gap-6 relative">
           <div className="hidden md:block absolute left-0 right-0 top-10 h-[2px] bg-neutral-900" />
           <motion.div
-            className="hidden md:block absolute top-[34px] left-0 w-4 h-4 rounded-full bg-amber-500 blur-[1px]"
-            animate={{ x: [0, 980, 0] }}
+            className="hidden md:block absolute top-[34px] w-4 h-4 rounded-full bg-amber-500 blur-[1px]"
+            animate={{ left: ['0%', '95%', '0%'] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           />
 
@@ -691,33 +688,55 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
                   <div
                     key={agent.id}
                     className={cn(
-                      'grid grid-cols-1 md:grid-cols-12 gap-4 px-6 py-6 hover:bg-neutral-950 transition-colors cursor-pointer',
+                      'px-6 py-4 hover:bg-neutral-950 transition-colors cursor-pointer',
                       isTop && 'bg-amber-500/5'
                     )}
                   >
-                    <div className="col-span-1 font-[var(--font-orbitron)] font-black text-2xl text-neutral-600">
-                      {isTop ? (
-                        <Trophy className="w-6 h-6 text-amber-500" />
-                      ) : (
-                        String(idx + 1).padStart(2, '0')
-                      )}
+                    {/* Mobile layout */}
+                    <div className="md:hidden flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="font-[var(--font-orbitron)] font-black text-lg text-neutral-600 w-8">
+                          {isTop ? (
+                            <Trophy className="w-5 h-5 text-amber-500" />
+                          ) : (
+                            String(idx + 1).padStart(2, '0')
+                          )}
+                        </div>
+                        <div className="font-[var(--font-orbitron)] font-black tracking-[0.1em] uppercase text-white text-sm">
+                          {agent.name}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="font-mono text-xs text-amber-500">{winRate}%</div>
+                        <div className="font-mono text-xs text-white">{agent.elo_rating}</div>
+                      </div>
                     </div>
-                    <div className="col-span-5 font-[var(--font-orbitron)] font-black tracking-[0.18em] uppercase text-white">
-                      {agent.name}
-                    </div>
-                    <div className="col-span-2 font-mono text-sm text-amber-500 md:text-right">
-                      {winRate}%
-                    </div>
-                    <div className="col-span-3 font-mono text-sm text-white md:text-right">
-                      {agent.elo_rating}
-                    </div>
-                    <div
-                      className={cn(
-                        'col-span-1 font-mono text-sm md:text-right',
-                        trend === 'UP' ? 'text-green-400' : trend === 'DN' ? 'text-red-500' : 'text-neutral-500'
-                      )}
-                    >
-                      {agent.wins}-{agent.losses}
+                    {/* Desktop layout */}
+                    <div className="hidden md:grid grid-cols-12 gap-4">
+                      <div className="col-span-1 font-[var(--font-orbitron)] font-black text-2xl text-neutral-600">
+                        {isTop ? (
+                          <Trophy className="w-6 h-6 text-amber-500" />
+                        ) : (
+                          String(idx + 1).padStart(2, '0')
+                        )}
+                      </div>
+                      <div className="col-span-5 font-[var(--font-orbitron)] font-black tracking-[0.18em] uppercase text-white">
+                        {agent.name}
+                      </div>
+                      <div className="col-span-2 font-mono text-sm text-amber-500 text-right">
+                        {winRate}%
+                      </div>
+                      <div className="col-span-3 font-mono text-sm text-white text-right">
+                        {agent.elo_rating}
+                      </div>
+                      <div
+                        className={cn(
+                          'col-span-1 font-mono text-sm text-right',
+                          trend === 'UP' ? 'text-green-400' : trend === 'DN' ? 'text-red-500' : 'text-neutral-500'
+                        )}
+                      >
+                        {agent.wins}-{agent.losses}
+                      </div>
                     </div>
                   </div>
                 );
@@ -756,10 +775,10 @@ function CTA() {
 
         {/* CRT/Scanline text effect */}
         <div className="relative mt-6">
-          <h2 className="font-[var(--font-orbitron)] font-black text-6xl md:text-8xl tracking-tighter text-white italic leading-[0.85]">
+          <h2 className="font-[var(--font-orbitron)] font-black text-5xl sm:text-6xl md:text-8xl tracking-tighter text-white italic leading-[0.85]">
             NO MERCY.
           </h2>
-          <h2 className="font-[var(--font-orbitron)] font-black text-6xl md:text-8xl tracking-tighter italic leading-[0.85] mt-2 text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500">
+          <h2 className="font-[var(--font-orbitron)] font-black text-5xl sm:text-6xl md:text-8xl tracking-tighter italic leading-[0.85] mt-2 text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500">
             ONLY CODE.
           </h2>
           {/* Scanline overlay on text */}
@@ -778,18 +797,18 @@ function CTA() {
 
         <div className="mt-12 flex flex-col sm:flex-row gap-5 justify-center">
           <Link href="/register">
-            <button className="group relative px-14 py-6 bg-red-600 text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(220,38,38,0.55)]">
+            <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-red-600 text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(220,38,38,0.55)]">
               <div className="absolute inset-0 bg-white translate-y-[120%] group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-              <span className="relative z-10 group-hover:text-red-600 transition-colors inline-flex items-center gap-3">
+              <span className="relative z-10 group-hover:text-red-600 transition-colors inline-flex items-center justify-center gap-3">
                 DEPLOY_AGENT
                 <Crosshair className="w-6 h-6" />
               </span>
             </button>
           </Link>
           <Link href="/arena">
-            <button className="group relative px-14 py-6 bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(245,158,11,0.35)]">
+            <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(245,158,11,0.35)]">
               <div className="absolute inset-0 bg-white translate-x-[-120%] group-hover:translate-x-0 transition-transform duration-300 ease-out" />
-              <span className="relative z-10 group-hover:text-amber-600 transition-colors inline-flex items-center gap-3">
+              <span className="relative z-10 group-hover:text-amber-600 transition-colors inline-flex items-center justify-center gap-3">
                 ENTER_ARENA
                 <Shield className="w-6 h-6" />
               </span>
