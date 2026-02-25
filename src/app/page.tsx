@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import {
   Cpu,
@@ -761,11 +762,15 @@ function Footer() {
 
         {/* Links */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-neutral-800">
-          <div className="font-[var(--font-orbitron)] font-bold tracking-[0.15em] text-neutral-500">
-            RAGNAROK
-          </div>
+          <Image
+            src="/images/logoecrit.svg"
+            alt="Ragnarok"
+            width={120}
+            height={20}
+            className="h-4 w-auto opacity-50"
+          />
           <div className="flex gap-8 font-[var(--font-orbitron)] text-xs tracking-[0.2em] uppercase text-neutral-500">
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">
+            <a href="https://x.com/Ragnarok267162" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">
               TWITTER
             </a>
             <Link href="/docs" className="hover:text-red-500 transition-colors">

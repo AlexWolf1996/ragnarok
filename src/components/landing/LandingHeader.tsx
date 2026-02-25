@@ -77,24 +77,24 @@ export default function LandingHeader() {
           className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded"
           aria-label="Ragnarok - Home"
         >
-          {!logoError ? (
+          {!logoError && (
             <Image
               src="/images/ragnarok.logo.VF2.svg"
               alt=""
-              width={36}
-              height={36}
+              width={32}
+              height={32}
               className="opacity-90 group-hover:opacity-100 transition-opacity"
               onError={() => setLogoError(true)}
               aria-hidden="true"
             />
-          ) : (
-            <span className="font-[var(--font-orbitron)] font-black text-2xl text-amber-500" aria-hidden="true">
-              R
-            </span>
           )}
-          <span className="font-[var(--font-orbitron)] font-bold text-lg tracking-[0.15em] text-white group-hover:text-red-500 transition-colors">
-            RAGNARÖK
-          </span>
+          <Image
+            src="/images/logoecrit.svg"
+            alt="Ragnarok"
+            width={140}
+            height={24}
+            className="h-5 w-auto opacity-90 group-hover:opacity-100 transition-opacity"
+          />
         </Link>
 
         {/* Desktop Navigation */}
