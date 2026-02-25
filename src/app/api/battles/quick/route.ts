@@ -1,6 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/supabase/types';
+import {
+  generateAgentResponse,
+  judgeResponses,
+  calculateEloChange,
+} from '@/lib/groq/client';
 
 // Create admin client for server-side operations
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -8,9 +13,214 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 function getSupabaseAdmin() {
   if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error('Missing Supabase environment variables');
+    throw new Error('Missing Supabase environment variables. Check NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.');
   }
   return createClient<Database>(supabaseUrl, supabaseServiceKey);
+}
+
+/**
+ * Execute a battle between two agents
+ * Shared logic used by both quick and execute routes
+ */
+async function executeBattle(agentAId: string, agentBId: string, challengeId: string) {
+  const startTime = Date.now();
+  const supabase = getSupabaseAdmin();
+
+  // Fetch both agents
+  const [agentAResult, agentBResult] = await Promise.all([
+    supabase.from('agents').select('*').eq('id', agentAId).single(),
+    supabase.from('agents').select('*').eq('id', agentBId).single(),
+  ]);
+
+  if (agentAResult.error || !agentAResult.data) {
+    throw new Error(`Agent A not found: ${agentAId}`);
+  }
+
+  if (agentBResult.error || !agentBResult.data) {
+    throw new Error(`Agent B not found: ${agentBId}`);
+  }
+
+  const agentA = agentAResult.data;
+  const agentB = agentBResult.data;
+
+  // Fetch challenge
+  const { data: challenge, error: challengeError } = await supabase
+    .from('challenges')
+    .select('*')
+    .eq('id', challengeId)
+    .single();
+
+  if (challengeError || !challenge) {
+    throw new Error(`Challenge not found: ${challengeId}`);
+  }
+
+  // Create match record
+  const { data: match, error: matchError } = await supabase
+    .from('matches')
+    .insert({
+      agent_a_id: agentAId,
+      agent_b_id: agentBId,
+      challenge_id: challenge.id,
+      status: 'in_progress',
+      started_at: new Date().toISOString(),
+    })
+    .select()
+    .single();
+
+  if (matchError || !match) {
+    console.error('Failed to create match:', matchError);
+    throw new Error('Failed to create match record');
+  }
+
+  try {
+    // Extract prompt text from challenge
+    const promptText = typeof challenge.prompt === 'object'
+      ? (challenge.prompt as Record<string, unknown>).question ||
+        (challenge.prompt as Record<string, unknown>).prompt ||
+        JSON.stringify(challenge.prompt)
+      : String(challenge.prompt);
+
+    // Generate responses from both agents in parallel
+    const [responseA, responseB] = await Promise.all([
+      generateAgentResponse(agentA.name, agentA.system_prompt, promptText as string),
+      generateAgentResponse(agentB.name, agentB.system_prompt, promptText as string),
+    ]);
+
+    // Judge the responses
+    const judgeResult = await judgeResponses(
+      {
+        name: challenge.name,
+        type: challenge.type,
+        prompt: challenge.prompt,
+        expectedOutput: challenge.expected_output,
+      },
+      agentA.name,
+      responseA,
+      agentB.name,
+      responseB
+    );
+
+    // Determine winner
+    let winnerId: string | null = null;
+    let winnerAgent, loserAgent;
+    let winnerScore: number, loserScore: number;
+
+    if (judgeResult.winnerId === 'A') {
+      winnerId = agentAId;
+      winnerAgent = agentA;
+      loserAgent = agentB;
+      winnerScore = judgeResult.scoreA;
+      loserScore = judgeResult.scoreB;
+    } else if (judgeResult.winnerId === 'B') {
+      winnerId = agentBId;
+      winnerAgent = agentB;
+      loserAgent = agentA;
+      winnerScore = judgeResult.scoreB;
+      loserScore = judgeResult.scoreA;
+    } else {
+      // Tie - higher rated agent wins (or random if equal)
+      if (agentA.elo_rating >= agentB.elo_rating) {
+        winnerId = agentAId;
+        winnerAgent = agentA;
+        loserAgent = agentB;
+      } else {
+        winnerId = agentBId;
+        winnerAgent = agentB;
+        loserAgent = agentA;
+      }
+      winnerScore = judgeResult.scoreA;
+      loserScore = judgeResult.scoreB;
+    }
+
+    // Calculate ELO changes
+    const { winnerDelta, loserDelta } = calculateEloChange(
+      winnerAgent.elo_rating,
+      loserAgent.elo_rating
+    );
+
+    const newWinnerElo = winnerAgent.elo_rating + winnerDelta;
+    const newLoserElo = Math.max(100, loserAgent.elo_rating + loserDelta);
+
+    // Update match with results
+    await supabase
+      .from('matches')
+      .update({
+        status: 'completed',
+        winner_id: winnerId,
+        agent_a_response: responseA,
+        agent_b_response: responseB,
+        agent_a_score: judgeResult.scoreA,
+        agent_b_score: judgeResult.scoreB,
+        judge_reasoning: judgeResult.reasoning,
+        completed_at: new Date().toISOString(),
+      })
+      .eq('id', match.id);
+
+    // Update agent stats
+    await Promise.all([
+      supabase
+        .from('agents')
+        .update({
+          elo_rating: newWinnerElo,
+          wins: winnerAgent.wins + 1,
+          matches_played: winnerAgent.matches_played + 1,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', winnerAgent.id),
+      supabase
+        .from('agents')
+        .update({
+          elo_rating: newLoserElo,
+          losses: loserAgent.losses + 1,
+          matches_played: loserAgent.matches_played + 1,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', loserAgent.id),
+    ]);
+
+    const duration = Date.now() - startTime;
+    console.log(`Battle completed in ${duration}ms: ${winnerAgent.name} defeats ${loserAgent.name}`);
+
+    return {
+      success: true,
+      matchId: match.id,
+      winner: {
+        id: winnerAgent.id,
+        name: winnerAgent.name,
+        score: winnerScore,
+        newElo: newWinnerElo,
+        eloDelta: winnerDelta,
+      },
+      loser: {
+        id: loserAgent.id,
+        name: loserAgent.name,
+        score: loserScore,
+        newElo: newLoserElo,
+        eloDelta: loserDelta,
+      },
+      challenge: {
+        id: challenge.id,
+        name: challenge.name,
+        type: challenge.type,
+      },
+      reasoning: judgeResult.reasoning,
+      responses: {
+        agentA: responseA,
+        agentB: responseB,
+      },
+    };
+  } catch (battleError) {
+    // Mark match as failed
+    await supabase
+      .from('matches')
+      .update({
+        status: 'failed',
+        completed_at: new Date().toISOString(),
+      })
+      .eq('id', match.id);
+
+    throw battleError;
+  }
 }
 
 /**
@@ -21,6 +231,17 @@ function getSupabaseAdmin() {
  */
 export async function GET() {
   try {
+    // Check required env vars
+    if (!process.env.GROQ_API_KEY) {
+      return NextResponse.json(
+        {
+          error: 'Configuration error',
+          message: 'GROQ_API_KEY environment variable is not set',
+        },
+        { status: 500 }
+      );
+    }
+
     const supabase = getSupabaseAdmin();
 
     // Get all active agents
@@ -29,7 +250,18 @@ export async function GET() {
       .select('id, name, elo_rating')
       .order('elo_rating', { ascending: false });
 
-    if (agentsError || !agents || agents.length < 2) {
+    if (agentsError) {
+      console.error('Failed to fetch agents:', agentsError);
+      return NextResponse.json(
+        {
+          error: 'Database error',
+          message: `Failed to fetch agents: ${agentsError.message}`,
+        },
+        { status: 500 }
+      );
+    }
+
+    if (!agents || agents.length < 2) {
       return NextResponse.json(
         {
           error: 'Not enough agents for a battle',
@@ -50,7 +282,18 @@ export async function GET() {
       .from('challenges')
       .select('id, name, type');
 
-    if (challengesError || !challenges || challenges.length === 0) {
+    if (challengesError) {
+      console.error('Failed to fetch challenges:', challengesError);
+      return NextResponse.json(
+        {
+          error: 'Database error',
+          message: `Failed to fetch challenges: ${challengesError.message}`,
+        },
+        { status: 500 }
+      );
+    }
+
+    if (!challenges || challenges.length === 0) {
       return NextResponse.json(
         {
           error: 'No challenges available',
@@ -62,40 +305,12 @@ export async function GET() {
 
     const challenge = challenges[Math.floor(Math.random() * challenges.length)];
 
-    // Call the execute endpoint internally
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||
-                    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` :
-                    'http://localhost:3000';
-
-    const executeResponse = await fetch(`${baseUrl}/api/battles/execute`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        agentAId: agentA.id,
-        agentBId: agentB.id,
-        challengeId: challenge.id,
-      }),
-    });
-
-    if (!executeResponse.ok) {
-      const errorData = await executeResponse.json();
-      return NextResponse.json(
-        {
-          error: 'Battle execution failed',
-          details: errorData,
-        },
-        { status: executeResponse.status }
-      );
-    }
-
-    const battleResult = await executeResponse.json();
+    // Execute the battle directly (no HTTP call)
+    const battleResult = await executeBattle(agentA.id, agentB.id, challenge.id);
 
     return NextResponse.json({
-      success: true,
-      message: `Quick battle completed: ${battleResult.winner.name} vs ${battleResult.loser.name}`,
       ...battleResult,
+      message: `Quick battle completed: ${battleResult.winner.name} vs ${battleResult.loser.name}`,
     });
   } catch (error) {
     console.error('Quick battle error:', error);
@@ -116,8 +331,19 @@ export async function GET() {
  * - challengeType: Only use challenges of this type
  * - minElo: Only include agents with ELO >= this value
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Check required env vars
+    if (!process.env.GROQ_API_KEY) {
+      return NextResponse.json(
+        {
+          error: 'Configuration error',
+          message: 'GROQ_API_KEY environment variable is not set',
+        },
+        { status: 500 }
+      );
+    }
+
     const body = await request.json().catch(() => ({}));
     const { challengeType, minElo } = body;
 
@@ -135,7 +361,18 @@ export async function POST(request: Request) {
 
     const { data: agents, error: agentsError } = await agentsQuery;
 
-    if (agentsError || !agents || agents.length < 2) {
+    if (agentsError) {
+      console.error('Failed to fetch agents:', agentsError);
+      return NextResponse.json(
+        {
+          error: 'Database error',
+          message: `Failed to fetch agents: ${agentsError.message}`,
+        },
+        { status: 500 }
+      );
+    }
+
+    if (!agents || agents.length < 2) {
       return NextResponse.json(
         {
           error: 'Not enough agents for a battle',
@@ -164,7 +401,18 @@ export async function POST(request: Request) {
 
     const { data: challenges, error: challengesError } = await challengesQuery;
 
-    if (challengesError || !challenges || challenges.length === 0) {
+    if (challengesError) {
+      console.error('Failed to fetch challenges:', challengesError);
+      return NextResponse.json(
+        {
+          error: 'Database error',
+          message: `Failed to fetch challenges: ${challengesError.message}`,
+        },
+        { status: 500 }
+      );
+    }
+
+    if (!challenges || challenges.length === 0) {
       return NextResponse.json(
         {
           error: 'No challenges available',
@@ -178,41 +426,13 @@ export async function POST(request: Request) {
 
     const challenge = challenges[Math.floor(Math.random() * challenges.length)];
 
-    // Call the execute endpoint
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||
-                    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` :
-                    'http://localhost:3000';
-
-    const executeResponse = await fetch(`${baseUrl}/api/battles/execute`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        agentAId: agentA.id,
-        agentBId: agentB.id,
-        challengeId: challenge.id,
-      }),
-    });
-
-    if (!executeResponse.ok) {
-      const errorData = await executeResponse.json();
-      return NextResponse.json(
-        {
-          error: 'Battle execution failed',
-          details: errorData,
-        },
-        { status: executeResponse.status }
-      );
-    }
-
-    const battleResult = await executeResponse.json();
+    // Execute the battle directly (no HTTP call)
+    const battleResult = await executeBattle(agentA.id, agentB.id, challenge.id);
 
     return NextResponse.json({
-      success: true,
+      ...battleResult,
       message: `Quick battle completed: ${battleResult.winner.name} vs ${battleResult.loser.name}`,
       filters: { challengeType, minElo },
-      ...battleResult,
     });
   } catch (error) {
     console.error('Quick battle error:', error);

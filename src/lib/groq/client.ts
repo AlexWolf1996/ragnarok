@@ -57,26 +57,45 @@ export async function callGroq(options: CallGroqOptions): Promise<string> {
     ? [{ role: 'system', content: systemPrompt }, ...messages]
     : messages;
 
-  const response = await fetch(GROQ_API_URL, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: GROQ_MODEL,
-      messages: allMessages,
-      temperature,
-      max_tokens: maxTokens,
-    }),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Groq API error (${response.status}): ${errorText}`);
+  let response: Response;
+  try {
+    response = await fetch(GROQ_API_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: GROQ_MODEL,
+        messages: allMessages,
+        temperature,
+        max_tokens: maxTokens,
+      }),
+    });
+  } catch (fetchError) {
+    throw new Error(`Failed to connect to Groq API: ${fetchError instanceof Error ? fetchError.message : 'Network error'}`);
   }
 
-  const data: GroqResponse = await response.json();
+  // Read response body as text first to handle non-JSON responses
+  const responseText = await response.text();
+
+  if (!response.ok) {
+    // Check if it's HTML (common when API key is invalid or URL is wrong)
+    if (responseText.trim().startsWith('<!') || responseText.trim().startsWith('<html')) {
+      throw new Error(`Groq API returned HTML instead of JSON (status ${response.status}). This usually means the API key is invalid or missing.`);
+    }
+    throw new Error(`Groq API error (${response.status}): ${responseText}`);
+  }
+
+  // Parse JSON response
+  let data: GroqResponse;
+  try {
+    data = JSON.parse(responseText);
+  } catch (parseError) {
+    // Response is not valid JSON
+    const preview = responseText.substring(0, 100);
+    throw new Error(`Groq API returned invalid JSON. Response preview: ${preview}...`);
+  }
 
   if (!data.choices || data.choices.length === 0) {
     throw new Error('No response from Groq API');
