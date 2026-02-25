@@ -580,7 +580,7 @@ function ArenaContent() {
                 )}
 
                 {/* Start Match Card */}
-                <div className="bg-black/40 border border-neutral-800 rounded-lg p-6 relative overflow-hidden">
+                <div className="bg-black/40 border border-neutral-800 rounded-lg p-6 relative">
                   <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
                   <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-6 flex items-center gap-2">
                     <Plus size={16} className="text-amber-500" />
