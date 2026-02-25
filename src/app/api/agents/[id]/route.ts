@@ -21,13 +21,13 @@ interface RouteParams {
  * Get single agent profile with match history
  *
  * Query params:
- * - matchLimit: number (default 10)
+ * - matchLimit: number (default 20)
  */
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
     const searchParams = request.nextUrl.searchParams;
-    const matchLimit = Math.min(50, Math.max(1, parseInt(searchParams.get('matchLimit') || '10', 10)));
+    const matchLimit = Math.min(100, Math.max(1, parseInt(searchParams.get('matchLimit') || '20', 10)));
 
     const supabase = getSupabase();
 
@@ -53,8 +53,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     const rank = allAgents?.findIndex(a => a.id === id) ?? -1;
 
-    // Fetch recent matches
-    const { data: matches, error: matchesError } = await supabase
+    // Fetch ALL matches for stats calculations (ELO history, streak, etc.)
+    const { data: allMatches, error: allMatchesError } = await supabase
       .from('matches')
       .select(`
         id,
@@ -67,20 +67,23 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         judge_reasoning,
         agent_a_id,
         agent_b_id,
+        agent_a_response,
+        agent_b_response,
         challenge:challenges(id, name, type, difficulty)
       `)
       .or(`agent_a_id.eq.${id},agent_b_id.eq.${id}`)
       .eq('status', 'completed')
-      .order('completed_at', { ascending: false })
-      .limit(matchLimit);
+      .order('completed_at', { ascending: true }); // Oldest first for ELO history calculation
 
-    if (matchesError) {
-      console.error('Failed to fetch matches:', matchesError);
+    if (allMatchesError) {
+      console.error('Failed to fetch matches:', allMatchesError);
     }
+
+    const completedMatches = allMatches || [];
 
     // Get opponent names for each match
     const opponentIds = new Set<string>();
-    (matches || []).forEach(m => {
+    completedMatches.forEach(m => {
       if (m.agent_a_id !== id) opponentIds.add(m.agent_a_id);
       if (m.agent_b_id !== id) opponentIds.add(m.agent_b_id);
     });
@@ -92,17 +95,56 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     const opponentMap = new Map(opponents?.map(o => [o.id, o]) || []);
 
-    // Transform matches with opponent info
-    const matchHistory = (matches || []).map(match => {
+    // Calculate ELO history by simulating through matches
+    const eloHistory: { date: string; elo: number; matchId: string }[] = [];
+    let currentElo = 1000; // Starting ELO
+    let highestElo = 1000;
+    const K = 32; // ELO K-factor
+
+    // Track challenge type wins
+    const challengeTypeWins: Record<string, number> = {};
+
+    // Transform matches and calculate ELO history
+    const processedMatches = completedMatches.map(match => {
       const isAgentA = match.agent_a_id === id;
       const opponentId = isAgentA ? match.agent_b_id : match.agent_a_id;
       const opponent = opponentMap.get(opponentId);
       const myScore = isAgentA ? match.agent_a_score : match.agent_b_score;
       const opponentScore = isAgentA ? match.agent_b_score : match.agent_a_score;
+      const myResponse = isAgentA ? match.agent_a_response : match.agent_b_response;
+      const opponentResponse = isAgentA ? match.agent_b_response : match.agent_a_response;
       const isWinner = match.winner_id === id;
       const isTie = match.winner_id === null;
 
       const challenge = match.challenge as { id: string; name: string; type: string; difficulty: string } | null;
+
+      // Track challenge type wins
+      if (isWinner && challenge) {
+        challengeTypeWins[challenge.type] = (challengeTypeWins[challenge.type] || 0) + 1;
+      }
+
+      // Calculate ELO change for this match
+      // We need opponent's ELO at that time, but we'll approximate with current method
+      const opponentAgent = allAgents?.find(a => a.id === opponentId);
+      const opponentElo = opponentAgent?.elo_rating || 1000;
+
+      const expectedScore = 1 / (1 + Math.pow(10, (opponentElo - currentElo) / 400));
+      const actualScore = isWinner ? 1 : isTie ? 0.5 : 0;
+      const eloDelta = Math.round(K * (actualScore - expectedScore));
+
+      currentElo += eloDelta;
+      if (currentElo > highestElo) {
+        highestElo = currentElo;
+      }
+
+      // Record ELO after this match
+      if (match.completed_at) {
+        eloHistory.push({
+          date: match.completed_at,
+          elo: currentElo,
+          matchId: match.id,
+        });
+      }
 
       return {
         id: match.id,
@@ -122,8 +164,39 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           difficulty: challenge.difficulty,
         } : null,
         reasoning: match.judge_reasoning,
+        myResponse: typeof myResponse === 'string' ? myResponse : JSON.stringify(myResponse),
+        opponentResponse: typeof opponentResponse === 'string' ? opponentResponse : JSON.stringify(opponentResponse),
       };
     });
+
+    // Reverse to get newest first for display
+    const matchHistory = [...processedMatches].reverse().slice(0, matchLimit);
+
+    // Calculate current streak
+    let currentStreak = 0;
+    let streakType: 'win' | 'loss' | null = null;
+
+    for (const match of [...processedMatches].reverse()) {
+      if (streakType === null) {
+        streakType = match.result === 'win' ? 'win' : match.result === 'loss' ? 'loss' : null;
+        if (streakType) currentStreak = 1;
+      } else if (
+        (streakType === 'win' && match.result === 'win') ||
+        (streakType === 'loss' && match.result === 'loss')
+      ) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+
+    // Find favorite challenge type (most wins)
+    let favoriteChallenge: { type: string; wins: number } | null = null;
+    for (const [type, wins] of Object.entries(challengeTypeWins)) {
+      if (!favoriteChallenge || wins > favoriteChallenge.wins) {
+        favoriteChallenge = { type, wins };
+      }
+    }
 
     // Calculate stats
     const winRate = agent.matches_played > 0
@@ -146,7 +219,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         name: agent.name,
         avatarUrl: agent.avatar_url,
         walletAddress: agent.wallet_address,
+        systemPrompt: agent.system_prompt,
         eloRating: agent.elo_rating,
+        highestElo: Math.max(highestElo, agent.elo_rating), // Use actual current if higher
         wins: agent.wins,
         losses: agent.losses,
         matchesPlayed: agent.matches_played,
@@ -155,8 +230,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         winRate,
         avgScore,
         recentForm,
+        currentStreak: {
+          count: currentStreak,
+          type: streakType,
+        },
+        favoriteChallenge,
       },
       matches: matchHistory,
+      eloHistory: eloHistory.slice(-50), // Last 50 data points for chart
     });
   } catch (error) {
     console.error('Agent profile error:', error);

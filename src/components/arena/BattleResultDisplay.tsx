@@ -12,6 +12,7 @@ import {
   Zap,
   Quote,
 } from 'lucide-react';
+import Link from 'next/link';
 
 interface AgentResult {
   id: string;
@@ -213,11 +214,14 @@ export default function BattleResultDisplay({
                 {agentA.name.charAt(0).toUpperCase()}
               </span>
             </div>
-            <h4 className={`font-[var(--font-orbitron)] text-sm md:text-base tracking-wider mb-1 ${
-              agentA.isWinner ? 'text-amber-400' : 'text-neutral-400'
-            }`}>
+            <Link
+              href={`/agents/${agentA.id}`}
+              className={`font-[var(--font-orbitron)] text-sm md:text-base tracking-wider mb-1 block hover:underline ${
+                agentA.isWinner ? 'text-amber-400 hover:text-amber-300' : 'text-neutral-400 hover:text-neutral-300'
+              }`}
+            >
               {agentA.name}
-            </h4>
+            </Link>
             <div className="font-mono text-xs text-neutral-500">
               ELO {agentA.elo}
             </div>
@@ -274,11 +278,14 @@ export default function BattleResultDisplay({
                 {agentB.name.charAt(0).toUpperCase()}
               </span>
             </div>
-            <h4 className={`font-[var(--font-orbitron)] text-sm md:text-base tracking-wider mb-1 ${
-              agentB.isWinner ? 'text-amber-400' : 'text-neutral-400'
-            }`}>
+            <Link
+              href={`/agents/${agentB.id}`}
+              className={`font-[var(--font-orbitron)] text-sm md:text-base tracking-wider mb-1 block hover:underline ${
+                agentB.isWinner ? 'text-amber-400 hover:text-amber-300' : 'text-neutral-400 hover:text-neutral-300'
+              }`}
+            >
               {agentB.name}
-            </h4>
+            </Link>
             <div className="font-mono text-xs text-neutral-500">
               ELO {agentB.elo}
             </div>

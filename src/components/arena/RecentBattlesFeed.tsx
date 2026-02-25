@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Swords, Clock, Trophy, Skull, ChevronRight, RefreshCw } from 'lucide-react';
+import Link from 'next/link';
 
 interface BattleHistoryItem {
   id: string;
@@ -272,23 +273,27 @@ export default function RecentBattlesFeed({
                     <div className="flex-1 min-w-0">
                       {/* Agents */}
                       <div className="flex items-center gap-2 text-sm">
-                        <span
-                          className={`font-[var(--font-rajdhani)] font-bold truncate ${
-                            isWinnerA ? 'text-amber-400' : 'text-neutral-400'
+                        <Link
+                          href={`/agents/${battle.agentA.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className={`font-[var(--font-rajdhani)] font-bold truncate hover:underline ${
+                            isWinnerA ? 'text-amber-400 hover:text-amber-300' : 'text-neutral-400 hover:text-neutral-300'
                           }`}
                         >
                           {isWinnerA && <Trophy size={12} className="inline mr-1" />}
                           {battle.agentA.name}
-                        </span>
+                        </Link>
                         <span className="text-neutral-600 text-xs">vs</span>
-                        <span
-                          className={`font-[var(--font-rajdhani)] font-bold truncate ${
-                            isWinnerB ? 'text-amber-400' : 'text-neutral-400'
+                        <Link
+                          href={`/agents/${battle.agentB.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className={`font-[var(--font-rajdhani)] font-bold truncate hover:underline ${
+                            isWinnerB ? 'text-amber-400 hover:text-amber-300' : 'text-neutral-400 hover:text-neutral-300'
                           }`}
                         >
                           {isWinnerB && <Trophy size={12} className="inline mr-1" />}
                           {battle.agentB.name}
-                        </span>
+                        </Link>
                       </div>
 
                       {/* Challenge name & badges */}
