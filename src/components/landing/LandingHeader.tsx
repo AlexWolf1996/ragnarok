@@ -74,7 +74,7 @@ export default function LandingHeader() {
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+          className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded"
           aria-label="Ragnarok - Home"
         >
           {!logoError ? (
@@ -92,7 +92,7 @@ export default function LandingHeader() {
               R
             </span>
           )}
-          <span className="font-[var(--font-orbitron)] font-bold text-lg tracking-[0.15em] text-white group-hover:text-amber-500 transition-colors">
+          <span className="font-[var(--font-orbitron)] font-bold text-lg tracking-[0.15em] text-white group-hover:text-red-500 transition-colors">
             RAGNARÖK
           </span>
         </Link>
@@ -103,7 +103,7 @@ export default function LandingHeader() {
             <Link
               key={link.href}
               href={link.href}
-              className="font-[var(--font-orbitron)] font-semibold text-[11px] tracking-[0.2em] text-neutral-400 hover:text-amber-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded px-1"
+              className="font-[var(--font-orbitron)] font-semibold text-[11px] tracking-[0.2em] text-neutral-400 hover:text-red-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded px-1"
               role="menuitem"
             >
               {link.label}
@@ -120,7 +120,7 @@ export default function LandingHeader() {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-white p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+          className="md:hidden text-white p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded"
           onClick={toggleMobileMenu}
           aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={mobileMenuOpen}
@@ -164,7 +164,7 @@ export default function LandingHeader() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="block font-[var(--font-orbitron)] font-semibold text-sm tracking-[0.2em] text-neutral-400 hover:text-amber-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded px-1"
+                    className="block font-[var(--font-orbitron)] font-semibold text-sm tracking-[0.2em] text-neutral-400 hover:text-red-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded px-1"
                     onClick={closeMobileMenu}
                     role="menuitem"
                     tabIndex={mobileMenuOpen ? 0 : -1}
@@ -172,7 +172,7 @@ export default function LandingHeader() {
                     {link.label}
                   </Link>
                 ))}
-                <div className="pt-6 border-t border-amber-500/10">
+                <div className="pt-6 border-t border-red-900/20">
                   <div className="landing-wallet-btn">
                     <WalletMultiButton />
                   </div>

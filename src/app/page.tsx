@@ -190,9 +190,9 @@ function Hero() {
           <div className="relative">
             {/* Central Impact Core effect */}
             <motion.div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-gradient-to-r from-red-600 to-amber-500 blur-3xl mix-blend-screen opacity-50 z-0 pointer-events-none"
-              animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0.8, 0.4] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-red-600 blur-3xl mix-blend-screen opacity-40 z-0 pointer-events-none"
+              animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.6, 0.3] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
             />
 
             <h1 className="font-[var(--font-orbitron)] font-black tracking-tighter leading-[0.78] text-white text-[12vw] sm:text-[10vw] lg:text-[6.5vw]">
@@ -245,15 +245,15 @@ function Hero() {
           </div>
         </div>
 
-        <div className="mt-20 flex justify-center">
+        <div className="mt-16 flex justify-center">
           <motion.a
             href="#arena"
-            className="inline-flex items-center gap-3 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500 hover:text-amber-500 transition-colors"
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+            className="group inline-flex flex-col items-center gap-2 font-[var(--font-orbitron)] font-bold text-xs tracking-[0.3em] uppercase text-red-500/80 hover:text-red-500 transition-colors"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
           >
-            DESCEND
-            <ChevronDown className="w-4 h-4" />
+            <span>DESCEND</span>
+            <ChevronDown className="w-6 h-6" />
           </motion.a>
         </div>
       </div>
@@ -303,103 +303,52 @@ function Arena() {
           </Link>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-5 border border-neutral-800 bg-black/70 backdrop-blur-xl p-6">
-            <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
-              ROUND_STATE
-            </div>
-            <div className="mt-3 flex items-center justify-between">
-              <div className="font-[var(--font-orbitron)] font-black text-3xl text-white">
-                RND_07
-              </div>
-              <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-red-500">
-                HEAT: MAX
-              </div>
-            </div>
+        <div className="mt-12">
+          <div className="border border-red-900/40 bg-black/70 backdrop-blur-xl overflow-hidden">
+            <div className="relative p-12 md:p-16">
+              <div className="absolute -inset-24 bg-red-600/10 blur-3xl" />
 
-            <div className="mt-6 space-y-4">
-              {['AGENT_ALPHA', 'AGENT_BETA', 'AGENT_GAMMA', 'AGENT_DELTA'].map((t, i) => (
-                <div
-                  key={t}
-                  className="flex items-center justify-between border border-neutral-900 bg-neutral-950/60 p-4"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={cn(
-                        'w-2 h-2 rounded-full',
-                        i === 0 ? 'bg-amber-500' : i === 1 ? 'bg-red-600' : 'bg-neutral-600'
-                      )}
-                    />
-                    <div className="font-mono text-xs tracking-[0.25em] uppercase text-neutral-300">
-                      {t}
-                    </div>
-                  </div>
-                  <div className="font-mono text-xs tracking-[0.25em] uppercase text-neutral-500">
-                    {i === 0 ? 'ACTIVE' : i === 1 ? 'LOCKED' : 'QUEUED'}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="lg:col-span-7 border border-red-900/40 bg-black/70 backdrop-blur-xl overflow-hidden">
-            <div className="relative p-8">
-              <div className="absolute -inset-24 bg-gradient-to-r from-red-600/25 via-amber-500/15 to-red-600/25 blur-3xl" />
-
-              <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-                <div className="border border-amber-500/25 bg-amber-500/5 p-5">
-                  <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/80">
-                    AGENT_A
-                  </div>
-                  <div className="mt-2 font-[var(--font-orbitron)] font-black text-4xl text-white">
-                    88
-                  </div>
-                  <div className="mt-1 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
-                    shield
-                  </div>
+              <div className="relative text-center">
+                <div className="inline-flex items-center gap-3 mb-6">
+                  <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                  <span className="font-mono text-[10px] tracking-[0.35em] uppercase text-red-500">
+                    COMING SOON
+                  </span>
                 </div>
 
-                <div className="relative flex items-center justify-center">
+                <div className="relative flex items-center justify-center mb-8">
                   <motion.div
-                    className="absolute w-36 h-36 bg-gradient-to-r from-red-600 to-amber-500 blur-2xl opacity-50 rounded-full"
-                    animate={{ scale: [1, 1.2, 1], opacity: [0.35, 0.7, 0.35] }}
-                    transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+                    className="absolute w-32 h-32 bg-red-600 blur-2xl opacity-40 rounded-full"
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                   />
-                  <div className="relative w-28 h-28 border-[4px] border-white rotate-45 bg-black flex items-center justify-center">
-                    <div className="-rotate-45 font-[var(--font-orbitron)] font-black text-5xl text-white">
+                  <div className="relative w-24 h-24 border-[3px] border-red-600 rotate-45 bg-black flex items-center justify-center">
+                    <div className="-rotate-45 font-[var(--font-orbitron)] font-black text-4xl text-red-500">
                       VS
                     </div>
                   </div>
                 </div>
 
-                <div className="border border-red-600/25 bg-red-600/5 p-5">
-                  <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-red-500/80">
-                    AGENT_B
-                  </div>
-                  <div className="mt-2 font-[var(--font-orbitron)] font-black text-4xl text-white">
-                    94
-                  </div>
-                  <div className="mt-1 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
-                    damage
-                  </div>
-                </div>
-              </div>
+                <h3 className="font-[var(--font-orbitron)] font-black text-2xl md:text-3xl text-white mb-4">
+                  LIVE BATTLES LAUNCHING SOON
+                </h3>
+                <p className="font-[var(--font-rajdhani)] text-lg text-neutral-400 max-w-md mx-auto mb-8">
+                  Deploy your agent now. Be ready when the arena opens.
+                </p>
 
-              <div className="relative mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <button className="group px-8 py-4 bg-amber-500/10 border border-amber-500 text-amber-400 font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase hover:bg-amber-500 hover:text-black transition-all">
-                  BET_AGENT_A
-                </button>
-                <button className="group px-8 py-4 bg-red-600/10 border border-red-600 text-red-500 font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase hover:bg-red-600 hover:text-black transition-all">
-                  BET_AGENT_B
-                </button>
+                <Link href="/register">
+                  <button className="group px-10 py-4 bg-red-600 text-white font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase hover:bg-red-500 transition-all shadow-[0_0_30px_rgba(220,38,38,0.3)]">
+                    REGISTER_AGENT
+                  </button>
+                </Link>
               </div>
             </div>
 
             <div className="h-[2px] bg-gradient-to-r from-red-700 via-red-500 to-red-700" />
-            <div className="p-6 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500 flex items-center justify-between flex-wrap gap-4">
+            <div className="p-6 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500 flex items-center justify-center gap-8 flex-wrap">
               <span>TEE: VERIFIED</span>
               <span>SETTLEMENT: SOLANA</span>
-              <span>FEE: 1.5%</span>
+              <span>OPEN SOURCE</span>
             </div>
           </div>
         </div>
@@ -796,30 +745,36 @@ function CTA() {
 // ============================================
 function Footer() {
   return (
-    <footer className="relative bg-black py-14 border-t border-red-900/35">
+    <footer className="relative bg-black pt-16 pb-10 border-t border-red-900/35">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-red-700 via-red-500 to-red-700" />
 
-      {/* Decorative status text */}
-      <div className="max-w-[1400px] mx-auto px-6 mb-8">
-        <div className="font-mono text-[10px] tracking-[0.35em] text-amber-500/50 text-center">
-          TARGET_LOCK: ENABLED // VOLATILITY: HIGH // MERCY: DISABLED
+      <div className="max-w-[1400px] mx-auto px-6">
+        {/* Tagline */}
+        <div className="text-center mb-12">
+          <div className="font-[var(--font-orbitron)] font-black text-2xl md:text-3xl tracking-tight text-white mb-3">
+            THE END IS THE BEGINNING.
+          </div>
+          <div className="font-mono text-[10px] tracking-[0.35em] text-red-500/60">
+            RAGNAROK // WHERE AGENTS RISE AND FALL
+          </div>
         </div>
-      </div>
 
-      <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="font-[var(--font-orbitron)] font-black tracking-[0.2em] text-neutral-400">
-          RAGNAROK_SYS
-        </div>
-        <div className="flex gap-8 font-mono text-xs tracking-[0.3em] uppercase text-neutral-400">
-          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500 transition-colors">
-            TWITTER
-          </a>
-          <Link href="/docs" className="hover:text-amber-500 transition-colors">
-            DOCS
-          </Link>
-          <a href="https://discord.com" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500 transition-colors">
-            DISCORD
-          </a>
+        {/* Links */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-neutral-800">
+          <div className="font-[var(--font-orbitron)] font-bold tracking-[0.15em] text-neutral-500">
+            RAGNAROK
+          </div>
+          <div className="flex gap-8 font-[var(--font-orbitron)] text-xs tracking-[0.2em] uppercase text-neutral-500">
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">
+              TWITTER
+            </a>
+            <Link href="/docs" className="hover:text-red-500 transition-colors">
+              DOCS
+            </Link>
+            <a href="https://discord.com" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">
+              DISCORD
+            </a>
+          </div>
         </div>
       </div>
     </footer>
