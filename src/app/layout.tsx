@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Space_Grotesk, JetBrains_Mono } from 'next/font/google';
+import { Space_Grotesk, JetBrains_Mono, Orbitron, Rajdhani } from 'next/font/google';
 import WalletProvider from '@/components/wallet/WalletProvider';
 import LayoutWrapper from '@/components/layout/LayoutWrapper';
 import { ToastProvider } from '@/hooks/useToast';
@@ -15,6 +15,19 @@ const spaceGrotesk = Space_Grotesk({
 const jetbrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
   subsets: ['latin'],
+  display: 'swap',
+});
+
+const orbitron = Orbitron({
+  variable: '--font-orbitron',
+  subsets: ['latin'],
+  display: 'swap',
+});
+
+const rajdhani = Rajdhani({
+  variable: '--font-rajdhani',
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
   display: 'swap',
 });
 
@@ -117,7 +130,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased min-h-screen flex flex-col bg-[#0a0a12] text-[#e8e8e8]`}
+        className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${orbitron.variable} ${rajdhani.variable} antialiased min-h-screen flex flex-col bg-[#0a0a12] text-[#e8e8e8]`}
       >
         <ErrorBoundary>
           <WalletProvider>

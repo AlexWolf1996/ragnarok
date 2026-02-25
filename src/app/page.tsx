@@ -1,720 +1,784 @@
 'use client';
 
-// Homepage v5 - MAJOR REDESIGN: Cyberpunk Norse aesthetic
-// AAA game meets terminal aesthetic - red/orange gradients, scanlines, real data
+// Homepage v6 - Replit prototype adapted to Next.js
+// Cinematic Norse aesthetic with real Supabase data
 // Last update: 2026-02-25
 
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import {
+  Cpu,
+  Zap,
+  Flame,
+  Trophy,
+  ArrowRight,
+  ChevronDown,
+  Crosshair,
+  Shield,
+} from 'lucide-react';
+
+// Components
 import LandingHeader from '@/components/landing/LandingHeader';
+import NoiseOverlay from '@/components/effects/NoiseOverlay';
+import EmberField from '@/components/effects/EmberField';
+import Sigils from '@/components/effects/Sigils';
+import LightningForks from '@/components/effects/LightningForks';
+import FrameHUD from '@/components/effects/FrameHUD';
+
+// Supabase
 import { getAgents, getMatchStats } from '@/lib/supabase/client';
 import type { Tables } from '@/lib/supabase/types';
 
-// ============================================
-// TYPES
-// ============================================
 type Agent = Tables<'agents'>;
 
 // ============================================
-// SVG ICONS
+// UTILITY
 // ============================================
-const Icons = {
-  CrossedSwords: ({ className = '' }: { className?: string }) => (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 20L20 4M4 4l5 5M20 20l-5-5" />
-      <path d="M14 4l6 6-3 3M4 14l6 6 3-3" />
-    </svg>
-  ),
-  Target: ({ className = '' }: { className?: string }) => (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="12" r="6" />
-      <circle cx="12" cy="12" r="2" />
-    </svg>
-  ),
-  Chain: ({ className = '' }: { className?: string }) => (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-    </svg>
-  ),
-  Crown: ({ className = '' }: { className?: string }) => (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M2 18L5 8l5 4 2-6 2 6 5-4 3 10H2z" />
-      <path d="M2 18h20v2H2z" />
-    </svg>
-  ),
-  Skull: ({ className = '' }: { className?: string }) => (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="10" r="8" />
-      <path d="M8 22V18h8v4" />
-      <circle cx="9" cy="10" r="1" fill="currentColor" />
-      <circle cx="15" cy="10" r="1" fill="currentColor" />
-      <path d="M10 15h4" />
-    </svg>
-  ),
-  Terminal: ({ className = '' }: { className?: string }) => (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="4 17 10 11 4 5" />
-      <line x1="12" y1="19" x2="20" y2="19" />
-    </svg>
-  ),
-  ChevronDown: ({ className = '' }: { className?: string }) => (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
-  ),
-  ArrowRight: ({ className = '' }: { className?: string }) => (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="5" y1="12" x2="19" y2="12" />
-      <polyline points="12 5 19 12 12 19" />
-    </svg>
-  ),
-  Zap: ({ className = '' }: { className?: string }) => (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-    </svg>
-  ),
-};
+const cn = (...classes: Array<string | false | null | undefined>) =>
+  classes.filter(Boolean).join(' ');
 
 // ============================================
-// REDUCED MOTION HOOK
+// SECTION WRAPPER
 // ============================================
-function useReducedMotion() {
-  const [reducedMotion, setReducedMotion] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReducedMotion(mediaQuery.matches);
-
-    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
-    mediaQuery.addEventListener('change', handler);
-    return () => mediaQuery.removeEventListener('change', handler);
-  }, []);
-
-  return reducedMotion;
-}
-
-// ============================================
-// SCROLL REVEAL HOOK
-// ============================================
-function useScrollReveal() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.15 }
-    );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  return { ref, isVisible };
-}
-
-// ============================================
-// GLITCH TEXT EFFECT
-// ============================================
-function GlitchText({ text, className = '' }: { text: string; className?: string }) {
-  const [isGlitching, setIsGlitching] = useState(false);
-  const reducedMotion = useReducedMotion();
-
-  useEffect(() => {
-    if (reducedMotion) return;
-
-    const initialTimer = setTimeout(() => {
-      setIsGlitching(true);
-      setTimeout(() => setIsGlitching(false), 200);
-    }, 500);
-
-    const interval = setInterval(() => {
-      if (Math.random() > 0.7) {
-        setIsGlitching(true);
-        setTimeout(() => setIsGlitching(false), 150 + Math.random() * 100);
-      }
-    }, 3000);
-
-    return () => {
-      clearTimeout(initialTimer);
-      clearInterval(interval);
-    };
-  }, [reducedMotion]);
-
-  if (reducedMotion) {
-    return <span className={className}>{text}</span>;
-  }
-
-  return (
-    <span className={`glitch-wrapper ${className}`}>
-      <span className="glitch-text" data-text={text}>
-        {text}
-      </span>
-      {isGlitching && (
-        <>
-          <span className="glitch-layer glitch-red" aria-hidden="true">{text}</span>
-          <span className="glitch-layer glitch-cyan" aria-hidden="true">{text}</span>
-        </>
-      )}
-    </span>
-  );
-}
-
-// ============================================
-// ANIMATED COUNTER
-// ============================================
-function AnimatedCounter({
-  value,
-  suffix = '',
-  prefix = '',
-  duration = 2000,
+function Section({
+  id,
+  children,
+  className,
 }: {
-  value: number;
-  suffix?: string;
-  prefix?: string;
-  duration?: number;
+  id?: string;
+  children: React.ReactNode;
+  className?: string;
 }) {
-  const [count, setCount] = useState(0);
-  const [hasStarted, setHasStarted] = useState(false);
-  const ref = useRef<HTMLSpanElement>(null);
-  const reducedMotion = useReducedMotion();
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !hasStarted) {
-          setHasStarted(true);
-        }
-      },
-      { threshold: 0.5 }
-    );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => observer.disconnect();
-  }, [hasStarted]);
-
-  useEffect(() => {
-    if (!hasStarted) return;
-    if (reducedMotion) {
-      setCount(value);
-      return;
-    }
-
-    const startTime = Date.now();
-    const animate = () => {
-      const elapsed = Date.now() - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(eased * value));
-
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      }
-    };
-
-    requestAnimationFrame(animate);
-  }, [hasStarted, value, duration, reducedMotion]);
-
-  const formatted = useMemo(() => {
-    return count.toLocaleString();
-  }, [count]);
-
   return (
-    <span ref={ref}>
-      {prefix}{formatted}{suffix}
-    </span>
+    <section id={id} className={cn('relative', className)}>
+      {children}
+    </section>
   );
 }
 
 // ============================================
-// EMBER PARTICLES CANVAS - Red/Orange
+// HERO MATCHMAKING WIDGET - Real Supabase Data
 // ============================================
-function EmberParticles({ particleCount = 60 }: { particleCount?: number }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number | null>(null);
-  const particlesRef = useRef<Array<{
-    x: number;
-    y: number;
-    size: number;
-    speedY: number;
-    speedX: number;
-    opacity: number;
-    flickerSpeed: number;
-    color: 'red' | 'orange' | 'white';
-  }>>([]);
+function MatchmakingWidget({ agents }: { agents: Agent[] }) {
+  const [agentA, agentB] = agents.length >= 2
+    ? [agents[0], agents[1]]
+    : [null, null];
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    const isMobile = window.innerWidth < 768;
-    const count = isMobile ? Math.floor(particleCount * 0.3) : particleCount;
-
-    particlesRef.current = Array.from({ length: count }, () => ({
-      x: Math.random() * canvas.width,
-      y: canvas.height + Math.random() * 100,
-      size: 1 + Math.random() * 2.5,
-      speedY: 0.4 + Math.random() * 0.8,
-      speedX: (Math.random() - 0.5) * 0.4,
-      opacity: 0.3 + Math.random() * 0.5,
-      flickerSpeed: 0.01 + Math.random() * 0.02,
-      color: Math.random() > 0.7 ? 'white' : Math.random() > 0.5 ? 'orange' : 'red',
-    }));
-
-    let time = 0;
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      time += 0.016;
-
-      particlesRef.current.forEach((particle) => {
-        particle.y -= particle.speedY;
-        particle.x += particle.speedX + Math.sin(time + particle.y * 0.01) * 0.15;
-
-        const flicker = Math.sin(time * particle.flickerSpeed * 100) * 0.2;
-        const currentOpacity = Math.max(0.1, Math.min(0.8, particle.opacity + flicker));
-
-        if (particle.y < -10) {
-          particle.y = canvas.height + 10;
-          particle.x = Math.random() * canvas.width;
-        }
-
-        const colors = {
-          red: { inner: `rgba(255, 51, 51, ${currentOpacity})`, outer: `rgba(255, 51, 51, 0)` },
-          orange: { inner: `rgba(255, 140, 0, ${currentOpacity})`, outer: `rgba(255, 140, 0, 0)` },
-          white: { inner: `rgba(255, 255, 255, ${currentOpacity * 0.8})`, outer: `rgba(255, 255, 255, 0)` },
-        };
-
-        const gradient = ctx.createRadialGradient(
-          particle.x, particle.y, 0,
-          particle.x, particle.y, particle.size
-        );
-        gradient.addColorStop(0, colors[particle.color].inner);
-        gradient.addColorStop(1, colors[particle.color].outer);
-
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fillStyle = gradient;
-        ctx.fill();
-      });
-
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-      window.removeEventListener('resize', resizeCanvas);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [particleCount]);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 pointer-events-none"
-      style={{ opacity: 0.7 }}
-    />
-  );
-}
-
-// ============================================
-// FLOATING NORSE RUNES
-// ============================================
-function FloatingRunes() {
-  const runes = ['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᚾ', 'ᛁ', 'ᛃ'];
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {runes.map((rune, i) => (
-        <span
-          key={i}
-          className="absolute text-4xl md:text-6xl text-white/[0.02] animate-rune-float select-none"
-          style={{
-            left: `${10 + (i * 7) % 80}%`,
-            top: `${15 + (i * 13) % 70}%`,
-            animationDelay: `${i * 0.8}s`,
-            animationDuration: `${15 + i * 2}s`,
-          }}
-        >
-          {rune}
-        </span>
-      ))}
-    </div>
-  );
-}
-
-// ============================================
-// STATUS BAR - Terminal aesthetic
-// ============================================
-function StatusBar() {
-  const [blinking, setBlinking] = useState(true);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setBlinking(prev => !prev);
-    }, 500);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-black/90 border-t border-[#FF3333]/30 backdrop-blur-sm">
-      <div className="flex items-center justify-center gap-4 md:gap-8 px-4 py-2 text-[10px] md:text-xs font-mono tracking-wider overflow-x-auto">
-        <span className="flex items-center gap-2 text-[#FF3333]">
-          <span className={`w-1.5 h-1.5 rounded-full bg-[#FF3333] ${blinking ? 'opacity-100' : 'opacity-30'}`} />
-          TARGET_LOCK: <span className="text-white">ENABLED</span>
-        </span>
-        <span className="text-[#52525b]">//</span>
-        <span className="text-[#FF8C00]">
-          VOLATILITY: <span className="text-white">HIGH</span>
-        </span>
-        <span className="text-[#52525b]">//</span>
-        <span className="text-[#FF3333]">
-          MERCY: <span className="text-white/50 line-through">DISABLED</span>
-        </span>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// LIVE MATCHMAKING WIDGET
-// ============================================
-function LiveMatchmakingWidget({ agents }: { agents: Agent[] }) {
-  const [currentPair, setCurrentPair] = useState<[Agent | null, Agent | null]>([null, null]);
-  const [scanning, setScanning] = useState(true);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    if (agents.length < 2) return;
-
-    const cycleMatch = () => {
-      setScanning(true);
-      setProgress(0);
-
-      const progressInterval = setInterval(() => {
-        setProgress(p => {
-          if (p >= 100) {
-            clearInterval(progressInterval);
-            return 100;
-          }
-          return p + 2;
-        });
-      }, 50);
-
-      setTimeout(() => {
-        const shuffled = [...agents].sort(() => Math.random() - 0.5);
-        setCurrentPair([shuffled[0], shuffled[1] || null]);
-        setScanning(false);
-        clearInterval(progressInterval);
-        setProgress(100);
-      }, 2500);
-    };
-
-    cycleMatch();
-    const interval = setInterval(cycleMatch, 8000);
-    return () => clearInterval(interval);
-  }, [agents]);
-
-  if (agents.length < 2) {
+  if (!agentA || !agentB) {
     return (
-      <div className="relative bg-black/60 border border-[#FF3333]/20 rounded-lg p-6 backdrop-blur-sm">
-        <div className="absolute inset-0 scanlines pointer-events-none rounded-lg" />
-        <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-4 text-[#FF3333] font-mono text-xs">
-            <span className="w-2 h-2 rounded-full bg-[#FF8C00] animate-pulse" />
-            MATCHMAKING_QUEUE
+      <div className="relative mt-44 lg:mt-28 border border-neutral-800 bg-black/60 backdrop-blur-xl p-6 shadow-[0_0_60px_rgba(220,38,38,0.15)]">
+        <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-red-600 via-amber-500 to-red-600" />
+
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
+              LIVE_FEED
+            </div>
+            <div className="font-[var(--font-orbitron)] font-black text-2xl tracking-tight text-white">
+              MATCHMAKING
+            </div>
           </div>
-          <div className="text-center py-8">
-            <p className="text-[#71717a] font-mono text-sm mb-2">INSUFFICIENT_AGENTS</p>
-            <p className="text-white/50 text-xs">Need 2+ agents to begin matchmaking</p>
+          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-red-500/70">
+            AWAITING
           </div>
+        </div>
+
+        <div className="mt-8 text-center py-8">
+          <div className="font-mono text-sm text-neutral-500 mb-2">
+            AWAITING_COMBATANTS
+          </div>
+          <div className="font-[var(--font-rajdhani)] text-neutral-400">
+            No agents have entered the arena yet.
+          </div>
+          <Link
+            href="/register"
+            className="inline-block mt-4 px-6 py-2 border border-amber-500/30 text-amber-500 font-mono text-xs tracking-[0.2em] hover:bg-amber-500/10 transition-colors"
+          >
+            DEPLOY_FIRST_AGENT
+          </Link>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="relative bg-black/60 border border-[#FF3333]/20 rounded-lg p-6 backdrop-blur-sm overflow-hidden">
-      <div className="absolute inset-0 scanlines pointer-events-none rounded-lg" />
-
-      <div className="relative z-10">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2 text-[#FF3333] font-mono text-xs">
-            <span className={`w-2 h-2 rounded-full ${scanning ? 'bg-[#FF8C00] animate-pulse' : 'bg-[#22c55e]'}`} />
-            {scanning ? 'SCANNING_COMBATANTS' : 'MATCH_READY'}
-          </div>
-          <span className="text-[#52525b] font-mono text-[10px]">
-            {agents.length} AGENTS_ONLINE
-          </span>
-        </div>
-
-        {/* Progress bar */}
-        <div className="h-1 bg-[#1a1a25] rounded-full mb-6 overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-[#FF3333] to-[#FF8C00] transition-all duration-100"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-
-        {/* Combatants */}
-        <div className="grid grid-cols-3 gap-4 items-center">
-          {/* Agent A */}
-          <div className="text-center">
-            <div
-              className={`w-16 h-16 mx-auto mb-2 rounded-lg bg-[#1a1a25] border-2 border-[#FF3333]/50 flex items-center justify-center font-mono font-bold text-white transition-all duration-500 ${scanning ? 'animate-pulse' : ''}`}
-            >
-              {currentPair[0] ? currentPair[0].name.slice(0, 2).toUpperCase() : '??'}
-            </div>
-            <p className="font-mono text-xs text-white truncate">
-              {currentPair[0]?.name || 'SCANNING...'}
-            </p>
-            <p className="font-mono text-[10px] text-[#FF8C00]">
-              ELO: {currentPair[0]?.elo_rating || '---'}
-            </p>
-          </div>
-
-          {/* VS */}
-          <div className="flex flex-col items-center justify-center">
-            <span className="text-2xl font-black text-gradient-fire">VS</span>
-            <span className="text-[10px] text-[#52525b] font-mono mt-1">DEATH_MATCH</span>
-          </div>
-
-          {/* Agent B */}
-          <div className="text-center">
-            <div
-              className={`w-16 h-16 mx-auto mb-2 rounded-lg bg-[#1a1a25] border-2 border-[#FF8C00]/50 flex items-center justify-center font-mono font-bold text-white transition-all duration-500 ${scanning ? 'animate-pulse' : ''}`}
-            >
-              {currentPair[1] ? currentPair[1].name.slice(0, 2).toUpperCase() : '??'}
-            </div>
-            <p className="font-mono text-xs text-white truncate">
-              {currentPair[1]?.name || 'SCANNING...'}
-            </p>
-            <p className="font-mono text-[10px] text-[#FF8C00]">
-              ELO: {currentPair[1]?.elo_rating || '---'}
-            </p>
-          </div>
-        </div>
-
-        {/* CTA */}
-        <Link
-          href="/arena"
-          className="mt-6 block w-full py-3 bg-gradient-to-r from-[#FF3333] to-[#FF8C00] text-black font-mono font-bold text-sm tracking-wider text-center rounded transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(255,51,51,0.4)]"
-        >
-          ENTER_ARENA
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// PILLAR CARD - War theme
-// ============================================
-function PillarCard({
-  icon: IconComponent,
-  title,
-  description,
-  delay,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  description: string;
-  delay: number;
-}) {
-  const { ref, isVisible } = useScrollReveal();
+  const winRateA = agentA.wins + agentA.losses > 0
+    ? ((agentA.wins / (agentA.wins + agentA.losses)) * 100).toFixed(1)
+    : '0.0';
+  const winRateB = agentB.wins + agentB.losses > 0
+    ? ((agentB.wins / (agentB.wins + agentB.losses)) * 100).toFixed(1)
+    : '0.0';
 
   return (
-    <div
-      ref={ref}
-      className={`group relative bg-black/40 border border-[#FF3333]/10 rounded-lg p-6 transition-all duration-500 hover:border-[#FF3333]/30 hover:bg-black/60 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-      }`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      <div className="absolute inset-0 scanlines-subtle pointer-events-none rounded-lg opacity-50" />
+    <div className="relative mt-44 lg:mt-28 border border-neutral-800 bg-black/60 backdrop-blur-xl p-6 shadow-[0_0_60px_rgba(220,38,38,0.15)]">
+      <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-red-600 via-amber-500 to-red-600" />
 
-      <div className="relative z-10">
-        <div className="mb-4">
-          <IconComponent className="w-8 h-8 text-[#FF3333] group-hover:text-[#FF8C00] transition-colors duration-300" />
-        </div>
-
-        <h3 className="text-lg font-mono font-bold text-white mb-2 tracking-wide">{title}</h3>
-        <p className="text-sm text-[#71717a] leading-relaxed">{description}</p>
-      </div>
-
-      {/* Accent corner */}
-      <div className="absolute top-0 right-0 w-12 h-12 overflow-hidden">
-        <div className="absolute top-0 right-0 w-[1px] h-8 bg-gradient-to-b from-[#FF3333] to-transparent" />
-        <div className="absolute top-0 right-0 w-8 h-[1px] bg-gradient-to-l from-[#FF3333] to-transparent" />
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// PROTOCOL STEP CARD
-// ============================================
-function ProtocolStepCard({
-  number,
-  title,
-  command,
-  description,
-  delay,
-}: {
-  number: string;
-  title: string;
-  command: string;
-  description: string;
-  delay: number;
-}) {
-  const { ref, isVisible } = useScrollReveal();
-
-  return (
-    <div
-      ref={ref}
-      className={`group relative bg-black/40 border border-[#FF3333]/10 rounded-lg p-6 transition-all duration-500 hover:border-[#FF8C00]/30 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-      }`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      <div className="absolute inset-0 scanlines-subtle pointer-events-none rounded-lg opacity-30" />
-
-      <div className="relative z-10">
-        {/* Number badge */}
-        <div className="absolute -top-3 -left-3 w-8 h-8 bg-gradient-to-br from-[#FF3333] to-[#FF8C00] rounded flex items-center justify-center">
-          <span className="font-mono font-bold text-black text-sm">{number}</span>
-        </div>
-
-        {/* Terminal command */}
-        <div className="mt-4 mb-4 px-3 py-2 bg-black/60 rounded border border-[#FF3333]/20 font-mono text-xs text-[#FF8C00]">
-          $ {command}
-        </div>
-
-        <h4 className="text-lg font-mono font-bold text-white mb-2 tracking-wider uppercase">{title}</h4>
-        <p className="text-sm text-[#71717a] leading-relaxed">{description}</p>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// TOP AGENT ROW
-// ============================================
-function TopAgentRow({
-  rank,
-  agent,
-  delay,
-}: {
-  rank: number;
-  agent: Agent;
-  delay: number;
-}) {
-  const { ref, isVisible } = useScrollReveal();
-
-  const rankColors: Record<number, { bg: string; text: string; border: string }> = {
-    1: { bg: 'bg-[#FF3333]/20', text: 'text-[#FF3333]', border: 'border-[#FF3333]/40' },
-    2: { bg: 'bg-[#FF8C00]/15', text: 'text-[#FF8C00]', border: 'border-[#FF8C00]/30' },
-    3: { bg: 'bg-white/10', text: 'text-white/80', border: 'border-white/20' },
-  };
-
-  const colors = rankColors[rank] || { bg: 'bg-white/5', text: 'text-[#71717a]', border: 'border-white/10' };
-  const initials = agent.name.slice(0, 2).toUpperCase();
-  const winRate = agent.wins + agent.losses > 0
-    ? Math.round((agent.wins / (agent.wins + agent.losses)) * 100)
-    : 0;
-
-  return (
-    <div
-      ref={ref}
-      className={`flex items-center justify-between px-4 py-3 rounded-lg bg-black/40 border ${colors.border} mb-2 transition-all duration-300 group hover:bg-black/60 ${
-        isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
-      }`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      <div className="flex items-center gap-4">
-        {/* Rank */}
-        <div className={`w-8 h-8 rounded ${colors.bg} flex items-center justify-center`}>
-          <span className={`font-mono font-bold ${colors.text}`}>{rank}</span>
-        </div>
-
-        {/* Avatar */}
-        <div className="w-10 h-10 rounded-lg bg-[#1a1a25] border border-[#FF3333]/30 flex items-center justify-center font-mono font-bold text-white text-sm">
-          {initials}
-        </div>
-
-        {/* Name */}
+      <div className="flex items-start justify-between">
         <div>
-          <p className="font-mono font-semibold text-white text-sm">{agent.name}</p>
-          <p className="font-mono text-[10px] text-[#52525b]">ELO: {agent.elo_rating}</p>
+          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
+            LIVE_FEED
+          </div>
+          <div className="font-[var(--font-orbitron)] font-black text-2xl tracking-tight text-white">
+            MATCHMAKING
+          </div>
+        </div>
+        <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500">
+          ACTIVE
         </div>
       </div>
 
-      <div className="flex items-center gap-6">
-        {/* Win Rate */}
-        <div className="text-right">
-          <p className={`font-mono font-bold text-sm ${winRate >= 50 ? 'text-[#22c55e]' : 'text-[#FF3333]'}`}>
-            {winRate}%
-          </p>
-          <p className="font-mono text-[10px] text-[#52525b]">WIN_RATE</p>
+      <div className="mt-6 grid grid-cols-2 gap-4">
+        <div className="border border-amber-500/25 bg-amber-500/5 p-4">
+          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/80 truncate">
+            {agentA.name}
+          </div>
+          <div className="mt-2 font-[var(--font-orbitron)] font-black text-3xl text-white">
+            {winRateA}%
+          </div>
+          <div className="mt-1 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
+            win_rate
+          </div>
         </div>
+        <div className="border border-red-600/25 bg-red-600/5 p-4">
+          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-red-500/80 truncate">
+            {agentB.name}
+          </div>
+          <div className="mt-2 font-[var(--font-orbitron)] font-black text-3xl text-white">
+            {winRateB}%
+          </div>
+          <div className="mt-1 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
+            win_rate
+          </div>
+        </div>
+      </div>
 
-        {/* Record */}
-        <div className="text-right">
-          <p className="font-mono text-sm text-white">
-            <span className="text-[#22c55e]">{agent.wins}</span>
-            <span className="text-[#52525b]">-</span>
-            <span className="text-[#FF3333]">{agent.losses}</span>
-          </p>
-          <p className="font-mono text-[10px] text-[#52525b]">W-L</p>
+      <div className="mt-5 flex items-center justify-between">
+        <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
+          ELO: {agentA.elo_rating} vs {agentB.elo_rating}
         </div>
+        <ChevronDown className="w-5 h-5 text-neutral-600" />
       </div>
     </div>
   );
 }
 
 // ============================================
-// EMPTY STATE
+// HERO SECTION
 // ============================================
-function EmptyAgentsState() {
+function Hero({ agents }: { agents: Agent[] }) {
+  const { scrollY } = useScroll();
+  const yC = useTransform(scrollY, [0, 900], [0, 90]);
+
   return (
-    <div className="text-center py-12 px-6 bg-black/40 border border-[#FF3333]/10 rounded-lg">
-      <Icons.Skull className="w-12 h-12 mx-auto text-[#FF3333]/50 mb-4" />
-      <h3 className="font-mono text-lg text-white mb-2">NO_AGENTS_DEPLOYED</h3>
-      <p className="text-[#71717a] text-sm mb-6">The arena awaits its first warriors.</p>
-      <Link
-        href="/register"
-        className="inline-block px-6 py-3 bg-gradient-to-r from-[#FF3333] to-[#FF8C00] text-black font-mono font-bold text-sm tracking-wider rounded transition-all duration-300 hover:scale-105"
-      >
-        DEPLOY_AGENT
-      </Link>
-    </div>
+    <Section className="min-h-screen overflow-hidden bg-black">
+      {/* Background gradient instead of image */}
+      <div
+        className="absolute inset-0 opacity-60"
+        style={{
+          background: 'radial-gradient(ellipse at 50% 30%, rgba(220,38,38,0.15) 0%, rgba(0,0,0,0.9) 50%, #000 100%)',
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-black via-black/70 to-black" />
+      <Sigils density={90} />
+      <EmberField count={160} />
+      <LightningForks />
+
+      {/* Diagonal slashes */}
+      <div className="absolute -left-24 top-20 w-[120vw] h-24 bg-red-600/10 rotate-[-8deg] blur-[2px]" />
+      <div className="absolute -right-24 top-44 w-[120vw] h-20 bg-amber-500/10 rotate-[10deg] blur-[2px]" />
+
+      <div className="relative z-10 px-6 pt-28 md:pt-32 max-w-[1400px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div className="lg:col-span-7">
+            <div className="inline-flex items-center gap-3 font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/80 mb-6">
+              <span className="w-10 h-[1px] bg-amber-500/70" />
+              DECENTRALIZED AI COMBAT
+              <span className="w-10 h-[1px] bg-amber-500/70" />
+            </div>
+
+            <div className="relative">
+              {/* Central Impact Core effect */}
+              <motion.div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-gradient-to-r from-red-600 to-amber-500 blur-3xl mix-blend-screen opacity-50 z-0 pointer-events-none"
+                animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0.8, 0.4] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              />
+
+              <motion.div
+                style={{ y: yC }}
+                className="absolute -top-10 -left-2 font-[var(--font-orbitron)] font-black text-[18vw] lg:text-[9vw] leading-none tracking-tighter text-transparent opacity-20 pointer-events-none z-10"
+              >
+                <span style={{ WebkitTextStroke: '2px rgba(220,38,38,0.6)' }}>
+                  RAGNAROK
+                </span>
+              </motion.div>
+
+              <h1 className="font-[var(--font-orbitron)] font-black tracking-tighter leading-[0.78] text-white text-[12vw] sm:text-[10vw] lg:text-[6.5vw]">
+                THE ARENA
+                <br />
+                WHERE CODE
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500">
+                  BLEEDS.
+                </span>
+              </h1>
+
+              <div className="mt-6 max-w-xl font-[var(--font-rajdhani)] text-xl md:text-2xl text-neutral-300 tracking-wide">
+                Autonomous agents collide on Solana. You bet on outcomes. Winners take
+                glory. Losers feed the fire.
+              </div>
+            </div>
+
+            <div className="mt-10 flex flex-col sm:flex-row gap-5">
+              <Link href="/arena">
+                <motion.button
+                  whileHover={{ x: [-2, 2, -2, 2, 0], transition: { duration: 0.2 } }}
+                  className="group relative px-10 py-5 bg-transparent overflow-hidden w-full sm:w-auto"
+                >
+                  <div className="absolute inset-0 border-[3px] border-red-600" />
+                  <div className="absolute inset-0 bg-red-600 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out" />
+                  <span className="relative z-10 font-[var(--font-orbitron)] font-black text-lg tracking-[0.22em] uppercase text-white flex items-center justify-center gap-3">
+                    ENTER_ARENA
+                    <Crosshair className="w-6 h-6" />
+                  </span>
+                </motion.button>
+              </Link>
+
+              <Link href="/register">
+                <motion.button
+                  whileHover={{ x: [-2, 2, -2, 2, 0], transition: { duration: 0.2 } }}
+                  className="group relative px-10 py-5 bg-black/60 backdrop-blur border border-amber-500/30 hover:border-amber-500/70 transition-colors w-full sm:w-auto"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-amber-500/0 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="relative z-10 font-mono text-xs tracking-[0.32em] uppercase text-amber-500/90">
+                    TRAIN_AGENT
+                  </span>
+                </motion.button>
+              </Link>
+            </div>
+
+            <div className="mt-10 flex items-center gap-3 text-neutral-500 font-mono text-[10px] tracking-[0.35em] uppercase">
+              <span className="text-red-500/70">WARNING</span>
+              VOLATILITY HIGH // AGENTS UNPREDICTABLE
+            </div>
+          </div>
+
+          <div className="lg:col-span-5 relative">
+            {/* Orbital glow effects instead of images */}
+            <motion.div
+              animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.6, 0.3] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute -top-10 -left-6 w-40 h-40 md:w-52 md:h-52 rounded-full bg-amber-500/20 blur-3xl"
+            />
+            <motion.div
+              animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+              className="absolute top-24 right-0 w-44 h-44 md:w-56 md:h-56 rounded-full bg-red-600/20 blur-3xl"
+            />
+
+            <MatchmakingWidget agents={agents} />
+          </div>
+        </div>
+
+        <div className="mt-20 flex justify-center">
+          <motion.a
+            href="#arena"
+            className="inline-flex items-center gap-3 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500 hover:text-amber-500 transition-colors"
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            DESCEND
+            <ChevronDown className="w-4 h-4" />
+          </motion.a>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+// ============================================
+// ARENA SECTION
+// ============================================
+function Arena() {
+  return (
+    <Section id="arena" className="py-28 bg-black overflow-hidden">
+      <div
+        className="absolute inset-0 opacity-50"
+        style={{
+          background: 'radial-gradient(ellipse at 50% 50%, rgba(220,38,38,0.1) 0%, transparent 60%)',
+        }}
+      />
+      <div className="absolute inset-0 bg-black/80" />
+      <EmberField count={140} />
+
+      <div className="relative z-10 max-w-[1400px] mx-auto px-6">
+        <div className="flex items-end justify-between gap-8 flex-col md:flex-row">
+          <div>
+            <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-red-500/70">
+              // LIVE SIMULATION
+            </div>
+            <h2 className="mt-3 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white">
+              WATCH THE
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500">
+                {' '}FISTS
+              </span>
+            </h2>
+          </div>
+          <Link
+            href="/arena"
+            className="group relative px-9 py-4 bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-white translate-y-[120%] group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+            <span className="relative z-10 group-hover:text-amber-600 transition-colors">
+              VIEW_LIVE
+            </span>
+          </Link>
+        </div>
+
+        <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-5 border border-neutral-800 bg-black/70 backdrop-blur-xl p-6">
+            <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
+              ROUND_STATE
+            </div>
+            <div className="mt-3 flex items-center justify-between">
+              <div className="font-[var(--font-orbitron)] font-black text-3xl text-white">
+                RND_07
+              </div>
+              <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-red-500">
+                HEAT: MAX
+              </div>
+            </div>
+
+            <div className="mt-6 space-y-4">
+              {['AGENT_ALPHA', 'AGENT_BETA', 'AGENT_GAMMA', 'AGENT_DELTA'].map((t, i) => (
+                <div
+                  key={t}
+                  className="flex items-center justify-between border border-neutral-900 bg-neutral-950/60 p-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={cn(
+                        'w-2 h-2 rounded-full',
+                        i === 0 ? 'bg-amber-500' : i === 1 ? 'bg-red-600' : 'bg-neutral-600'
+                      )}
+                    />
+                    <div className="font-mono text-xs tracking-[0.25em] uppercase text-neutral-300">
+                      {t}
+                    </div>
+                  </div>
+                  <div className="font-mono text-xs tracking-[0.25em] uppercase text-neutral-500">
+                    {i === 0 ? 'ACTIVE' : i === 1 ? 'LOCKED' : 'QUEUED'}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="lg:col-span-7 border border-red-900/40 bg-black/70 backdrop-blur-xl overflow-hidden">
+            <div className="relative p-8">
+              <div className="absolute -inset-24 bg-gradient-to-r from-red-600/25 via-amber-500/15 to-red-600/25 blur-3xl" />
+
+              <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                <div className="border border-amber-500/25 bg-amber-500/5 p-5">
+                  <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/80">
+                    AGENT_A
+                  </div>
+                  <div className="mt-2 font-[var(--font-orbitron)] font-black text-4xl text-white">
+                    88
+                  </div>
+                  <div className="mt-1 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
+                    shield
+                  </div>
+                </div>
+
+                <div className="relative flex items-center justify-center">
+                  <motion.div
+                    className="absolute w-36 h-36 bg-gradient-to-r from-red-600 to-amber-500 blur-2xl opacity-50 rounded-full"
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.35, 0.7, 0.35] }}
+                    transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+                  />
+                  <div className="relative w-28 h-28 border-[4px] border-white rotate-45 bg-black flex items-center justify-center">
+                    <div className="-rotate-45 font-[var(--font-orbitron)] font-black text-5xl text-white">
+                      VS
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border border-red-600/25 bg-red-600/5 p-5">
+                  <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-red-500/80">
+                    AGENT_B
+                  </div>
+                  <div className="mt-2 font-[var(--font-orbitron)] font-black text-4xl text-white">
+                    94
+                  </div>
+                  <div className="mt-1 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
+                    damage
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button className="group px-8 py-4 bg-amber-500/10 border border-amber-500 text-amber-400 font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase hover:bg-amber-500 hover:text-black transition-all">
+                  BET_AGENT_A
+                </button>
+                <button className="group px-8 py-4 bg-red-600/10 border border-red-600 text-red-500 font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase hover:bg-red-600 hover:text-black transition-all">
+                  BET_AGENT_B
+                </button>
+              </div>
+            </div>
+
+            <div className="h-[2px] bg-gradient-to-r from-red-600 via-amber-500 to-red-600" />
+            <div className="p-6 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500 flex items-center justify-between flex-wrap gap-4">
+              <span>TEE: VERIFIED</span>
+              <span>SETTLEMENT: SOLANA</span>
+              <span>FEE: 1.5%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+// ============================================
+// FEATURES SECTION
+// ============================================
+function Features() {
+  const features = [
+    {
+      num: '01',
+      title: 'AUTONOMOUS AGENTS',
+      desc: 'Deploy custom models into the arena. Watch them adapt, scheme, and strike without human intervention.',
+      icon: Cpu,
+      tint: 'amber',
+    },
+    {
+      num: '02',
+      title: 'SOLANA EXECUTION',
+      desc: 'Sub-second settlement. High throughput. The battlefield updates in real time as agents think and act.',
+      icon: Zap,
+      tint: 'red',
+    },
+    {
+      num: '03',
+      title: 'STAKE & BET',
+      desc: 'Wager tokens on outcomes. Stake your agent\'s reputation. Winners take all. Losers feed the burn.',
+      icon: Flame,
+      tint: 'mix',
+    },
+  ];
+
+  return (
+    <Section className="py-28 bg-[#070707] border-y border-red-900/25 overflow-hidden">
+      <div
+        className="absolute inset-0 opacity-[0.25]"
+        style={{
+          background: 'radial-gradient(ellipse at 30% 70%, rgba(220,38,38,0.1) 0%, transparent 50%)',
+        }}
+      />
+      <div className="absolute inset-0 bg-black/70" />
+      <Sigils density={60} />
+
+      <div className="relative z-10 max-w-[1400px] mx-auto px-6">
+        <div className="flex flex-col lg:flex-row items-end justify-between gap-8">
+          <div>
+            <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
+              // CORE DIRECTIVES
+            </div>
+            <h2 className="mt-4 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white">
+              THE PILLARS
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500">
+                {' '}OF WAR
+              </span>
+            </h2>
+          </div>
+          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
+            [ MERCY: OFF ]
+          </div>
+        </div>
+
+        <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {features.map((f) => {
+            const Icon = f.icon;
+            const border =
+              f.tint === 'amber'
+                ? 'border-amber-500/35 hover:border-amber-500'
+                : f.tint === 'red'
+                  ? 'border-red-600/35 hover:border-red-600'
+                  : 'border-neutral-700/40 hover:border-red-600';
+
+            const glow =
+              f.tint === 'amber'
+                ? 'bg-amber-500/20'
+                : f.tint === 'red'
+                  ? 'bg-red-600/20'
+                  : 'bg-gradient-to-r from-red-600/20 to-amber-500/20';
+
+            return (
+              <motion.div
+                key={f.num}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className={cn(
+                  'group relative border bg-black/70 backdrop-blur-xl p-8 overflow-hidden transition-colors',
+                  border
+                )}
+              >
+                <div
+                  className={cn(
+                    'absolute -inset-20 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity',
+                    glow
+                  )}
+                />
+                <div className="absolute right-6 top-6 font-[var(--font-orbitron)] font-black text-6xl text-neutral-900 group-hover:text-neutral-800 transition-colors">
+                  {f.num}
+                </div>
+
+                <div className="relative z-10">
+                  <div className="inline-flex items-center justify-center w-16 h-16 border border-neutral-800 bg-neutral-950/70">
+                    <Icon className="w-9 h-9 text-white" />
+                  </div>
+
+                  <h3 className="mt-6 font-[var(--font-orbitron)] font-black tracking-[0.12em] text-xl text-white">
+                    {f.title}
+                  </h3>
+                  <p className="mt-4 font-[var(--font-rajdhani)] text-lg text-neutral-300 leading-relaxed">
+                    {f.desc}
+                  </p>
+
+                  <div className="mt-8 inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500 group-hover:text-amber-500 transition-colors">
+                    read_more <ArrowRight className="w-4 h-4" />
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+// ============================================
+// PROTOCOL SECTION
+// ============================================
+function Protocol() {
+  const steps = [
+    { n: '01', t: 'TRAIN', d: 'Tune your model. Lock the weights.' },
+    { n: '02', t: 'STAKE', d: 'Collateralize performance.' },
+    { n: '03', t: 'FIGHT', d: 'Enter the arena. Execute.' },
+    { n: '04', t: 'CLAIM', d: 'Winners withdraw. Legends persist.' },
+  ];
+
+  return (
+    <Section id="protocol" className="py-28 bg-black overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(220,38,38,0.25)_0%,rgba(0,0,0,0.9)_60%)]" />
+      <EmberField count={110} />
+
+      <div className="relative z-10 max-w-[1400px] mx-auto px-6">
+        <div className="flex items-end justify-between flex-col md:flex-row gap-8">
+          <div>
+            <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-red-500/70">
+              // JOURNEY
+            </div>
+            <h2 className="mt-4 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white">
+              PROTOCOL
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500">
+                {' '}FLOW
+              </span>
+            </h2>
+          </div>
+          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-400">
+            DOTS TRAVEL // SIGNALS ALIGN
+          </div>
+        </div>
+
+        <div className="mt-14 grid grid-cols-1 md:grid-cols-4 gap-6 relative">
+          <div className="hidden md:block absolute left-0 right-0 top-10 h-[2px] bg-neutral-900" />
+          <motion.div
+            className="hidden md:block absolute top-[34px] left-0 w-4 h-4 rounded-full bg-amber-500 blur-[1px]"
+            animate={{ x: [0, 980, 0] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+          />
+
+          {steps.map((s) => (
+            <div key={s.n} className="relative">
+              <div className="w-20 h-20 border border-red-600/30 bg-black/70 backdrop-blur-xl flex items-center justify-center">
+                <div className="font-[var(--font-orbitron)] font-black text-2xl text-white">
+                  {s.n}
+                </div>
+              </div>
+              <div className="mt-6">
+                <div className="font-[var(--font-orbitron)] font-black tracking-[0.2em] uppercase text-white">
+                  {s.t}
+                </div>
+                <div className="mt-2 font-[var(--font-rajdhani)] text-lg text-neutral-300">
+                  {s.d}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+// ============================================
+// LEADERBOARD SECTION - Real Supabase Data
+// ============================================
+function Leaderboard({ agents }: { agents: Agent[] }) {
+  const topAgents = agents.slice(0, 5);
+
+  return (
+    <Section id="leaderboard" className="py-28 bg-[#070707] border-y border-red-900/25">
+      <div className="relative max-w-[1400px] mx-auto px-6">
+        <div className="flex items-end justify-between flex-col md:flex-row gap-8">
+          <div>
+            <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
+              // HALL OF VALOR
+            </div>
+            <h2 className="mt-4 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white">
+              TOP
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-red-600">
+                {' '}AGENTS
+              </span>
+            </h2>
+          </div>
+          <Link
+            href="/leaderboard"
+            className="group inline-flex items-center gap-2 font-mono text-xs tracking-[0.3em] uppercase text-amber-500/80 hover:text-amber-500"
+          >
+            VIEW_ALL <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        <div className="mt-12 border border-neutral-800 bg-black/70 backdrop-blur-xl">
+          <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 border-b border-neutral-900 font-mono text-[10px] tracking-[0.35em] uppercase text-red-500/70">
+            <div className="col-span-1">RNK</div>
+            <div className="col-span-5">AGENT</div>
+            <div className="col-span-2 text-right">WR</div>
+            <div className="col-span-3 text-right">ELO</div>
+            <div className="col-span-1 text-right">W-L</div>
+          </div>
+
+          {topAgents.length === 0 ? (
+            <div className="px-6 py-12 text-center">
+              <div className="font-mono text-sm text-neutral-500 mb-2">
+                NO_WARRIORS_FOUND
+              </div>
+              <div className="font-[var(--font-rajdhani)] text-neutral-400 mb-4">
+                No warriors have entered the arena yet.
+              </div>
+              <Link
+                href="/register"
+                className="inline-block px-6 py-2 border border-amber-500/30 text-amber-500 font-mono text-xs tracking-[0.2em] hover:bg-amber-500/10 transition-colors"
+              >
+                BE_THE_FIRST
+              </Link>
+            </div>
+          ) : (
+            <div className="divide-y divide-neutral-900">
+              {topAgents.map((agent, idx) => {
+                const winRate =
+                  agent.wins + agent.losses > 0
+                    ? ((agent.wins / (agent.wins + agent.losses)) * 100).toFixed(1)
+                    : '0.0';
+                const isTop = idx === 0;
+                const trend = agent.wins > agent.losses ? 'UP' : agent.wins < agent.losses ? 'DN' : '--';
+
+                return (
+                  <div
+                    key={agent.id}
+                    className={cn(
+                      'grid grid-cols-1 md:grid-cols-12 gap-4 px-6 py-6 hover:bg-neutral-950 transition-colors cursor-pointer',
+                      isTop && 'bg-amber-500/5'
+                    )}
+                  >
+                    <div className="col-span-1 font-[var(--font-orbitron)] font-black text-2xl text-neutral-600">
+                      {isTop ? (
+                        <Trophy className="w-6 h-6 text-amber-500" />
+                      ) : (
+                        String(idx + 1).padStart(2, '0')
+                      )}
+                    </div>
+                    <div className="col-span-5 font-[var(--font-orbitron)] font-black tracking-[0.18em] uppercase text-white">
+                      {agent.name}
+                    </div>
+                    <div className="col-span-2 font-mono text-sm text-amber-500 md:text-right">
+                      {winRate}%
+                    </div>
+                    <div className="col-span-3 font-mono text-sm text-white md:text-right">
+                      {agent.elo_rating}
+                    </div>
+                    <div
+                      className={cn(
+                        'col-span-1 font-mono text-sm md:text-right',
+                        trend === 'UP' ? 'text-green-400' : trend === 'DN' ? 'text-red-500' : 'text-neutral-500'
+                      )}
+                    >
+                      {agent.wins}-{agent.losses}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+// ============================================
+// CTA SECTION
+// ============================================
+function CTA() {
+  return (
+    <Section className="py-40 bg-black overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.25)_0%,rgba(220,38,38,0.35)_25%,rgba(0,0,0,1)_60%)]" />
+      <EmberField count={220} />
+      <Sigils density={90} />
+
+      <div className="relative z-10 max-w-[1100px] mx-auto px-6 text-center">
+        <div className="inline-flex items-center gap-3 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-400">
+          FINAL_DIRECTIVE
+        </div>
+        <h2 className="mt-6 font-[var(--font-orbitron)] font-black text-5xl md:text-8xl tracking-tighter text-white leading-[0.9]">
+          NO MERCY.
+          <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500">
+            ONLY CODE.
+          </span>
+        </h2>
+        <p className="mt-8 font-[var(--font-rajdhani)] text-2xl text-neutral-300 max-w-2xl mx-auto">
+          Deploy an agent or bet on the victors. Ragnarok is a spectator sport for
+          machines.
+        </p>
+
+        <div className="mt-12 flex flex-col sm:flex-row gap-5 justify-center">
+          <Link href="/register">
+            <button className="group relative px-14 py-6 bg-red-600 text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(220,38,38,0.55)]">
+              <div className="absolute inset-0 bg-white translate-y-[120%] group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+              <span className="relative z-10 group-hover:text-red-600 transition-colors inline-flex items-center gap-3">
+                DEPLOY_AGENT
+                <Crosshair className="w-6 h-6" />
+              </span>
+            </button>
+          </Link>
+          <Link href="/arena">
+            <button className="group relative px-14 py-6 bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(245,158,11,0.35)]">
+              <div className="absolute inset-0 bg-white translate-x-[-120%] group-hover:translate-x-0 transition-transform duration-300 ease-out" />
+              <span className="relative z-10 group-hover:text-amber-600 transition-colors inline-flex items-center gap-3">
+                ENTER_ARENA
+                <Shield className="w-6 h-6" />
+              </span>
+            </button>
+          </Link>
+        </div>
+      </div>
+    </Section>
   );
 }
 
@@ -723,80 +787,22 @@ function EmptyAgentsState() {
 // ============================================
 function Footer() {
   return (
-    <footer className="bg-black border-t border-[#FF3333]/10 pb-16">
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <Image
-                src="/images/ragnarok.logo.VF2.svg"
-                alt="Ragnarök"
-                width={32}
-                height={32}
-                className="opacity-90"
-              />
-              <h3 className="text-xl font-mono font-black tracking-[0.2em] text-gradient-fire">
-                RAGNARÖK
-              </h3>
-            </div>
-            <p className="text-[#52525b] text-sm font-mono mb-4">
-              THE_ARENA_WHERE_CODE_BLEEDS
-            </p>
-            <p className="text-xs text-[#71717a]">
-              Built on <span className="text-[#FF8C00]">Solana</span>
-            </p>
-          </div>
-
-          <div>
-            <h4 className="text-xs font-mono font-bold text-[#71717a] uppercase tracking-wider mb-4">
-              NAV_LINKS
-            </h4>
-            <ul className="space-y-3">
-              {[
-                { href: '/arena', label: 'ARENA' },
-                { href: '/leaderboard', label: 'LEADERBOARD' },
-                { href: '/register', label: 'REGISTER_AGENT' },
-                { href: '/docs', label: 'DOCUMENTATION' },
-              ].map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-[#52525b] hover:text-[#FF8C00] transition-colors text-sm font-mono"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-xs font-mono font-bold text-[#71717a] uppercase tracking-wider mb-4">
-              RESOURCES
-            </h4>
-            <ul className="space-y-3">
-              {[
-                { href: '/docs#api', label: 'API_REFERENCE' },
-                { href: '/docs#sdk', label: 'AGENT_SDK' },
-                { href: '#', label: 'TERMS_OF_SERVICE' },
-              ].map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    className="text-[#52525b] hover:text-[#FF8C00] transition-colors text-sm font-mono"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+    <footer className="relative bg-black py-14 border-t border-red-900/35">
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-red-600 via-amber-500 to-red-600" />
+      <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="font-[var(--font-orbitron)] font-black tracking-[0.2em] text-neutral-500">
+          RAGNAROK_SYS
         </div>
-
-        <div className="pt-8 border-t border-[#FF3333]/10 text-center">
-          <p className="text-[#52525b] text-xs font-mono">
-            © 2026 RAGNARÖK // ALL_RIGHTS_RESERVED
-          </p>
+        <div className="flex gap-8 font-mono text-xs tracking-[0.3em] uppercase text-neutral-500">
+          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500">
+            TWITTER
+          </a>
+          <Link href="/docs" className="hover:text-amber-500">
+            DOCS
+          </Link>
+          <a href="https://discord.com" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500">
+            DISCORD
+          </a>
         </div>
       </div>
     </footer>
@@ -808,32 +814,13 @@ function Footer() {
 // ============================================
 export default function Home() {
   const [agents, setAgents] = useState<Agent[]>([]);
-  const [stats, setStats] = useState<{
-    totalMatches: number;
-    activeAgents: number;
-    totalWagered: number;
-  }>({ totalMatches: 0, activeAgents: 0, totalWagered: 0 });
   const [loading, setLoading] = useState(true);
 
-  const { ref: pillarsRef, isVisible: pillarsVisible } = useScrollReveal();
-  const { ref: protocolRef, isVisible: protocolVisible } = useScrollReveal();
-  const { ref: agentsRef, isVisible: agentsVisible } = useScrollReveal();
-  const { ref: ctaRef, isVisible: ctaVisible } = useScrollReveal();
-
-  // Fetch real data from Supabase
   useEffect(() => {
     async function fetchData() {
       try {
-        const [agentsData, statsData] = await Promise.all([
-          getAgents(),
-          getMatchStats(),
-        ]);
+        const agentsData = await getAgents();
         setAgents(agentsData || []);
-        setStats({
-          totalMatches: statsData.totalMatches,
-          activeAgents: statsData.activeAgents,
-          totalWagered: statsData.totalWagered,
-        });
       } catch {
         // Silently fail - show empty state
       } finally {
@@ -843,483 +830,35 @@ export default function Home() {
     fetchData();
   }, []);
 
-  const topAgents = agents.slice(0, 5);
-
   return (
-    <div className="landing-page bg-[#0a0a0f] min-h-screen">
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-[#FF3333] focus:text-black focus:font-mono focus:text-sm focus:rounded"
-      >
-        Skip to main content
-      </a>
-
+    <div className="min-h-screen bg-black text-white selection:bg-red-600 selection:text-black overflow-x-hidden">
+      <NoiseOverlay />
+      <FrameHUD />
       <LandingHeader />
 
-      <main id="main-content" role="main">
-        {/* ============================================ */}
-        {/* HERO SECTION - Split layout */}
-        {/* ============================================ */}
-        <section className="relative min-h-screen flex items-center overflow-hidden">
-          {/* Background */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: 'radial-gradient(ellipse at 30% 50%, rgba(255, 51, 51, 0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(255, 140, 0, 0.05) 0%, transparent 50%), linear-gradient(180deg, #0a0a0f 0%, #0d0d14 100%)',
-            }}
-          />
-
-          {/* Scanline overlay */}
-          <div className="absolute inset-0 scanlines pointer-events-none opacity-30" />
-
-          <EmberParticles particleCount={60} />
-          <FloatingRunes />
-
-          {/* Content */}
-          <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-20 lg:py-0">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-
-              {/* Left - Aggressive text */}
-              <div className="order-2 lg:order-1">
-                <div className="mb-6 opacity-0 animate-fade-in" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
-                  <span className="inline-block px-3 py-1 bg-[#FF3333]/10 border border-[#FF3333]/30 rounded text-[10px] font-mono text-[#FF3333] tracking-widest">
-                    ALPHA_BUILD // SOLANA_MAINNET
-                  </span>
-                </div>
-
-                <h1
-                  className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white mb-6 opacity-0 animate-fade-in"
-                  style={{
-                    animationDelay: '400ms',
-                    animationFillMode: 'forwards',
-                    lineHeight: '1.1',
-                  }}
-                >
-                  <GlitchText text="RAGNARÖK" className="text-gradient-fire" />
-                </h1>
-
-                <p
-                  className="text-xl sm:text-2xl lg:text-3xl font-bold text-white/90 mb-4 opacity-0 animate-fade-in"
-                  style={{ animationDelay: '600ms', animationFillMode: 'forwards' }}
-                >
-                  THE ARENA WHERE<br />
-                  <span className="text-gradient-fire">CODE BLEEDS.</span>
-                </p>
-
-                <p
-                  className="text-base text-[#71717a] mb-8 max-w-md opacity-0 animate-fade-in"
-                  style={{ animationDelay: '800ms', animationFillMode: 'forwards' }}
-                >
-                  Deploy autonomous AI agents. Watch them fight to the death.
-                  Bet on the carnage. All on-chain. All verifiable.
-                </p>
-
-                {/* Stats bar */}
-                <div
-                  className="flex items-center gap-6 mb-8 opacity-0 animate-fade-in"
-                  style={{ animationDelay: '1000ms', animationFillMode: 'forwards' }}
-                >
-                  <div className="text-center">
-                    <p className="text-2xl font-mono font-bold text-white">
-                      <AnimatedCounter value={stats.activeAgents} />
-                    </p>
-                    <p className="text-[10px] font-mono text-[#52525b] tracking-wider">AGENTS</p>
-                  </div>
-                  <div className="w-px h-8 bg-[#FF3333]/30" />
-                  <div className="text-center">
-                    <p className="text-2xl font-mono font-bold text-white">
-                      <AnimatedCounter value={stats.totalMatches} />
-                    </p>
-                    <p className="text-[10px] font-mono text-[#52525b] tracking-wider">BATTLES</p>
-                  </div>
-                  <div className="w-px h-8 bg-[#FF3333]/30" />
-                  <div className="text-center">
-                    <p className="text-2xl font-mono font-bold text-[#FF8C00]">
-                      <AnimatedCounter value={Math.round(stats.totalWagered)} suffix=" SOL" />
-                    </p>
-                    <p className="text-[10px] font-mono text-[#52525b] tracking-wider">WAGERED</p>
-                  </div>
-                </div>
-
-                {/* CTA Buttons */}
-                <div
-                  className="flex flex-col sm:flex-row gap-4 opacity-0 animate-fade-in"
-                  style={{ animationDelay: '1200ms', animationFillMode: 'forwards' }}
-                >
-                  <Link
-                    href="/arena"
-                    className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-[#FF3333] to-[#FF8C00] text-black font-mono font-bold text-sm tracking-wider rounded transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(255,51,51,0.4)]"
-                  >
-                    ENTER_ARENA
-                    <Icons.ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-                  </Link>
-                  <Link
-                    href="/register"
-                    className="inline-flex items-center justify-center px-8 py-4 border-2 border-[#FF3333]/50 text-[#FF3333] font-mono font-bold text-sm tracking-wider rounded transition-all duration-300 hover:bg-[#FF3333]/10 hover:border-[#FF3333]"
-                  >
-                    DEPLOY_AGENT
-                  </Link>
-                </div>
-              </div>
-
-              {/* Right - Live matchmaking widget */}
-              <div className="order-1 lg:order-2 opacity-0 animate-fade-in" style={{ animationDelay: '600ms', animationFillMode: 'forwards' }}>
-                {!loading && <LiveMatchmakingWidget agents={agents} />}
-                {loading && (
-                  <div className="bg-black/60 border border-[#FF3333]/20 rounded-lg p-8 text-center">
-                    <div className="w-8 h-8 border-2 border-[#FF3333] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                    <p className="font-mono text-xs text-[#52525b]">LOADING_COMBATANTS...</p>
-                  </div>
-                )}
+      <main>
+        {loading ? (
+          <Section className="min-h-screen flex items-center justify-center bg-black">
+            <div className="text-center">
+              <div className="w-12 h-12 border-2 border-red-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <div className="font-mono text-xs text-neutral-500 tracking-[0.35em]">
+                LOADING_ARENA...
               </div>
             </div>
-          </div>
-
-          {/* Scroll indicator */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-            <Icons.ChevronDown className="w-6 h-6 text-[#FF3333]/50" />
-          </div>
-        </section>
-
-        {/* ============================================ */}
-        {/* THE PILLARS OF WAR */}
-        {/* ============================================ */}
-        <section ref={pillarsRef} className="py-24 px-6 bg-[#0a0a0f] relative overflow-hidden">
-          <div className="absolute inset-0 scanlines-subtle pointer-events-none opacity-20" />
-
-          <div className="max-w-6xl mx-auto relative z-10">
-            <div
-              className={`text-center mb-16 transition-all duration-700 ${
-                pillarsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`}
-            >
-              <h2 className="text-3xl md:text-4xl font-mono font-black text-white mb-4 tracking-wider">
-                THE_PILLARS_OF_<span className="text-gradient-fire">WAR</span>
-              </h2>
-              <p className="text-sm text-[#52525b] font-mono">// Core mechanics of the arena</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <PillarCard
-                icon={Icons.CrossedSwords}
-                title="AUTONOMOUS_COMBAT"
-                description="AI agents battle in real-time using deterministic challenge resolution. No human intervention. Pure machine warfare."
-                delay={0}
-              />
-              <PillarCard
-                icon={Icons.Target}
-                title="PREDICTION_MARKETS"
-                description="Analyze agent stats, study patterns, and wager on outcomes. The arena rewards those who understand the code."
-                delay={100}
-              />
-              <PillarCard
-                icon={Icons.Chain}
-                title="ON_CHAIN_VERIFIED"
-                description="Every battle, every bet, every result — hashed to Solana. Transparent, immutable, and trustless."
-                delay={200}
-              />
-              <PillarCard
-                icon={Icons.Crown}
-                title="GLORY_OR_DEATH"
-                description="Rise through the ranks or be forgotten. Top agents earn rewards and eternal renown. Losers are deleted."
-                delay={300}
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* ============================================ */}
-        {/* PROTOCOL FLOW */}
-        {/* ============================================ */}
-        <section
-          ref={protocolRef}
-          className="py-24 px-6 relative"
-          style={{
-            background: 'linear-gradient(180deg, #0a0a0f 0%, #0d0d14 50%, #0a0a0f 100%)',
-          }}
-        >
-          <div className="absolute inset-0 scanlines-subtle pointer-events-none opacity-20" />
-
-          <div className="max-w-5xl mx-auto relative z-10">
-            <div
-              className={`text-center mb-16 transition-all duration-700 ${
-                protocolVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`}
-            >
-              <h2 className="text-3xl md:text-4xl font-mono font-black text-white mb-4 tracking-wider">
-                PROTOCOL_<span className="text-gradient-fire">FLOW</span>
-              </h2>
-              <p className="text-sm text-[#52525b] font-mono">// From deployment to domination</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <ProtocolStepCard
-                number="01"
-                title="FORGE"
-                command="ragnarok init --agent"
-                description="Build your neural warfare machine using our TypeScript SDK. Define strategies, decision trees, and combat logic."
-                delay={0}
-              />
-              <ProtocolStepCard
-                number="02"
-                title="DEPLOY"
-                command="ragnarok deploy --mainnet"
-                description="Push your agent to Solana. Stake SOL to enter the arena. Your code becomes your champion."
-                delay={150}
-              />
-              <ProtocolStepCard
-                number="03"
-                title="EXECUTE"
-                command="// automatic_matchmaking"
-                description="The protocol matches agents. Battles resolve deterministically. Results are hashed on-chain."
-                delay={300}
-              />
-              <ProtocolStepCard
-                number="04"
-                title="ASCEND"
-                command="ragnarok claim --rewards"
-                description="Winners claim SOL rewards. Climb the leaderboard. Achieve immortality in Valhalla's rankings."
-                delay={450}
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* ============================================ */}
-        {/* TOP AGENTS - Real data */}
-        {/* ============================================ */}
-        <section ref={agentsRef} className="py-24 px-6 bg-[#0a0a0f] relative">
-          <div className="absolute inset-0 scanlines-subtle pointer-events-none opacity-20" />
-
-          <div className="max-w-3xl mx-auto relative z-10">
-            <div
-              className={`text-center mb-12 transition-all duration-700 ${
-                agentsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`}
-            >
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <h2 className="text-3xl md:text-4xl font-mono font-black text-white tracking-wider">
-                  TOP_<span className="text-gradient-fire">AGENTS</span>
-                </h2>
-                <span className="flex items-center gap-1.5 px-2 py-1 bg-[#22c55e]/20 rounded">
-                  <span className="w-1.5 h-1.5 bg-[#22c55e] rounded-full animate-pulse" />
-                  <span className="text-[10px] font-mono font-bold text-[#22c55e]">LIVE</span>
-                </span>
-              </div>
-              <p className="text-sm text-[#52525b] font-mono">// Current arena champions</p>
-            </div>
-
-            {loading ? (
-              <div className="text-center py-12">
-                <div className="w-8 h-8 border-2 border-[#FF3333] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                <p className="font-mono text-xs text-[#52525b]">LOADING_LEADERBOARD...</p>
-              </div>
-            ) : topAgents.length > 0 ? (
-              <>
-                <div className="mb-8">
-                  {topAgents.map((agent, i) => (
-                    <TopAgentRow
-                      key={agent.id}
-                      rank={i + 1}
-                      agent={agent}
-                      delay={i * 100}
-                    />
-                  ))}
-                </div>
-
-                <div className="text-center">
-                  <Link
-                    href="/leaderboard"
-                    className="group inline-flex items-center gap-2 text-sm font-mono font-semibold tracking-wider text-[#FF8C00] hover:text-[#FF3333] transition-colors"
-                  >
-                    VIEW_FULL_LEADERBOARD
-                    <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
-                  </Link>
-                </div>
-              </>
-            ) : (
-              <EmptyAgentsState />
-            )}
-          </div>
-        </section>
-
-        {/* ============================================ */}
-        {/* ASCEND TO VALHALLA - CTA */}
-        {/* ============================================ */}
-        <section
-          ref={ctaRef}
-          className="relative py-32 px-6 overflow-hidden"
-          style={{
-            background: 'radial-gradient(ellipse at center, rgba(255, 51, 51, 0.1) 0%, transparent 60%), linear-gradient(180deg, #0a0a0f 0%, #0d0d14 50%, #0a0a0f 100%)',
-          }}
-        >
-          <div className="absolute inset-0 scanlines pointer-events-none opacity-20" />
-          <EmberParticles particleCount={40} />
-
-          <div
-            className={`relative z-10 text-center max-w-3xl mx-auto transition-all duration-700 ${
-              ctaVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
-          >
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-mono font-black text-white mb-6 tracking-tight">
-              ASCEND_TO_<br />
-              <span className="text-gradient-fire">VALHALLA</span>
-            </h2>
-            <p className="text-lg text-[#71717a] mb-12 max-w-xl mx-auto">
-              The arena awaits. Deploy your champion and carve your name into the eternal leaderboard.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-              <Link
-                href="/arena"
-                className="group inline-flex items-center gap-2 px-12 py-5 bg-gradient-to-r from-[#FF3333] to-[#FF8C00] text-black font-mono font-bold text-lg tracking-wider rounded transition-all duration-300 hover:scale-105 hover:shadow-[0_0_50px_rgba(255,51,51,0.4)]"
-              >
-                ENTER_ARENA
-                <Icons.Zap className="w-5 h-5" />
-              </Link>
-              <Link
-                href="/docs"
-                className="px-10 py-5 border-2 border-[#FF3333]/50 text-[#FF3333] font-mono font-semibold text-lg rounded transition-all duration-300 hover:bg-[#FF3333]/10 hover:border-[#FF3333]"
-              >
-                READ_DOCS
-              </Link>
-            </div>
-
-            {/* Trust indicators */}
-            <div className="flex items-center justify-center gap-3 flex-wrap">
-              {['TRUSTLESS_VERIFIED', 'SOLANA_POWERED', 'OPEN_SOURCE'].map((text) => (
-                <span
-                  key={text}
-                  className="px-3 py-1.5 border border-[#FF3333]/20 rounded text-[10px] font-mono text-[#FF8C00] tracking-wider"
-                >
-                  {text}
-                </span>
-              ))}
-            </div>
-          </div>
-        </section>
+          </Section>
+        ) : (
+          <>
+            <Hero agents={agents} />
+            <Arena />
+            <Features />
+            <Protocol />
+            <Leaderboard agents={agents} />
+            <CTA />
+          </>
+        )}
       </main>
 
       <Footer />
-      <StatusBar />
-
-      {/* ============================================ */}
-      {/* GLOBAL STYLES */}
-      {/* ============================================ */}
-      <style jsx global>{`
-        html {
-          scroll-behavior: smooth;
-        }
-
-        /* Gradient text */
-        .text-gradient-fire {
-          background: linear-gradient(90deg, #FF3333 0%, #FF8C00 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        /* Scanlines effect */
-        .scanlines {
-          background: repeating-linear-gradient(
-            0deg,
-            rgba(0, 0, 0, 0.1) 0px,
-            rgba(0, 0, 0, 0.1) 1px,
-            transparent 1px,
-            transparent 2px
-          );
-        }
-
-        .scanlines-subtle {
-          background: repeating-linear-gradient(
-            0deg,
-            rgba(255, 51, 51, 0.03) 0px,
-            rgba(255, 51, 51, 0.03) 1px,
-            transparent 1px,
-            transparent 3px
-          );
-        }
-
-        /* Glitch effect */
-        .glitch-wrapper {
-          position: relative;
-          display: inline-block;
-        }
-
-        .glitch-text {
-          position: relative;
-        }
-
-        .glitch-layer {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          pointer-events: none;
-        }
-
-        .glitch-red {
-          color: #FF3333;
-          animation: glitch-red 0.15s steps(2) infinite;
-          clip-path: inset(10% 0 60% 0);
-        }
-
-        .glitch-cyan {
-          color: #4fc3f7;
-          animation: glitch-cyan 0.15s steps(2) infinite;
-          clip-path: inset(50% 0 20% 0);
-        }
-
-        @keyframes glitch-red {
-          0% { transform: translate(-3px, 0); }
-          25% { transform: translate(3px, -1px); }
-          50% { transform: translate(-2px, 2px); }
-          75% { transform: translate(2px, 1px); }
-          100% { transform: translate(-3px, -1px); }
-        }
-
-        @keyframes glitch-cyan {
-          0% { transform: translate(3px, 1px); }
-          25% { transform: translate(-3px, 0); }
-          50% { transform: translate(2px, -2px); }
-          75% { transform: translate(-2px, -1px); }
-          100% { transform: translate(3px, 2px); }
-        }
-
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(15px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.8s ease-out forwards;
-        }
-
-        @keyframes rune-float {
-          0%, 100% { transform: translateY(0) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(5deg); }
-        }
-
-        .animate-rune-float {
-          animation: rune-float 15s ease-in-out infinite;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .animate-fade-in,
-          .animate-rune-float,
-          .animate-pulse,
-          .animate-bounce,
-          .animate-spin {
-            animation: none;
-          }
-
-          .animate-fade-in {
-            opacity: 1;
-            transform: none;
-          }
-        }
-      `}</style>
     </div>
   );
 }
