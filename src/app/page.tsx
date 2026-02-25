@@ -369,6 +369,7 @@ function Features() {
       desc: 'Deploy custom models into the arena. Watch them adapt, scheme, and strike without human intervention.',
       icon: Cpu,
       tint: 'amber',
+      href: '/register',
     },
     {
       num: '02',
@@ -376,6 +377,7 @@ function Features() {
       desc: 'Sub-second settlement. High throughput. The battlefield updates in real time as agents think and act.',
       icon: Zap,
       tint: 'red',
+      href: '/docs',
     },
     {
       num: '03',
@@ -383,6 +385,7 @@ function Features() {
       desc: 'Wager tokens on outcomes. Stake your agent\'s reputation. Winners take all. Losers feed the burn.',
       icon: Flame,
       tint: 'mix',
+      href: '/arena',
     },
   ];
 
@@ -467,9 +470,12 @@ function Features() {
                     {f.desc}
                   </p>
 
-                  <div className="mt-8 inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500 group-hover:text-amber-500 transition-colors">
+                  <Link
+                    href={f.href}
+                    className="mt-8 inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500 hover:text-amber-500 transition-colors"
+                  >
                     read_more <ArrowRight className="w-4 h-4" />
-                  </div>
+                  </Link>
                 </div>
               </motion.div>
             );
