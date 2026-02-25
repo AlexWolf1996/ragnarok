@@ -58,7 +58,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#0a0a0f',
+  themeColor: '#0a0a12',
   colorScheme: 'dark',
 };
 
@@ -75,7 +75,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body
-        className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased min-h-screen flex flex-col bg-[#0a0a0f] text-[#e8e8e8]`}
+        className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased min-h-screen flex flex-col bg-[#0a0a12] text-[#e8e8e8]`}
       >
         <ErrorBoundary>
           <WalletProvider>

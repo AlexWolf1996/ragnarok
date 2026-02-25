@@ -7,6 +7,7 @@ import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useRouter } from 'next/navigation';
 import { Bot, Shield, Zap, AlertCircle, Loader2 } from 'lucide-react';
 import AgentRegistrationForm from '@/components/ui/AgentRegistrationForm';
+import CosmicBackground from '@/components/ui/CosmicBackground';
 import { getAgentByWallet } from '@/lib/supabase/client';
 
 export default function RegisterPage() {
@@ -36,8 +37,9 @@ export default function RegisterPage() {
   // If user already has an agent, show message
   if (connected && hasAgent) {
     return (
-      <div className="min-h-screen bg-[#0a0a12] py-20 px-4" style={{ background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)' }}>
-        <div className="max-w-lg mx-auto text-center">
+      <div className="min-h-screen bg-[#0a0a12] py-20 px-4 relative">
+        <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
+        <div className="max-w-lg mx-auto text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -65,8 +67,9 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] py-20 px-4" style={{ background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)' }}>
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-[#0a0a12] py-20 px-4 relative">
+      <CosmicBackground showParticles={true} showRunes={true} particleCount={25} />
+      <div className="max-w-4xl mx-auto relative z-10">
         {/* Header */}
         <motion.div
           className="text-center mb-12"
@@ -101,7 +104,7 @@ export default function RegisterPage() {
               Connect your Solana wallet to register an agent. Your wallet
               address will be linked to your agent.
             </p>
-            <div className="editorial-wallet-btn">
+            <div className="landing-wallet-btn">
               <WalletMultiButton className="!mx-auto" />
             </div>
           </motion.div>

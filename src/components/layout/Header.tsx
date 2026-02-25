@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -23,10 +23,41 @@ export default function Header() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 50);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close mobile menu on escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [mobileMenuOpen]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
+  const toggleMobileMenu = useCallback(() => {
+    setMobileMenuOpen((prev) => !prev);
+  }, []);
+
+  const closeMobileMenu = useCallback(() => {
+    setMobileMenuOpen(false);
   }, []);
 
   return (
@@ -34,44 +65,54 @@ export default function Header() {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
           ? 'bg-[#0a0a12]/95 backdrop-blur-md border-b border-[#c9a84c]/10'
-          : 'bg-[#0a0a12] border-b border-[#c9a84c]/10'
+          : 'bg-[#0a0a12]/80 backdrop-blur-sm border-b border-[#c9a84c]/10'
       }`}
+      role="banner"
     >
-      <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
+      <nav
+        className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between"
+        aria-label="Main navigation"
+      >
+        {/* Logo - Exact same as LandingHeader */}
+        <Link
+          href="/"
+          className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded"
+          aria-label="Ragnarök - Home"
+        >
           {!logoError ? (
             <Image
               src="/images/ragnarok.logo.VF2.svg"
-              alt="Ragnarok"
-              width={28}
-              height={28}
-              className="opacity-70 group-hover:opacity-100 transition-opacity"
+              alt=""
+              width={32}
+              height={32}
+              className="opacity-90 group-hover:opacity-100 transition-opacity"
               onError={() => setLogoError(true)}
+              aria-hidden="true"
             />
           ) : (
-            <span className="font-mono text-lg text-[#c9a84c] group-hover:text-[#e8e8e8] transition-colors">
+            <span className="font-mono text-2xl text-[#c9a84c] group-hover:text-[#e8e8e8] transition-colors" aria-hidden="true">
               R
             </span>
           )}
-          <span className="font-mono text-base tracking-[0.15em] text-[#e8e8e8] font-normal">
+          <span className="font-mono text-lg tracking-[0.2em] text-[#e8e8e8] font-light">
             RAGNARÖK
           </span>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-10">
+        <div className="hidden md:flex items-center gap-12" role="menubar">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`font-mono text-xs tracking-[0.2em] transition-colors relative ${
+                className={`font-mono text-xs tracking-[0.3em] transition-colors relative focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded px-1 ${
                   isActive
                     ? 'text-[#c9a84c]'
                     : 'text-[#71717a] hover:text-[#c9a84c]'
                 }`}
+                role="menuitem"
               >
                 {link.label}
                 {isActive && (
@@ -85,58 +126,82 @@ export default function Header() {
           })}
         </div>
 
-        {/* Wallet Connect */}
+        {/* Wallet Connect - Same class as LandingHeader */}
         <div className="hidden md:block">
-          <div className="editorial-wallet-btn">
+          <div className="landing-wallet-btn">
             <WalletMultiButton />
           </div>
         </div>
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-[#e8e8e8] p-2"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle menu"
+          className="md:hidden text-[#e8e8e8] p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded"
+          onClick={toggleMobileMenu}
+          aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="mobile-menu"
         >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {mobileMenuOpen ? (
+            <X size={24} aria-hidden="true" />
+          ) : (
+            <Menu size={24} aria-hidden="true" />
+          )}
         </button>
       </nav>
 
       {/* Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div
-            className="md:hidden bg-[#0a0a12] border-b border-[#c9a84c]/10"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <div className="px-6 py-6 space-y-5">
-              {navLinks.map((link) => {
-                const isActive = pathname === link.href;
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`block font-mono text-sm tracking-[0.2em] transition-colors ${
-                      isActive
-                        ? 'text-[#c9a84c]'
-                        : 'text-[#71717a] hover:text-[#c9a84c]'
-                    }`}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                );
-              })}
-              <div className="pt-4 border-t border-[#c9a84c]/10">
-                <div className="editorial-wallet-btn">
-                  <WalletMultiButton />
+          <>
+            {/* Backdrop */}
+            <motion.div
+              className="md:hidden fixed inset-0 bg-[#0a0a12]/80 z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeMobileMenu}
+              aria-hidden="true"
+            />
+
+            {/* Menu panel */}
+            <motion.div
+              id="mobile-menu"
+              className="md:hidden absolute top-20 left-0 right-0 bg-[#111118] border-b border-[#c9a84c]/10 z-50"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2 }}
+              role="menu"
+              aria-label="Mobile navigation"
+            >
+              <div className="px-6 py-6 space-y-6">
+                {navLinks.map((link) => {
+                  const isActive = pathname === link.href;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`block font-mono text-sm tracking-[0.3em] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded px-1 ${
+                        isActive
+                          ? 'text-[#c9a84c]'
+                          : 'text-[#71717a] hover:text-[#c9a84c]'
+                      }`}
+                      onClick={closeMobileMenu}
+                      role="menuitem"
+                      tabIndex={mobileMenuOpen ? 0 : -1}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
+                <div className="pt-6 border-t border-[#c9a84c]/10">
+                  <div className="landing-wallet-btn">
+                    <WalletMultiButton />
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </header>

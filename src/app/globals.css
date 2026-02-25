@@ -523,6 +523,25 @@ body {
 }
 
 /* ============================================
+   FLOATING RUNE ANIMATION
+   ============================================ */
+
+@keyframes rune-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.03;
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+    opacity: 0.05;
+  }
+}
+
+.animate-rune-float {
+  animation: rune-float 15s ease-in-out infinite;
+}
+
+/* ============================================
    REDUCED MOTION SUPPORT
    ============================================ */
 
@@ -543,7 +562,8 @@ body {
   }
 
   .animate-float,
-  .animate-flicker {
+  .animate-flicker,
+  .animate-rune-float {
     animation: none;
   }
 

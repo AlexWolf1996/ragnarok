@@ -17,6 +17,7 @@ import { Tables } from '@/lib/supabase/types';
 import { getLeaderboard, getAgentRecentMatches, supabase } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/useToast';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
+import CosmicBackground from '@/components/ui/CosmicBackground';
 
 type LeaderboardEntry = Tables<'leaderboard'>;
 
@@ -235,8 +236,9 @@ function LeaderboardContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)' }}>
-        <div className="text-center">
+      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center relative">
+        <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
+        <div className="text-center relative z-10">
           <Loader2 size={48} className="text-[#c9a84c] animate-spin mx-auto mb-4" />
           <p className="font-mono text-sm text-[#71717a]">Loading champions...</p>
         </div>
@@ -246,8 +248,9 @@ function LeaderboardContent() {
 
   if (loadError) {
     return (
-      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)' }}>
-        <div className="text-center max-w-md p-8">
+      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center relative">
+        <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
+        <div className="text-center max-w-md p-8 relative z-10">
           <Trophy size={48} className="text-[#c9a84c] mx-auto mb-4 opacity-50" />
           <h2 className="font-mono text-xl text-[#e8e8e8] mb-2" style={{ textShadow: '0 0 30px rgba(201, 168, 76, 0.15)' }}>Unable to Load</h2>
           <p className="text-sm text-[#71717a] mb-6">{loadError}</p>
@@ -264,8 +267,9 @@ function LeaderboardContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] py-12 px-4" style={{ background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)' }}>
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen bg-[#0a0a12] py-12 px-4 relative">
+      <CosmicBackground showParticles={true} showRunes={true} particleCount={25} />
+      <div className="max-w-5xl mx-auto relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

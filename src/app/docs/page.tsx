@@ -5,6 +5,7 @@ import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Terminal, Code, Lock, Copy, Check } from 'lucide-react';
+import CosmicBackground from '@/components/ui/CosmicBackground';
 
 // Code example with manual syntax highlighting
 const codeExample = `import { RagnarokAgent, ChallengeHandler } from '@ragnarok/sdk';
@@ -263,7 +264,9 @@ export default function DocsPage() {
   const isHeroInView = useInView(heroRef, { once: true });
 
   return (
-    <div className="min-h-screen bg-[#0a0a12]" style={{ background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)' }}>
+    <div className="min-h-screen bg-[#0a0a12] relative">
+      <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
+
       {/* Skip to content link for accessibility */}
       <a
         href="#main-content"
@@ -273,7 +276,7 @@ export default function DocsPage() {
       </a>
 
       {/* Hero */}
-      <section ref={heroRef} className="relative py-24 px-6 overflow-hidden">
+      <section ref={heroRef} className="relative py-24 px-6 overflow-hidden z-10">
         {/* Decorative Yggdrasil background */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
           <div className="relative w-64 h-64 opacity-[0.06]">

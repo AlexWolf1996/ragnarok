@@ -32,6 +32,7 @@ import AgentSelector from '@/components/ui/AgentSelector';
 import BetPanel from '@/components/ui/BetPanel';
 import MatchCommentary from '@/components/ui/MatchCommentary';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
+import CosmicBackground from '@/components/ui/CosmicBackground';
 import { useToast } from '@/hooks/useToast';
 import {
   TierSelector,
@@ -363,8 +364,9 @@ function ArenaContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)' }}>
-        <div className="text-center">
+      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center relative">
+        <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
+        <div className="text-center relative z-10">
           <Loader2 size={32} className="text-[#c9a84c] animate-spin mx-auto mb-4" />
           <p className="font-mono text-sm text-[#71717a]">Loading arena...</p>
         </div>
@@ -374,8 +376,9 @@ function ArenaContent() {
 
   if (loadError) {
     return (
-      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)' }}>
-        <div className="text-center max-w-md p-8">
+      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center relative">
+        <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
+        <div className="text-center max-w-md p-8 relative z-10">
           <div className="text-[#c9a84c] mb-4">
             <Swords size={48} className="mx-auto opacity-50" />
           </div>
@@ -394,8 +397,9 @@ function ArenaContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] py-8 px-6" style={{ background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d16 50%, #0a0a12 100%)' }}>
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-[#0a0a12] py-8 px-6 relative">
+      <CosmicBackground showParticles={true} showRunes={true} particleCount={25} />
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
         <motion.div
           className="text-center mb-6"

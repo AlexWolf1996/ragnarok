@@ -62,7 +62,7 @@ export default function LandingHeader() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-[#0a0a0f]/90 backdrop-blur-md border-b border-[#1a1a25]'
+          ? 'bg-[#0a0a12]/95 backdrop-blur-md border-b border-[#c9a84c]/10'
           : 'bg-transparent'
       }`}
       role="banner"
@@ -93,7 +93,7 @@ export default function LandingHeader() {
             </span>
           )}
           <span className="font-mono text-lg tracking-[0.2em] text-[#e8e8e8] font-light">
-            RAGNAROK
+            RAGNARÖK
           </span>
         </Link>
 
@@ -140,7 +140,7 @@ export default function LandingHeader() {
           <>
             {/* Backdrop */}
             <motion.div
-              className="md:hidden fixed inset-0 bg-[#0a0a0f]/80 z-40"
+              className="md:hidden fixed inset-0 bg-[#0a0a12]/80 z-40"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -151,7 +151,7 @@ export default function LandingHeader() {
             {/* Menu panel */}
             <motion.div
               id="mobile-menu"
-              className="md:hidden absolute top-20 left-0 right-0 bg-[#111118] border-b border-[#1a1a25] z-50"
+              className="md:hidden absolute top-20 left-0 right-0 bg-[#111118] border-b border-[#c9a84c]/10 z-50"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -172,7 +172,7 @@ export default function LandingHeader() {
                     {link.label}
                   </Link>
                 ))}
-                <div className="pt-6 border-t border-[#1a1a25]">
+                <div className="pt-6 border-t border-[#c9a84c]/10">
                   <div className="landing-wallet-btn">
                     <WalletMultiButton />
                   </div>
