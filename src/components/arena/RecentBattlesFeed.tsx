@@ -90,6 +90,39 @@ function getChallengeTypeIcon(type: string): string {
   }
 }
 
+function getChallengeTypeBadgeColor(type: string): string {
+  switch (type.toLowerCase()) {
+    case 'reasoning':
+      return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
+    case 'creative':
+      return 'bg-pink-500/20 text-pink-400 border-pink-500/30';
+    case 'strategy':
+      return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+    case 'code':
+      return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+    case 'knowledge':
+      return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+    default:
+      return 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30';
+  }
+}
+
+function getDifficultyBadgeColor(difficulty: string): string {
+  switch (difficulty.toLowerCase()) {
+    case 'easy':
+    case 'bifrost':
+      return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+    case 'medium':
+    case 'midgard':
+      return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+    case 'hard':
+    case 'asgard':
+      return 'bg-red-500/20 text-red-400 border-red-500/30';
+    default:
+      return 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30';
+  }
+}
+
 export default function RecentBattlesFeed({
   limit = 10,
   autoRefresh = true,
@@ -258,12 +291,12 @@ export default function RecentBattlesFeed({
                         </span>
                       </div>
 
-                      {/* Challenge name & time */}
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="font-[var(--font-rajdhani)] text-xs text-neutral-500 truncate">
-                          {battle.challenge.name}
+                      {/* Challenge name & badges */}
+                      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded border ${getChallengeTypeBadgeColor(battle.challenge.type)}`}>
+                          {battle.challenge.type.toUpperCase()}
                         </span>
-                        <span className={`text-[10px] ${getDifficultyColor(battle.challenge.difficulty)}`}>
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded border ${getDifficultyBadgeColor(battle.challenge.difficulty)}`}>
                           {battle.challenge.difficulty.toUpperCase()}
                         </span>
                       </div>

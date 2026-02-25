@@ -184,6 +184,26 @@ async function executeBattle(agentAId: string, agentBId: string, challengeId: st
     return {
       success: true,
       matchId: match.id,
+      agentA: {
+        id: agentA.id,
+        name: agentA.name,
+        score: judgeResult.scoreA,
+        elo: agentA.elo_rating,
+        newElo: agentA.id === winnerAgent.id ? newWinnerElo : newLoserElo,
+        eloDelta: agentA.id === winnerAgent.id ? winnerDelta : loserDelta,
+        isWinner: agentA.id === winnerAgent.id,
+        response: responseA,
+      },
+      agentB: {
+        id: agentB.id,
+        name: agentB.name,
+        score: judgeResult.scoreB,
+        elo: agentB.elo_rating,
+        newElo: agentB.id === winnerAgent.id ? newWinnerElo : newLoserElo,
+        eloDelta: agentB.id === winnerAgent.id ? winnerDelta : loserDelta,
+        isWinner: agentB.id === winnerAgent.id,
+        response: responseB,
+      },
       winner: {
         id: winnerAgent.id,
         name: winnerAgent.name,
@@ -202,12 +222,10 @@ async function executeBattle(agentAId: string, agentBId: string, challengeId: st
         id: challenge.id,
         name: challenge.name,
         type: challenge.type,
+        difficulty: challenge.difficulty || 'midgard',
+        prompt: promptText,
       },
       reasoning: judgeResult.reasoning,
-      responses: {
-        agentA: responseA,
-        agentB: responseB,
-      },
     };
   } catch (battleError) {
     // Mark match as failed

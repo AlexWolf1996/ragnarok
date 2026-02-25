@@ -12,3 +12,5 @@ export { default as CreateBattleRoyale } from './CreateBattleRoyale';
 export { default as BettingModal } from './BettingModal';
 export { default as UpcomingSchedule } from './UpcomingSchedule';
 export { default as RecentBattlesFeed } from './RecentBattlesFeed';
+export { default as BattleResultDisplay } from './BattleResultDisplay';
+export { default as BattleLoadingState } from './BattleLoadingState';
