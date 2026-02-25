@@ -1052,7 +1052,7 @@ function Footer() {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <Image
-                src="/images/ragnaroklogovf.svg"
+                src="/images/ragnarok.logo.VF2.svg"
                 alt="Ragnarök"
                 width={32}
                 height={32}

@@ -79,7 +79,7 @@ export default function LandingHeader() {
         >
           {!logoError ? (
             <Image
-              src="/images/ragnaroklogovf.svg"
+              src="/images/ragnarok.logo.VF2.svg"
               alt=""
               width={32}
               height={32}
