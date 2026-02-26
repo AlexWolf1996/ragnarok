@@ -16,7 +16,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { executeBattle, getSupabaseAdmin } from '@/lib/battles/engine';
-import { verifyTransactionDetails, BETTING_TIERS, solToLamports, BettingTier } from '@/lib/solana/transfer';
+import { verifyTransactionDetails, BETTING_TIERS, solToLamports, lamportsToSol, BettingTier } from '@/lib/solana/transfer';
+import { sendPayout } from '@/lib/solana/payout';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -84,7 +85,8 @@ export async function POST(request: NextRequest) {
     const betAmountLamports = solToLamports(BETTING_TIERS[tier]);
     const betWon = result.winner.id === bettorPickId;
 
-    const { error: updateError } = await supabase
+    // Initial update with bet info
+    await supabase
       .from('matches')
       .update({
         bet_amount_lamports: betAmountLamports,
@@ -96,8 +98,48 @@ export async function POST(request: NextRequest) {
       })
       .eq('id', result.matchId);
 
-    if (updateError) {
-      console.error('[BetBattle] Failed to update match with bet info:', updateError);
+    // Auto-payout if bettor won
+    let payoutTxSignature: string | null = null;
+    let payoutSol = 0;
+    let payoutStatus: string = betWon ? 'won' : 'lost';
+
+    if (betWon) {
+      console.log(`[BetBattle] Bettor won! Initiating auto-payout for match ${result.matchId}`);
+      try {
+        const payoutResult = await sendPayout(bettorWallet, betAmountLamports);
+
+        if (payoutResult.success && payoutResult.signature) {
+          payoutTxSignature = payoutResult.signature;
+          payoutSol = lamportsToSol(payoutResult.payoutLamports || 0);
+          payoutStatus = 'paid';
+
+          await supabase
+            .from('matches')
+            .update({
+              payout_tx_signature: payoutResult.signature,
+              bet_status: 'paid',
+            })
+            .eq('id', result.matchId);
+
+          console.log(`[BetBattle] Payout sent: ${payoutResult.signature}`);
+        } else {
+          payoutStatus = 'payout_failed';
+          await supabase
+            .from('matches')
+            .update({ bet_status: 'payout_failed' })
+            .eq('id', result.matchId);
+
+          console.error(`[BetBattle] Payout failed: ${payoutResult.error}`);
+        }
+      } catch (payoutErr) {
+        payoutStatus = 'payout_failed';
+        await supabase
+          .from('matches')
+          .update({ bet_status: 'payout_failed' })
+          .eq('id', result.matchId);
+
+        console.error('[BetBattle] Payout error:', payoutErr);
+      }
     }
 
     const duration = Date.now() - startTime;
@@ -113,6 +155,9 @@ export async function POST(request: NextRequest) {
         pickedAgent: bettorPickId,
         won: betWon,
         potentialPayout: betWon ? BETTING_TIERS[tier] * 1.9 : 0,
+        payoutSol,
+        payoutTxSignature,
+        payoutStatus,
       },
       battle: {
         agentA: {

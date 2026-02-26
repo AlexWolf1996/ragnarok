@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
-import { Swords, Loader2, Plus, Zap, Trophy, AlertTriangle, Check, X } from 'lucide-react';
+import { Swords, Loader2, Plus, Zap, Trophy, AlertTriangle, Check, X, ExternalLink } from 'lucide-react';
 import AgentSelector from '@/components/ui/AgentSelector';
 import { Tables } from '@/lib/supabase/types';
 import { BETTING_TIERS, BettingTier, transferToTreasury } from '@/lib/solana/transfer';
@@ -26,6 +26,9 @@ interface BattleResult {
     pickedAgent: string;
     won: boolean;
     potentialPayout: number;
+    payoutSol?: number;
+    payoutTxSignature?: string | null;
+    payoutStatus?: string;
   };
   battle: {
     agentA: {
@@ -515,8 +518,19 @@ export default function BettingDuelPanel({
                         VICTORY!
                       </div>
                       <div className="font-mono text-xs text-emerald-300">
-                        +{battleResult.bet.potentialPayout.toFixed(3)} SOL (pending payout)
+                        +{battleResult.bet.potentialPayout.toFixed(3)} SOL
+                        {battleResult.bet.payoutStatus === 'paid' ? ' sent' : ' (payout pending)'}
                       </div>
+                      {battleResult.bet.payoutTxSignature && (
+                        <a
+                          href={`https://solscan.io/tx/${battleResult.bet.payoutTxSignature}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 font-mono text-[10px] text-emerald-400/70 hover:text-emerald-300 transition-colors mt-1"
+                        >
+                          View payout tx <ExternalLink size={10} />
+                        </a>
+                      )}
                     </div>
                   </>
                 ) : (
