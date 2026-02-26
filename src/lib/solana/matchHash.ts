@@ -36,10 +36,8 @@ export async function hashMatchToSolana(
   }
 
   try {
-    const connection = new Connection(
-      process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com',
-      'confirmed'
-    );
+    const rpcUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
+    const connection = new Connection(rpcUrl, 'confirmed');
 
     // Create memo data - this will be stored on-chain
     const memo = JSON.stringify({

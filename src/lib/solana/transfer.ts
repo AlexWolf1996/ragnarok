@@ -77,7 +77,7 @@ export async function transferToTreasury(
     const treasuryWallet = getTreasuryWallet();
 
     // Use confirmed commitment for reliable RPC responses
-    const rpcUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
+    const rpcUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
     const connection = new Connection(rpcUrl, 'confirmed');
 
     console.log(`[Solana Transfer] Initiating ${amountSol} SOL transfer to treasury: ${treasuryWallet.toBase58()}`);
@@ -173,7 +173,7 @@ export async function verifyTransactionDetails(
   maxRetries: number = 5,
   retryDelayMs: number = 3000
 ): Promise<VerificationResult> {
-  const rpcUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
+  const rpcUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
   const connection = new Connection(rpcUrl, 'confirmed');
 
   console.log(`[Solana Verify] Checking transaction: ${signature}`);

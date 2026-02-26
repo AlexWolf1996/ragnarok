@@ -1,7 +1,7 @@
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 
 // Default fallback URL for build time
-const DEFAULT_RPC_URL = 'https://api.devnet.solana.com';
+const DEFAULT_RPC_URL = 'https://api.mainnet-beta.solana.com';
 
 // Get network from environment variable - only read at runtime
 export const getSolanaNetwork = (): WalletAdapterNetwork => {
