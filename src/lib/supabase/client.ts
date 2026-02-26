@@ -444,4 +444,24 @@ export async function getMatchBetsByWallet(walletAddress: string) {
   return data;
 }
 
+/**
+ * Fetch all matches that have bets (for betting leaderboard aggregation).
+ * Returns only the columns needed for aggregation.
+ */
+export async function getAllBetMatches() {
+  const { data, error } = await getSupabase()
+    .from('matches')
+    .select(`
+      bettor_wallet,
+      bet_amount_lamports,
+      bet_status,
+      tier
+    `)
+    .not('bettor_wallet', 'is', null)
+    .not('bet_amount_lamports', 'is', null);
+
+  if (error) throw error;
+  return data;
+}
+
 export default supabase;

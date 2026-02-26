@@ -20,6 +20,8 @@ import { getLeaderboard, getAgentRecentMatches, supabase } from '@/lib/supabase/
 import { useToast } from '@/hooks/useToast';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import CosmicBackground from '@/components/ui/CosmicBackground';
+import BettorLeaderboard from '@/components/leaderboard/BettorLeaderboard';
+import { Coins } from 'lucide-react';
 
 type LeaderboardEntry = Tables<'leaderboard'>;
 
@@ -73,8 +75,11 @@ function getRowStyle(rank: number | null): string {
   return '';
 }
 
+type LeaderboardTab = 'warriors' | 'bettors';
+
 function LeaderboardContent() {
   const toast = useToast();
+  const [activeTab, setActiveTab] = useState<LeaderboardTab>('warriors');
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -290,6 +295,43 @@ function LeaderboardContent() {
           </p>
         </motion.div>
 
+        {/* Tab Toggle */}
+        <motion.div
+          className="flex justify-center mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+        >
+          <div className="inline-flex bg-black/60 border border-neutral-800 rounded-lg p-1 gap-1">
+            <button
+              onClick={() => setActiveTab('warriors')}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-md font-[var(--font-orbitron)] text-xs tracking-[0.15em] transition-all ${
+                activeTab === 'warriors'
+                  ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30'
+                  : 'text-neutral-500 hover:text-white'
+              }`}
+            >
+              <Swords size={14} />
+              WARRIORS
+            </button>
+            <button
+              onClick={() => setActiveTab('bettors')}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-md font-[var(--font-orbitron)] text-xs tracking-[0.15em] transition-all ${
+                activeTab === 'bettors'
+                  ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30'
+                  : 'text-neutral-500 hover:text-white'
+              }`}
+            >
+              <Coins size={14} />
+              BETTORS
+            </button>
+          </div>
+        </motion.div>
+
+        {activeTab === 'bettors' ? (
+          <BettorLeaderboard />
+        ) : (
+        <>
         {/* Controls */}
         <motion.div
           className="flex flex-col md:flex-row gap-4 mb-6"
@@ -562,6 +604,8 @@ function LeaderboardContent() {
         >
           THE CHRONICLES UPDATE AS BLOOD IS SPILLED IN THE ARENA
         </motion.p>
+        </>
+        )}
       </div>
     </div>
   );
