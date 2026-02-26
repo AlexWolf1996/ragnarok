@@ -46,6 +46,7 @@ import {
   RecentBattlesFeed,
   BattleResultDisplay,
   BattleLoadingState,
+  BettingDuelPanel,
 } from '@/components/arena';
 
 type Agent = Tables<'agents'>;
@@ -579,93 +580,39 @@ function ArenaContent() {
                   />
                 )}
 
-                {/* Start Match Card */}
-                <div className="bg-black/40 border border-neutral-800 rounded-lg p-6 relative">
-                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
-                  <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-6 flex items-center gap-2">
-                    <Plus size={16} className="text-amber-500" />
-                    SUMMON A DUEL
-                  </h2>
-
-                  {agents.length < 2 ? (
-                    <div className="text-center py-8">
-                      <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400 mb-4">
-                        The arena requires at least 2 champions.
-                      </p>
-                      <a href="/register" className="inline-block px-6 py-2 border border-red-600 text-red-500 font-[var(--font-orbitron)] text-xs tracking-[0.2em] transition-all hover:bg-red-500 hover:text-white">
-                        FORGE YOUR CHAMPION
-                      </a>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">
-                          FIRST WARRIOR
-                        </label>
-                        <AgentSelector
-                          agents={agents}
-                          selectedAgent={agentA}
-                          onSelect={setAgentA}
-                          placeholder="Select first agent"
-                          excludeAgentId={agentB?.id}
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-center py-2">
-                        <span className="font-[var(--font-orbitron)] text-xs text-red-500 font-bold">VS</span>
-                      </div>
-
-                      <div>
-                        <label className="block text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">
-                          SECOND WARRIOR
-                        </label>
-                        <AgentSelector
-                          agents={agents}
-                          selectedAgent={agentB}
-                          onSelect={setAgentB}
-                          placeholder="Select second agent"
-                          excludeAgentId={agentA?.id}
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">
-                          TRIAL BY
-                        </label>
-                        <select
-                          value={selectedChallenge}
-                          onChange={(e) => setSelectedChallenge(e.target.value)}
-                          className="w-full px-4 py-3 bg-black/60 border border-neutral-800 rounded-lg focus:outline-none focus:border-amber-500/50 font-[var(--font-rajdhani)] text-sm text-white"
-                        >
-                          <option value="random">The Norns Decide (Random)</option>
-                          {challenges.map((challenge) => (
-                            <option key={challenge.id} value={challenge.id}>
-                              {challenge.type.replace(/_/g, ' ')} ({challenge.difficulty})
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <button
-                        onClick={handleStartMatch}
-                        disabled={!agentA || !agentB || isStartingMatch}
-                        className="w-full py-4 bg-gradient-to-r from-red-700 via-red-600 to-red-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-red-600 hover:via-red-500 hover:to-red-600 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
-                      >
-                        {isStartingMatch ? (
-                          <>
-                            <Loader2 size={16} className="animate-spin" />
-                            THE GODS WATCH...
-                          </>
-                        ) : (
-                          <>
-                            <Swords size={16} />
-                            LET THEM FIGHT
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  )}
-                </div>
+                {/* Betting Duel Panel */}
+                <BettingDuelPanel
+                  agents={agents}
+                  challenges={challenges}
+                  onBattleComplete={(result) => {
+                    // Show commentary if needed
+                    if (result.battle) {
+                      setCommentaryData({
+                        agentA: {
+                          name: result.battle.agentA.name,
+                          elo_rating: 1000, // Will be recalculated
+                        },
+                        agentB: {
+                          name: result.battle.agentB.name,
+                          elo_rating: 1000,
+                        },
+                        challenge: {
+                          name: result.battle.challenge.name,
+                          type: result.battle.challenge.type,
+                          difficulty_level: result.battle.challenge.difficulty,
+                        },
+                        score_a: result.battle.agentA.score,
+                        score_b: result.battle.agentB.score,
+                        winner_id: result.battle.winner.id,
+                        winnerName: result.battle.winner.name,
+                      });
+                      setShowCommentary(true);
+                    }
+                    loadDuelData();
+                    const status = result.bet.won ? 'VICTORY' : 'DEFEAT';
+                    toast.info('Battle Complete', `${status} - ${result.battle.winner.name} wins!`);
+                  }}
+                />
 
                 {/* Quick Battle Card */}
                 {!isQuickBattling && !quickBattleResult && (

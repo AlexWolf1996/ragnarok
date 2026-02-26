@@ -14,3 +14,4 @@ export { default as UpcomingSchedule } from './UpcomingSchedule';
 export { default as RecentBattlesFeed } from './RecentBattlesFeed';
 export { default as BattleResultDisplay } from './BattleResultDisplay';
 export { default as BattleLoadingState } from './BattleLoadingState';
+export { default as BettingDuelPanel } from './BettingDuelPanel';
