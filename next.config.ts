@@ -38,7 +38,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https: blob:",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.solana.com https://api.mainnet-beta.solana.com https://api.devnet.solana.com https://api.anthropic.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.solana.com https://api.mainnet-beta.solana.com https://api.devnet.solana.com https://*.helius-rpc.com wss://*.helius-rpc.com https://api.anthropic.com",
       "frame-ancestors 'self'",
       "base-uri 'self'",
       "form-action 'self'",
