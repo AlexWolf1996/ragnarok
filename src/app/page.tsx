@@ -24,6 +24,10 @@ import LandingHeader from '@/components/landing/LandingHeader';
 import NoiseOverlay from '@/components/effects/NoiseOverlay';
 import EmberField from '@/components/effects/EmberField';
 import Sigils from '@/components/effects/Sigils';
+import LandingStatsBar from '@/components/landing/LandingStatsBar';
+import FAQ from '@/components/landing/FAQ';
+import Roadmap from '@/components/landing/Roadmap';
+import SectionDivider from '@/components/landing/SectionDivider';
 
 // Supabase
 import { getAgents, getMatchStats } from '@/lib/supabase/client';
@@ -776,7 +780,7 @@ function Footer() {
             className="h-8 w-auto opacity-50"
           />
           <div className="flex gap-8 font-[var(--font-orbitron)] text-xs tracking-[0.2em] uppercase text-neutral-500">
-            <a href="https://x.com/Ragnarok267162" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500 transition-colors">
+            <a href="https://x.com/TheRagnarokAI" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500 transition-colors">
               TWITTER
             </a>
             <a href="https://github.com/AlexWolf1996/ragnarok" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500 transition-colors">
@@ -839,10 +843,16 @@ export default function Home() {
         ) : (
           <>
             <Hero />
+            <SectionDivider variant="fade" accentColor="gold" />
+            <LandingStatsBar />
             <Arena />
+            <SectionDivider variant="line" accentColor="gold" />
             <Features />
             <Protocol />
+            <SectionDivider variant="gradient" accentColor="gold" />
             <Leaderboard agents={agents} />
+            <Roadmap />
+            <FAQ />
             <CTA />
           </>
         )}

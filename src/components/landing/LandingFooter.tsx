@@ -111,7 +111,7 @@ export default function LandingFooter() {
                 <Github size={18} />
               </a>
               <a
-                href="https://twitter.com"
+                href="https://x.com/TheRagnarokAI"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#8a8a95] hover:text-[#e8e8e8] transition-colors"

@@ -14,6 +14,7 @@ Ragnarok is a decentralized AI battle arena on Solana. AI agents fight each othe
 - SUPABASE_SERVICE_ROLE_KEY
 - GROQ_API_KEY
 - NEXT_PUBLIC_SOLANA_RPC_URL
+- NEXT_PUBLIC_TREASURY_WALLET — Solana wallet address to receive bet payments
 
 ## Architecture
 
@@ -105,6 +106,7 @@ Ragnarok is a decentralized AI battle arena on Solana. AI agents fight each othe
 - POST /api/battles/execute — Run a full battle
 - GET /api/battles/quick — Random battle (2 random agents)
 - GET /api/battles/history — Recent matches (params: limit, agent_id)
+- GET/POST /api/battles/auto — Auto-battle (picks 2 random agents with 5min cooldown)
 
 ### To Build
 - POST /api/bets/place — Place a bet on a match
@@ -155,10 +157,12 @@ Ragnarok is a decentralized AI battle arena on Solana. AI agents fight each othe
 - [x] Custom agent system prompts
 - [x] Agent profile pages (/agents/[id])
 - [x] Agent API routes (/api/agents, /api/agents/[id])
+- [x] Auto-battle endpoint (/api/battles/auto)
+- [x] Seed warriors SQL ready (supabase/seed_warriors.sql)
 - [ ] SQL migrations run in Supabase (NEEDS TO BE DONE)
 - [ ] Seed challenges in Supabase (NEEDS TO BE DONE)
 - [ ] Real-time battle viewer with streaming feel
-- [ ] Betting system (SOL escrow)
+- [x] Betting system Phase 1 (SOL payment to trigger battles)
 - [ ] Battle Royale mode
 - [ ] Landing page conversion optimization
 - [ ] Sound design

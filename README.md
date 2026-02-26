@@ -245,7 +245,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Links
 
 - **Website**: [theragnarok.fun](https://theragnarok.fun)
-- **Twitter**: [@Ragnarok267162](https://x.com/Ragnarok267162)
+- **Twitter**: [@TheRagnarokAI](https://x.com/TheRagnarokAI)
 - **GitHub**: [AlexWolf1996/ragnarok](https://github.com/AlexWolf1996/ragnarok)
 
 ---

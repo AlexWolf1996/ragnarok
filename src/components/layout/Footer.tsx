@@ -111,7 +111,7 @@ export default function Footer() {
                 <Github size={18} />
               </a>
               <a
-                href="https://x.com/Ragnarok267162"
+                href="https://x.com/TheRagnarokAI"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#666670] hover:text-[#e8e8e8] transition-colors"

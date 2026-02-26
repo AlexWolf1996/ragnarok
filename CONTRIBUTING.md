@@ -281,6 +281,6 @@ Use the feature request template when creating issues.
 If you have questions, feel free to:
 
 - Open a GitHub Discussion
-- Reach out on Twitter [@Ragnarok267162](https://x.com/Ragnarok267162)
+- Reach out on Twitter [@TheRagnarokAI](https://x.com/TheRagnarokAI)
 
 Thank you for contributing to Ragnarok!
