@@ -64,7 +64,8 @@ export function getTreasuryWallet(): PublicKey {
  */
 export async function transferToTreasury(
   walletAdapter: WalletAdapter,
-  tier: BettingTier
+  tier: BettingTier,
+  existingConnection?: Connection
 ): Promise<TransferResult> {
   if (!walletAdapter.publicKey) {
     return { success: false, error: 'Wallet not connected' };
@@ -76,9 +77,12 @@ export async function transferToTreasury(
   try {
     const treasuryWallet = getTreasuryWallet();
 
-    // Use confirmed commitment for reliable RPC responses
-    const rpcUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
-    const connection = new Connection(rpcUrl, 'confirmed');
+    // Prefer the connection passed from WalletProvider (already configured with correct endpoint)
+    // Fall back to creating our own if none provided
+    const connection = existingConnection || new Connection(
+      process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com',
+      'confirmed'
+    );
 
     console.log(`[Solana Transfer] Initiating ${amountSol} SOL transfer to treasury: ${treasuryWallet.toBase58()}`);
 

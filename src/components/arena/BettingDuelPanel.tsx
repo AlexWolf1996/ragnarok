@@ -80,6 +80,9 @@ export default function BettingDuelPanel({
   const wallet = useWallet();
   const { connection } = useConnection();
 
+  console.log('[BETTING] RPC URL:', process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'UNDEFINED — using fallback');
+  console.log('[BETTING] Connection endpoint:', connection.rpcEndpoint);
+
   // Selection state
   const [agentA, setAgentA] = useState<Agent | null>(null);
   const [agentB, setAgentB] = useState<Agent | null>(null);
@@ -123,8 +126,8 @@ export default function BettingDuelPanel({
     onBattleStart?.();
 
     try {
-      // Transfer SOL to treasury - returns immediately after wallet signs
-      const transferResult = await transferToTreasury(wallet, selectedTier);
+      // Transfer SOL to treasury using the connection from WalletProvider
+      const transferResult = await transferToTreasury(wallet, selectedTier, connection);
 
       if (!transferResult.success || !transferResult.signature) {
         throw new Error(transferResult.error || 'Payment failed');
