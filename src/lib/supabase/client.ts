@@ -173,13 +173,38 @@ export async function getMatchStats() {
 
   if (topError && topError.code !== 'PGRST116') throw topError;
 
-  const { data: betsData, error: betsError } = await supabase
-    .from('bets')
-    .select('amount_sol');
+  // Calculate total wagered from matches with bets (new betting system)
+  let totalWageredFromMatches = 0;
+  const { data: matchBets, error: matchBetsError } = await supabase
+    .from('matches')
+    .select('bet_amount_lamports')
+    .not('bet_status', 'is', null)
+    .neq('bet_status', 'none');
 
-  if (betsError) throw betsError;
+  if (!matchBetsError && matchBets) {
+    // Sum lamports and convert to SOL
+    const totalLamports = matchBets.reduce(
+      (sum, m) => sum + (m.bet_amount_lamports || 0),
+      0
+    );
+    totalWageredFromMatches = totalLamports / 1_000_000_000; // lamports to SOL
+  }
 
-  const totalWagered = betsData?.reduce((sum, bet) => sum + bet.amount_sol, 0) || 0;
+  // Also check legacy bets table (if it exists)
+  let totalWageredFromBets = 0;
+  try {
+    const { data: betsData } = await supabase
+      .from('bets')
+      .select('amount_sol');
+
+    if (betsData) {
+      totalWageredFromBets = betsData.reduce((sum, bet) => sum + (bet.amount_sol || 0), 0);
+    }
+  } catch {
+    // bets table may not exist, ignore
+  }
+
+  const totalWagered = totalWageredFromMatches + totalWageredFromBets;
 
   return {
     totalMatches: totalMatches || 0,

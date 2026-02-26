@@ -104,7 +104,7 @@ export default function LandingStatsBar() {
     {
       value: stats.prizePool > 10 ? Math.floor(stats.prizePool) : 8420,
       suffix: ' SOL',
-      label: 'PRIZE POOL',
+      label: 'TOTAL WAGERED',
     },
   ];
 
