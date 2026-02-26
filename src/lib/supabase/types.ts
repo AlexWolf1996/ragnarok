@@ -147,14 +147,21 @@ export type Database = {
           agent_b_id: string
           agent_b_response: Json | null
           agent_b_score: number | null
+          bet_amount_lamports: number | null
+          bet_status: string | null
+          bet_tx_signature: string | null
+          bettor_pick_id: string | null
+          bettor_wallet: string | null
           challenge_id: string
           completed_at: string | null
           created_at: string
           id: string
           judge_reasoning: string | null
+          payout_tx_signature: string | null
           solana_tx_hash: string | null
           started_at: string | null
           status: Database["public"]["Enums"]["match_status"]
+          tier: string | null
           winner_id: string | null
         }
         Insert: {
@@ -164,14 +171,21 @@ export type Database = {
           agent_b_id: string
           agent_b_response?: Json | null
           agent_b_score?: number | null
+          bet_amount_lamports?: number | null
+          bet_status?: string | null
+          bet_tx_signature?: string | null
+          bettor_pick_id?: string | null
+          bettor_wallet?: string | null
           challenge_id: string
           completed_at?: string | null
           created_at?: string
           id?: string
           judge_reasoning?: string | null
+          payout_tx_signature?: string | null
           solana_tx_hash?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["match_status"]
+          tier?: string | null
           winner_id?: string | null
         }
         Update: {
@@ -181,14 +195,21 @@ export type Database = {
           agent_b_id?: string
           agent_b_response?: Json | null
           agent_b_score?: number | null
+          bet_amount_lamports?: number | null
+          bet_status?: string | null
+          bet_tx_signature?: string | null
+          bettor_pick_id?: string | null
+          bettor_wallet?: string | null
           challenge_id?: string
           completed_at?: string | null
           created_at?: string
           id?: string
           judge_reasoning?: string | null
+          payout_tx_signature?: string | null
           solana_tx_hash?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["match_status"]
+          tier?: string | null
           winner_id?: string | null
         }
         Relationships: [
