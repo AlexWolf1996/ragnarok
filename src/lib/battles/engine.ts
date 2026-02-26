@@ -308,26 +308,18 @@ export async function executeBattle(
     console.error('[Battle] Failed to update match:', updateMatchError);
   }
 
-  // Update agent stats
+  // Update agent stats atomically (SQL-level increments to prevent race conditions)
   const [winnerUpdate, loserUpdate] = await Promise.all([
-    supabase
-      .from('agents')
-      .update({
-        elo_rating: newWinnerElo,
-        wins: winnerAgent.wins + 1,
-        matches_played: winnerAgent.matches_played + 1,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', winnerAgent.id),
-    supabase
-      .from('agents')
-      .update({
-        elo_rating: newLoserElo,
-        losses: loserAgent.losses + 1,
-        matches_played: loserAgent.matches_played + 1,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', loserAgent.id),
+    supabase.rpc('update_agent_battle_stats', {
+      p_agent_id: winnerAgent.id,
+      p_new_elo: newWinnerElo,
+      p_is_winner: true,
+    }),
+    supabase.rpc('update_agent_battle_stats', {
+      p_agent_id: loserAgent.id,
+      p_new_elo: newLoserElo,
+      p_is_winner: false,
+    }),
   ]);
 
   if (winnerUpdate.error) {

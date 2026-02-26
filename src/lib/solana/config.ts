@@ -5,10 +5,10 @@ const DEFAULT_RPC_URL = 'https://api.mainnet-beta.solana.com';
 
 // Get network from environment variable - only read at runtime
 export const getSolanaNetwork = (): WalletAdapterNetwork => {
-  // Check if we're in browser or have env vars available
+  // Default to mainnet-beta to match the Helius RPC URL
   const networkEnv = typeof window !== 'undefined' || process.env.NEXT_PUBLIC_SOLANA_NETWORK
-    ? process.env.NEXT_PUBLIC_SOLANA_NETWORK || 'devnet'
-    : 'devnet';
+    ? process.env.NEXT_PUBLIC_SOLANA_NETWORK || 'mainnet-beta'
+    : 'mainnet-beta';
 
   switch (networkEnv) {
     case 'mainnet-beta':

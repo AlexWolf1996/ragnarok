@@ -598,7 +598,14 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      update_agent_battle_stats: {
+        Args: {
+          p_agent_id: string
+          p_new_elo: number
+          p_is_winner: boolean
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       bet_status: "pending" | "won" | "lost" | "refunded"
