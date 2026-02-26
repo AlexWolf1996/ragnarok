@@ -1,19 +1,65 @@
-import { createClient, RealtimeChannel } from '@supabase/supabase-js';
+import { createClient, RealtimeChannel, SupabaseClient } from '@supabase/supabase-js';
 import { Database, Tables, TablesInsert } from './types';
 
-// Use placeholder URLs at build time to avoid errors during static page generation
-// Real env vars are used at runtime
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
+// Lazy initialization to avoid build-time errors during static page generation
+let _supabase: SupabaseClient<Database> | null = null;
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+// Check if we're in a browser environment
+const isBrowser = typeof window !== 'undefined';
+
+// Safe placeholder URL that's valid for Supabase client creation
+const PLACEHOLDER_URL = 'https://placeholder.supabase.co';
+const PLACEHOLDER_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2MTY5MTgwMDAsImV4cCI6MTkzMjQ5NDAwMH0.placeholder';
+
+function getSupabase(): SupabaseClient<Database> {
+  if (_supabase) {
+    return _supabase;
+  }
+
+  // Use real env vars in browser, placeholders during SSR/build
+  let supabaseUrl: string;
+  let supabaseAnonKey: string;
+
+  if (isBrowser) {
+    supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || PLACEHOLDER_URL;
+    supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || PLACEHOLDER_KEY;
+  } else {
+    // During SSR/build, use placeholders to avoid errors
+    // The actual API calls won't happen during build anyway
+    supabaseUrl = PLACEHOLDER_URL;
+    supabaseAnonKey = PLACEHOLDER_KEY;
+  }
+
+  _supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+  return _supabase;
+}
+
+// Export a getter function
+export function getSupabaseClient(): SupabaseClient<Database> {
+  return getSupabase();
+}
+
+// For backwards compatibility - Proxy that lazily initializes
+export const supabase: SupabaseClient<Database> = new Proxy(
+  {} as SupabaseClient<Database>,
+  {
+    get(_, prop: string) {
+      const client = getSupabase();
+      const value = client[prop as keyof SupabaseClient<Database>];
+      if (typeof value === 'function') {
+        return value.bind(client);
+      }
+      return value;
+    },
+  }
+);
 
 // ============================================================================
 // Agent Operations
 // ============================================================================
 
 export async function registerAgent(data: TablesInsert<'agents'>) {
-  const { data: agent, error } = await supabase
+  const { data: agent, error } = await getSupabase()
     .from('agents')
     .insert(data)
     .select()
@@ -24,7 +70,7 @@ export async function registerAgent(data: TablesInsert<'agents'>) {
 }
 
 export async function getAgents() {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('agents')
     .select('*')
     .order('elo_rating', { ascending: false });
@@ -34,18 +80,18 @@ export async function getAgents() {
 }
 
 export async function getAgentByWallet(wallet: string) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('agents')
     .select('*')
     .eq('wallet_address', wallet)
     .single();
 
-  if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows
+  if (error && error.code !== 'PGRST116') throw error;
   return data;
 }
 
 export async function getAgentById(id: string) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('agents')
     .select('*')
     .eq('id', id)
@@ -56,7 +102,7 @@ export async function getAgentById(id: string) {
 }
 
 export async function checkAgentNameExists(name: string) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('agents')
     .select('id')
     .eq('name', name)
@@ -71,7 +117,7 @@ export async function checkAgentNameExists(name: string) {
 // ============================================================================
 
 export async function getRecentMatches(limit: number = 10) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('matches')
     .select(`
       *,
@@ -89,7 +135,7 @@ export async function getRecentMatches(limit: number = 10) {
 }
 
 export async function getLiveMatches() {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('matches')
     .select(`
       *,
@@ -105,7 +151,7 @@ export async function getLiveMatches() {
 }
 
 export async function getMatchById(id: string) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('matches')
     .select(`
       *,
@@ -128,7 +174,7 @@ export function subscribeToMatches(
     old: Tables<'matches'> | null;
   }) => void
 ): RealtimeChannel {
-  return supabase
+  return getSupabase()
     .channel('matches-changes')
     .on(
       'postgres_changes',
@@ -149,20 +195,22 @@ export function subscribeToMatches(
 }
 
 export async function getMatchStats() {
-  const { count: totalMatches, error: matchError } = await supabase
+  const client = getSupabase();
+
+  const { count: totalMatches, error: matchError } = await client
     .from('matches')
     .select('*', { count: 'exact', head: true })
     .eq('status', 'completed');
 
   if (matchError) throw matchError;
 
-  const { count: activeAgents, error: agentError } = await supabase
+  const { count: activeAgents, error: agentError } = await client
     .from('agents')
     .select('*', { count: 'exact', head: true });
 
   if (agentError) throw agentError;
 
-  const { data: topAgent, error: topError } = await supabase
+  const { data: topAgent, error: topError } = await client
     .from('agents')
     .select('name, elo_rating')
     .order('elo_rating', { ascending: false })
@@ -171,27 +219,24 @@ export async function getMatchStats() {
 
   if (topError && topError.code !== 'PGRST116') throw topError;
 
-  // Calculate total wagered from matches with bets (new betting system)
   let totalWageredFromMatches = 0;
-  const { data: matchBets, error: matchBetsError } = await supabase
+  const { data: matchBets, error: matchBetsError } = await client
     .from('matches')
     .select('bet_amount_lamports')
     .not('bet_status', 'is', null)
     .neq('bet_status', 'none');
 
   if (!matchBetsError && matchBets) {
-    // Sum lamports and convert to SOL
     const totalLamports = matchBets.reduce(
       (sum, m) => sum + (m.bet_amount_lamports || 0),
       0
     );
-    totalWageredFromMatches = totalLamports / 1_000_000_000; // lamports to SOL
+    totalWageredFromMatches = totalLamports / 1_000_000_000;
   }
 
-  // Also check legacy bets table (if it exists)
   let totalWageredFromBets = 0;
   try {
-    const { data: betsData } = await supabase
+    const { data: betsData } = await client
       .from('bets')
       .select('amount_sol');
 
@@ -199,7 +244,7 @@ export async function getMatchStats() {
       totalWageredFromBets = betsData.reduce((sum, bet) => sum + (bet.amount_sol || 0), 0);
     }
   } catch {
-    // bets table may not exist, ignore
+    // bets table may not exist
   }
 
   const totalWagered = totalWageredFromMatches + totalWageredFromBets;
@@ -217,7 +262,7 @@ export async function getMatchStats() {
 // ============================================================================
 
 export async function getLeaderboard() {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('leaderboard')
     .select('*')
     .order('rank', { ascending: true });
@@ -227,7 +272,7 @@ export async function getLeaderboard() {
 }
 
 export async function getAgentRecentMatches(agentId: string, limit: number = 5) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('matches')
     .select(`
       *,
@@ -249,7 +294,7 @@ export async function getAgentRecentMatches(agentId: string, limit: number = 5) 
 // ============================================================================
 
 export async function placeBet(data: TablesInsert<'bets'>) {
-  const { data: bet, error } = await supabase
+  const { data: bet, error } = await getSupabase()
     .from('bets')
     .insert(data)
     .select()
@@ -260,7 +305,7 @@ export async function placeBet(data: TablesInsert<'bets'>) {
 }
 
 export async function getMatchBets(matchId: string) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('bets')
     .select(`
       *,
@@ -273,7 +318,7 @@ export async function getMatchBets(matchId: string) {
 }
 
 export async function getBetsByWallet(walletAddress: string) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('bets')
     .select(`
       *,
@@ -292,7 +337,7 @@ export async function getBetsByWallet(walletAddress: string) {
 // ============================================================================
 
 export async function getChallenges() {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('challenges')
     .select('*')
     .order('difficulty', { ascending: true });
@@ -302,7 +347,7 @@ export async function getChallenges() {
 }
 
 export async function getRandomChallenge() {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('challenges')
     .select('*');
 
@@ -314,7 +359,7 @@ export async function getRandomChallenge() {
 }
 
 export async function getChallengeById(id: string) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('challenges')
     .select('*')
     .eq('id', id)
@@ -347,7 +392,6 @@ export async function runMatch(agentAId: string, agentBId: string, challengeId?:
     throw new Error(data.message || data.error || 'Battle execution failed');
   }
 
-  // Return in format expected by arena page
   return {
     match_id: data.matchId,
     winner_id: data.winner?.id,
@@ -356,7 +400,7 @@ export async function runMatch(agentAId: string, agentBId: string, challengeId?:
 }
 
 export async function updateMatchSolanaTxHash(matchId: string, txHash: string) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('matches')
     .update({ solana_tx_hash: txHash })
     .eq('id', matchId)
