@@ -57,7 +57,7 @@ interface BattleResult {
   };
 }
 
-type BattleStep = 'select' | 'bet' | 'paying' | 'fighting' | 'result';
+type BattleStep = 'select' | 'bet' | 'paying' | 'verifying' | 'fighting' | 'result';
 
 const TIER_LABELS: Record<BettingTier, string> = {
   bifrost: 'BIFROST',
@@ -123,16 +123,17 @@ export default function BettingDuelPanel({
     onBattleStart?.();
 
     try {
-      // Transfer SOL to treasury
+      // Transfer SOL to treasury - returns immediately after wallet signs
       const transferResult = await transferToTreasury(wallet, selectedTier);
 
       if (!transferResult.success || !transferResult.signature) {
         throw new Error(transferResult.error || 'Payment failed');
       }
 
-      setStep('fighting');
+      // Show verifying state while backend confirms transaction
+      setStep('verifying');
 
-      // Execute battle with bet
+      // Send signature to backend for verification + battle execution
       const response = await fetch('/api/battles/bet', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -146,6 +147,9 @@ export default function BettingDuelPanel({
           challengeId: selectedChallenge === 'random' ? undefined : selectedChallenge,
         }),
       });
+
+      // Backend verified, now show fighting
+      setStep('fighting');
 
       const data = await response.json();
 
@@ -212,7 +216,7 @@ export default function BettingDuelPanel({
           <Zap size={16} className="text-amber-500" />
           WAGE BATTLE
         </h2>
-        {step !== 'select' && step !== 'fighting' && step !== 'paying' && (
+        {step !== 'select' && step !== 'fighting' && step !== 'paying' && step !== 'verifying' && (
           <button
             onClick={handleReset}
             className="text-xs text-neutral-500 hover:text-amber-500 transition-colors"
@@ -409,7 +413,7 @@ export default function BettingDuelPanel({
           </motion.div>
         )}
 
-        {/* STEP 3: Payment Processing */}
+        {/* STEP 3: Payment Processing - Wallet Popup */}
         {step === 'paying' && (
           <motion.div
             key="paying"
@@ -424,6 +428,34 @@ export default function BettingDuelPanel({
             </p>
             <p className="font-[var(--font-rajdhani)] text-xs text-neutral-400">
               Approve the {BETTING_TIERS[selectedTier]} SOL transfer to proceed...
+            </p>
+          </motion.div>
+        )}
+
+        {/* STEP 3.5: Verifying Payment on Chain */}
+        {step === 'verifying' && (
+          <motion.div
+            key="verifying"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="py-12 text-center"
+          >
+            <div className="relative inline-block">
+              <Check size={32} className="text-emerald-500 mx-auto mb-4" />
+              <motion.div
+                className="absolute -inset-2"
+                animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <div className="w-full h-full border-2 border-emerald-500 rounded-full" />
+              </motion.div>
+            </div>
+            <p className="font-[var(--font-orbitron)] text-sm text-white tracking-wider mb-2">
+              VERIFYING PAYMENT...
+            </p>
+            <p className="font-[var(--font-rajdhani)] text-xs text-neutral-400">
+              Confirming your transaction on Solana...
             </p>
           </motion.div>
         )}
