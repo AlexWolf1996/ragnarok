@@ -1,29 +1,12 @@
-import { createClient, RealtimeChannel, SupabaseClient } from '@supabase/supabase-js';
+import { createClient, RealtimeChannel } from '@supabase/supabase-js';
 import { Database, Tables, TablesInsert } from './types';
 
-// Lazy initialization to avoid build-time errors when env vars aren't available
-let _supabase: SupabaseClient<Database> | null = null;
+// Use placeholder URLs at build time to avoid errors during static page generation
+// Real env vars are used at runtime
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
 
-function getSupabase(): SupabaseClient<Database> {
-  if (_supabase) return _supabase;
-
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Missing Supabase environment variables');
-  }
-
-  _supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
-  return _supabase;
-}
-
-// Export getter for backwards compatibility
-export const supabase = new Proxy({} as SupabaseClient<Database>, {
-  get(_, prop) {
-    return (getSupabase() as unknown as Record<string | symbol, unknown>)[prop];
-  },
-});
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
 // ============================================================================
 // Agent Operations
