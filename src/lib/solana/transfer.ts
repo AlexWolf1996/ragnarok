@@ -25,20 +25,9 @@ export function lamportsToSol(lamports: number): number {
   return lamports / LAMPORTS_PER_SOL;
 }
 
-interface SendTransactionOptions {
-  maxRetries?: number;
-  skipPreflight?: boolean;
-  preflightCommitment?: 'processed' | 'confirmed' | 'finalized';
-}
-
 interface WalletAdapter {
   publicKey: PublicKey | null;
   signTransaction?: <T extends Transaction>(transaction: T) => Promise<T>;
-  sendTransaction?: (
-    transaction: Transaction,
-    connection: Connection,
-    options?: SendTransactionOptions
-  ) => Promise<string>;
 }
 
 interface TransferResult {
@@ -86,6 +75,10 @@ export async function transferToTreasury(
 
     console.log(`[Solana Transfer] Initiating ${amountSol} SOL transfer to treasury: ${treasuryWallet.toBase58()}`);
 
+    if (!walletAdapter.signTransaction) {
+      return { success: false, error: 'Wallet does not support signing transactions' };
+    }
+
     // Create transfer instruction
     const transferInstruction = SystemProgram.transfer({
       fromPubkey: walletAdapter.publicKey,
@@ -93,39 +86,43 @@ export async function transferToTreasury(
       lamports: amountLamports,
     });
 
-    // Build transaction
+    // Build transaction — set feePayer and blockhash BEFORE signing
+    // so Phantom can simulate it properly
     const transaction = new Transaction().add(transferInstruction);
-
-    // Get recent blockhash
     const { blockhash } = await connection.getLatestBlockhash('confirmed');
     transaction.recentBlockhash = blockhash;
     transaction.feePayer = walletAdapter.publicKey;
 
-    // Send transaction using wallet adapter's sendTransaction
-    let signature: string;
+    // Pre-simulate to catch errors before the wallet popup.
+    // Pass no signers so web3.js sends sigVerify: false for the unsigned tx.
+    console.log('[Solana Transfer] Pre-simulating transaction...');
+    const simulation = await connection.simulateTransaction(transaction);
 
-    if (walletAdapter.sendTransaction) {
-      signature = await walletAdapter.sendTransaction(transaction, connection, {
-        maxRetries: 3,
-        skipPreflight: false,
-        preflightCommitment: 'confirmed',
-      });
-      console.log(`[Solana Transfer] Transaction sent: ${signature}`);
-    } else if (walletAdapter.signTransaction) {
-      const signed = await walletAdapter.signTransaction(transaction);
-      signature = await connection.sendRawTransaction(signed.serialize(), {
-        maxRetries: 3,
-        skipPreflight: false,
-        preflightCommitment: 'confirmed',
-      });
-      console.log(`[Solana Transfer] Transaction sent: ${signature}`);
-    } else {
-      return { success: false, error: 'Wallet does not support transactions' };
+    if (simulation.value.err) {
+      const simError = JSON.stringify(simulation.value.err);
+      console.error('[Solana Transfer] Simulation failed:', simError);
+      if (simulation.value.logs) {
+        console.error('[Solana Transfer] Simulation logs:', simulation.value.logs.join('\n'));
+      }
+      if (simError.includes('InsufficientFunds') || simError.includes('0x1')) {
+        return { success: false, error: 'Insufficient SOL balance for this transaction.' };
+      }
+      return { success: false, error: `Transaction simulation failed: ${simError}` };
     }
+    console.log('[Solana Transfer] Simulation passed');
 
-    // DO NOT wait for confirmation here - return signature immediately
-    // Backend will verify the transaction with retries
-    console.log(`[Solana Transfer] Returning signature for backend verification`);
+    // Sign with wallet (signTransaction only — avoids Phantom sendTransaction issues)
+    const signed = await walletAdapter.signTransaction(transaction);
+
+    // Send the signed transaction ourselves
+    const signature = await connection.sendRawTransaction(signed.serialize(), {
+      maxRetries: 3,
+      skipPreflight: true, // We already simulated above
+      preflightCommitment: 'confirmed',
+    });
+    console.log(`[Solana Transfer] Transaction sent: ${signature}`);
+
+    // Return signature immediately — backend will verify
     return { success: true, signature };
 
   } catch (err) {
