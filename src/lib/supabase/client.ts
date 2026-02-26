@@ -411,4 +411,37 @@ export async function updateMatchSolanaTxHash(matchId: string, txHash: string) {
   return data;
 }
 
+/**
+ * Fetch all matches where this wallet placed a bet, with agent names.
+ */
+export async function getMatchBetsByWallet(walletAddress: string) {
+  const { data, error } = await getSupabase()
+    .from('matches')
+    .select(`
+      id,
+      created_at,
+      completed_at,
+      status,
+      agent_a_id,
+      agent_b_id,
+      agent_a_score,
+      agent_b_score,
+      winner_id,
+      bet_amount_lamports,
+      bettor_wallet,
+      bettor_pick_id,
+      bet_tx_signature,
+      bet_status,
+      tier,
+      payout_tx_signature,
+      agent_a:agents!matches_agent_a_id_fkey(id, name),
+      agent_b:agents!matches_agent_b_id_fkey(id, name)
+    `)
+    .eq('bettor_wallet', walletAddress)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
 export default supabase;

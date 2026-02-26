@@ -12,6 +12,7 @@ const navLinks = [
   { href: '/arena', label: 'ARENA' },
   { href: '/register', label: 'REGISTER' },
   { href: '/leaderboard', label: 'LEADERBOARD' },
+  { href: '/my-bets', label: 'MY BETS' },
   { href: '/docs', label: 'DOCS' },
 ];
 
