@@ -25,12 +25,19 @@ export function lamportsToSol(lamports: number): number {
   return lamports / LAMPORTS_PER_SOL;
 }
 
+interface SendTransactionOptions {
+  maxRetries?: number;
+  skipPreflight?: boolean;
+  preflightCommitment?: 'processed' | 'confirmed' | 'finalized';
+}
+
 interface WalletAdapter {
   publicKey: PublicKey | null;
   signTransaction?: <T extends Transaction>(transaction: T) => Promise<T>;
   sendTransaction?: (
     transaction: Transaction,
-    connection: Connection
+    connection: Connection,
+    options?: SendTransactionOptions
   ) => Promise<string>;
 }
 
@@ -53,6 +60,7 @@ export function getTreasuryWallet(): PublicKey {
 
 /**
  * Transfer SOL to treasury wallet for betting
+ * Uses recommended Solana confirmation strategy to avoid blockhash expiration
  */
 export async function transferToTreasury(
   walletAdapter: WalletAdapter,
@@ -68,10 +76,14 @@ export async function transferToTreasury(
   try {
     const treasuryWallet = getTreasuryWallet();
 
-    const connection = new Connection(
-      process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com',
-      'confirmed'
-    );
+    // Use confirmed commitment for reliable RPC responses
+    const rpcUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
+    const connection = new Connection(rpcUrl, {
+      commitment: 'confirmed',
+      confirmTransactionInitialTimeout: 60000, // 60 second timeout
+    });
+
+    console.log(`[Solana Transfer] Initiating ${amountSol} SOL transfer to treasury`);
 
     // Create transfer instruction
     const transferInstruction = SystemProgram.transfer({
@@ -83,34 +95,75 @@ export async function transferToTreasury(
     // Build transaction
     const transaction = new Transaction().add(transferInstruction);
 
-    // Get recent blockhash
-    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
+    // Get recent blockhash with confirmed commitment (critical for avoiding expiration)
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
     transaction.recentBlockhash = blockhash;
     transaction.feePayer = walletAdapter.publicKey;
+
+    console.log(`[Solana Transfer] Got blockhash: ${blockhash.slice(0, 16)}... (valid until block ${lastValidBlockHeight})`);
 
     // Send transaction using wallet adapter's sendTransaction
     let signature: string;
 
     if (walletAdapter.sendTransaction) {
-      signature = await walletAdapter.sendTransaction(transaction, connection);
+      // Use maxRetries for better reliability
+      signature = await walletAdapter.sendTransaction(transaction, connection, {
+        maxRetries: 3,
+        skipPreflight: false,
+        preflightCommitment: 'confirmed',
+      });
+      console.log(`[Solana Transfer] Transaction sent via wallet adapter: ${signature}`);
     } else if (walletAdapter.signTransaction) {
       const signed = await walletAdapter.signTransaction(transaction);
-      signature = await connection.sendRawTransaction(signed.serialize());
+      signature = await connection.sendRawTransaction(signed.serialize(), {
+        maxRetries: 3,
+        skipPreflight: false,
+        preflightCommitment: 'confirmed',
+      });
+      console.log(`[Solana Transfer] Transaction sent via signTransaction: ${signature}`);
     } else {
       return { success: false, error: 'Wallet does not support transactions' };
     }
 
-    // Wait for confirmation
-    await connection.confirmTransaction({
-      signature,
-      blockhash,
-      lastValidBlockHeight,
-    }, 'confirmed');
+    // Wait for confirmation using the recommended strategy
+    // This properly handles blockhash expiration by checking lastValidBlockHeight
+    console.log(`[Solana Transfer] Waiting for confirmation...`);
 
+    const confirmation = await connection.confirmTransaction(
+      {
+        signature,
+        blockhash,
+        lastValidBlockHeight,
+      },
+      'confirmed'
+    );
+
+    if (confirmation.value.err) {
+      console.error(`[Solana Transfer] Transaction failed:`, confirmation.value.err);
+      return { success: false, error: 'Transaction failed on-chain' };
+    }
+
+    console.log(`[Solana Transfer] Transaction confirmed! Signature: ${signature}`);
     return { success: true, signature };
+
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Transfer failed';
     console.error('[Solana Transfer] Error:', errorMessage);
+
+    // Provide more helpful error messages
+    if (errorMessage.includes('block height exceeded') || errorMessage.includes('expired')) {
+      return {
+        success: false,
+        error: 'Transaction expired. Please try again with a fresh transaction.'
+      };
+    }
+    if (errorMessage.includes('insufficient')) {
+      return { success: false, error: 'Insufficient SOL balance for this transaction.' };
+    }
+    if (errorMessage.includes('User rejected')) {
+      return { success: false, error: 'Transaction was rejected in wallet.' };
+    }
+
     return { success: false, error: errorMessage };
   }
 }
