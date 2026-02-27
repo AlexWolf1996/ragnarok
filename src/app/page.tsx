@@ -4,10 +4,10 @@
 // Cinematic Norse aesthetic with real Supabase data
 // Last update: 2026-02-25
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import {
   Cpu,
   Zap,
@@ -496,6 +496,9 @@ function Features() {
 // PROTOCOL SECTION
 // ============================================
 function Protocol() {
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
+
   const steps = [
     { n: '01', t: 'TRAIN', d: 'Tune your model. Lock the weights.' },
     { n: '02', t: 'STAKE', d: 'Collateralize performance.' },
@@ -508,45 +511,115 @@ function Protocol() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.15)_0%,rgba(0,0,0,0.9)_60%)]" />
       <EmberField count={20} />
 
-      <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6">
-        <div className="flex items-end justify-between flex-col md:flex-row gap-4 sm:gap-8">
-          <div>
-            <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
-              // JOURNEY
-            </div>
-            <h2 className="mt-3 sm:mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
-              PROTOCOL
+      <div ref={sectionRef} className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6">
+        {/* Section Header */}
+        <div>
+          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
+            // JOURNEY
+          </div>
+          <h2 className="mt-3 sm:mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
+            PROTOCOL
+            <motion.span
+              className="inline-block"
+              animate={isInView ? {
+                filter: [
+                  'drop-shadow(0 0 0px rgba(245,158,11,0))',
+                  'drop-shadow(0 0 20px rgba(245,158,11,0.7))',
+                  'drop-shadow(0 0 0px rgba(245,158,11,0))',
+                ],
+              } : {}}
+              transition={{ duration: 1.5, ease: 'easeInOut' }}
+            >
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
                 {' '}FLOW
               </span>
-            </h2>
-          </div>
+            </motion.span>
+          </h2>
         </div>
 
-        <div className="mt-8 sm:mt-14 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 relative">
-          <div className="hidden md:block absolute left-0 right-0 top-10 h-[2px] bg-neutral-900" />
+        {/* ── Mobile (<md): Vertical Card Stack with Connectors ── */}
+        <div className="md:hidden mt-10 flex flex-col">
+          {steps.map((s, i) => (
+            <div key={s.n}>
+              <motion.div
+                className="relative border border-amber-500/20 bg-black/70 backdrop-blur-sm p-6 overflow-hidden"
+                style={{ boxShadow: '0 0 15px rgba(245,158,11,0.06)' }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ delay: i * 0.12, duration: 0.5 }}
+              >
+                {/* Watermark number */}
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 font-[var(--font-orbitron)] font-black text-[80px] leading-none text-amber-500/[0.08] pointer-events-none select-none">
+                  {s.n}
+                </div>
+
+                <div className="relative z-10">
+                  <div className="font-[var(--font-orbitron)] font-black tracking-[0.15em] text-base uppercase text-amber-500">
+                    {s.t}
+                  </div>
+                  <div className="mt-2 font-[var(--font-rajdhani)] text-base text-white/60 leading-relaxed">
+                    {s.d}
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Connector between cards */}
+              {i < steps.length - 1 && (
+                <div className="h-7 flex flex-col items-center justify-center">
+                  <div className="w-px flex-1 bg-gradient-to-b from-amber-500/25 to-transparent" />
+                  <div className="w-1.5 h-1.5 rotate-45 border border-amber-500/30" />
+                  <div className="w-px flex-1 bg-gradient-to-b from-transparent to-amber-500/25" />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* ── Desktop (md+): Horizontal Timeline + Cards ── */}
+        <div className="hidden md:grid md:grid-cols-4 gap-6 mt-14 relative">
+          {/* Horizontal connector line */}
+          <div className="absolute top-[5px] left-0 right-0 h-px bg-amber-500/15 pointer-events-none" />
+          {/* Animated pulse on line */}
           <motion.div
-            className="hidden md:block absolute top-[34px] w-4 h-4 rounded-full bg-amber-500 blur-[1px]"
-            animate={{ left: ['0%', '95%', '0%'] }}
+            className="absolute top-[2px] w-3 h-3 rounded-full bg-amber-500/40 blur-[3px] pointer-events-none"
+            animate={{ left: ['5%', '95%', '5%'] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           />
 
-          {steps.map((s) => (
-            <div key={s.n} className="relative">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 border border-amber-500/30 bg-black/70 backdrop-blur-sm flex items-center justify-center">
-                <div className="font-[var(--font-orbitron)] font-black text-lg sm:text-2xl text-white">
+          {steps.map((s, i) => (
+            <motion.div
+              key={s.n}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.12, duration: 0.5 }}
+            >
+              {/* Node on timeline */}
+              <div className="flex justify-center mb-5">
+                <div className="w-2 h-2 rotate-45 border border-amber-500/30 bg-black relative z-10" />
+              </div>
+
+              {/* Card */}
+              <div
+                className="relative border border-amber-500/20 bg-black/70 backdrop-blur-sm p-6 lg:p-8 overflow-hidden"
+                style={{ boxShadow: '0 0 15px rgba(245,158,11,0.06)' }}
+              >
+                {/* Watermark number */}
+                <div className="absolute right-3 top-3 font-[var(--font-orbitron)] font-black text-6xl leading-none text-amber-500/[0.08] pointer-events-none select-none">
                   {s.n}
                 </div>
-              </div>
-              <div className="mt-3 sm:mt-6">
-                <div className="font-[var(--font-orbitron)] font-black tracking-[0.1em] sm:tracking-[0.2em] text-sm sm:text-base uppercase text-white">
-                  {s.t}
+
+                <div className="relative z-10">
+                  <div className="font-[var(--font-orbitron)] font-black tracking-[0.15em] text-lg uppercase text-amber-500">
+                    {s.t}
+                  </div>
+                  <div className="mt-3 font-[var(--font-rajdhani)] text-lg text-white/60 leading-relaxed">
+                    {s.d}
+                  </div>
                 </div>
-                <div className="mt-1 sm:mt-2 font-[var(--font-rajdhani)] text-sm sm:text-base md:text-lg text-neutral-300">
-                  {s.d}
-                </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
