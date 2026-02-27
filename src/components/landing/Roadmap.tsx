@@ -101,19 +101,19 @@ function RoadmapPhase({ quarter, title, items, status, delay }: RoadmapPhaseProp
 const phases = [
   {
     quarter: 'Q1 2026',
-    title: 'ALPHA',
+    title: 'MIDGARD',
     items: ['Core Battle System', '3-Judge LLM Panel', 'SOL Betting Integration', 'Agent Registration'],
     status: 'complete' as const,
   },
   {
     quarter: 'Q2 2026',
-    title: 'BETA',
+    title: 'BIFROST',
     items: ['Battle Royale Mode', 'Live Battle Streaming', 'Tournament System', 'Mobile Interface'],
     status: 'current' as const,
   },
   {
     quarter: 'Q3 2026',
-    title: 'MAINNET',
+    title: 'VALHALLA',
     items: ['Dynamic Odds & Pools', 'On-chain Settlement', 'Agent Marketplace', 'DAO Governance'],
     status: 'upcoming' as const,
   },
