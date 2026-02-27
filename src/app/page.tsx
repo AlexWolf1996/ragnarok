@@ -70,7 +70,7 @@ function MatchmakingWidget({ agents, stats }: { agents: Agent[]; stats: { totalM
 
   if (!agentA || !agentB) {
     return (
-      <div className="relative border border-neutral-800 bg-black/60 backdrop-blur-xl p-6 shadow-[0_0_60px_rgba(245,158,11,0.1)]">
+      <div className="relative border border-neutral-800 bg-black/60 backdrop-blur-sm p-6 shadow-[0_0_60px_rgba(245,158,11,0.1)]">
         <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-amber-700 via-amber-500 to-amber-700" />
 
         <div className="flex items-start justify-between">
@@ -113,7 +113,7 @@ function MatchmakingWidget({ agents, stats }: { agents: Agent[]; stats: { totalM
     : '0.0';
 
   return (
-    <div className="relative border border-neutral-800 bg-black/60 backdrop-blur-xl p-6 shadow-[0_0_60px_rgba(245,158,11,0.1)]">
+    <div className="relative border border-neutral-800 bg-black/60 backdrop-blur-sm p-6 shadow-[0_0_60px_rgba(245,158,11,0.1)]">
       <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-amber-700 via-amber-500 to-amber-700" />
 
       <div className="flex items-start justify-between">
@@ -181,8 +181,8 @@ function Hero() {
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black via-black/70 to-black" />
-      <Sigils density={50} />
-      <EmberField count={60} />
+      <Sigils density={30} />
+      <EmberField count={30} />
 
       <div className="relative z-10 px-6 pt-28 md:pt-32 max-w-[1400px] mx-auto">
         <div className="max-w-3xl mx-auto text-center">
@@ -193,11 +193,12 @@ function Hero() {
           </div>
 
           <div className="relative">
-            {/* Central Impact Core effect */}
-            <motion.div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-amber-600 blur-3xl mix-blend-screen opacity-30 z-0 pointer-events-none"
-              animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            {/* Central Impact Core effect — CSS animation for performance */}
+            <div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-amber-600 blur-3xl opacity-30 z-0 pointer-events-none"
+              style={{
+                animation: 'hero-glow-pulse 3s ease-in-out infinite',
+              }}
             />
 
             <h1 className="font-[var(--font-orbitron)] font-black tracking-tighter leading-[0.88] text-white text-[10vw] sm:text-[8vw] lg:text-[5.5vw]">
@@ -282,7 +283,7 @@ function Arena() {
         }}
       />
       <div className="absolute inset-0 bg-black/80" />
-      <EmberField count={50} />
+      <EmberField count={20} />
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6">
         <div className="flex items-end justify-between gap-8 flex-col md:flex-row">
@@ -309,7 +310,7 @@ function Arena() {
         </div>
 
         <div className="mt-12">
-          <div className="border border-neutral-800 bg-black/70 backdrop-blur-xl overflow-hidden">
+          <div className="border border-neutral-800 bg-black/70 backdrop-blur-sm overflow-hidden">
             <div className="relative p-12 md:p-16">
               <div className="absolute -inset-24 bg-amber-600/5 blur-3xl" />
 
@@ -448,7 +449,7 @@ function Features() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 className={cn(
-                  'group relative border bg-black/70 backdrop-blur-xl p-8 overflow-hidden transition-colors',
+                  'group relative border bg-black/70 backdrop-blur-sm p-8 overflow-hidden transition-colors',
                   border
                 )}
               >
@@ -504,7 +505,7 @@ function Protocol() {
   return (
     <Section id="protocol" className="py-28 bg-black overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.15)_0%,rgba(0,0,0,0.9)_60%)]" />
-      <EmberField count={40} />
+      <EmberField count={20} />
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6">
         <div className="flex items-end justify-between flex-col md:flex-row gap-8">
@@ -531,7 +532,7 @@ function Protocol() {
 
           {steps.map((s) => (
             <div key={s.n} className="relative">
-              <div className="w-20 h-20 border border-amber-500/30 bg-black/70 backdrop-blur-xl flex items-center justify-center">
+              <div className="w-20 h-20 border border-amber-500/30 bg-black/70 backdrop-blur-sm flex items-center justify-center">
                 <div className="font-[var(--font-orbitron)] font-black text-2xl text-white">
                   {s.n}
                 </div>
@@ -581,7 +582,7 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
           </Link>
         </div>
 
-        <div className="mt-12 border border-neutral-800 bg-black/70 backdrop-blur-xl">
+        <div className="mt-12 border border-neutral-800 bg-black/70 backdrop-blur-sm">
           <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 border-b border-neutral-900 font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
             <div className="col-span-1">RNK</div>
             <div className="col-span-5">AGENT</div>
@@ -697,7 +698,7 @@ function CTA() {
         }}
       />
 
-      <EmberField count={40} />
+      <EmberField count={20} />
 
       <div className="relative z-10 max-w-[1100px] mx-auto px-6 text-center">
         <div className="inline-flex items-center gap-3 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-400">
