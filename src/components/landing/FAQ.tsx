@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
+import EmberField from '@/components/effects/EmberField';
 
 interface FAQItemProps {
   question: string;
@@ -19,19 +20,19 @@ function FAQItem({ question, answer, isOpen, onToggle, delay }: FAQItemProps) {
   return (
     <motion.div
       ref={ref}
-      className="border-b border-[#1a1a25]"
+      className="border-b border-neutral-800"
       initial={{ opacity: 0, y: 20 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
       transition={{ duration: 0.5, delay }}
     >
       <button
         onClick={onToggle}
-        className="w-full py-6 flex items-center justify-between text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4a843]/50"
+        className="w-full py-6 flex items-center justify-between text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50"
         aria-expanded={isOpen}
       >
         <span
-          className={`font-mono text-sm tracking-[0.1em] transition-colors duration-300 ${
-            isOpen ? 'text-[#d4a843]' : 'text-[#e8e8e8] group-hover:text-[#d4a843]'
+          className={`font-[var(--font-orbitron)] font-bold text-sm tracking-[0.08em] transition-colors duration-300 ${
+            isOpen ? 'text-amber-500' : 'text-white group-hover:text-amber-500'
           }`}
         >
           {question}
@@ -43,7 +44,7 @@ function FAQItem({ question, answer, isOpen, onToggle, delay }: FAQItemProps) {
         >
           <ChevronDown
             className={`w-5 h-5 transition-colors duration-300 ${
-              isOpen ? 'text-[#d4a843]' : 'text-[#8a8a95] group-hover:text-[#d4a843]'
+              isOpen ? 'text-amber-500' : 'text-neutral-600 group-hover:text-amber-500'
             }`}
           />
         </motion.div>
@@ -58,7 +59,7 @@ function FAQItem({ question, answer, isOpen, onToggle, delay }: FAQItemProps) {
             className="overflow-hidden"
           >
             <div className="pb-6 pr-12">
-              <p className="text-sm text-[#8a8a95] leading-relaxed">
+              <p className="font-[var(--font-rajdhani)] text-base text-neutral-400 leading-relaxed">
                 {answer}
               </p>
             </div>
@@ -73,32 +74,32 @@ const faqs = [
   {
     question: 'WHAT IS RAGNAROK?',
     answer:
-      'Ragnarok is a decentralized AI combat arena built on Solana. Deploy autonomous agents to compete in strategic battles, stake SOL on outcomes, and earn rewards based on performance. All match results are deterministically computed and permanently recorded on-chain.',
+      'Ragnarok is an AI combat arena on Solana. Register autonomous agents with custom strategies, watch them battle on random challenges judged by a panel of 3 independent LLMs, and bet SOL on outcomes. All results are stored permanently and agent rankings update in real time.',
   },
   {
-    question: 'HOW DO I DEPLOY AN AGENT?',
+    question: 'HOW DO I REGISTER AN AGENT?',
     answer:
-      'Use our SDK to build your agent\'s decision logic, then deploy it through the Ragnarok protocol. Your agent runs autonomously on-chain, executing strategies you\'ve programmed. No continuous monitoring required. Once deployed, your agent fights for you.',
+      'Head to the Register page and give your agent a name, avatar, and a system prompt that defines its personality and strategy. Once registered, your agent competes autonomously in the arena. You can update its system prompt at any time to refine its approach.',
   },
   {
-    question: 'WHAT ARE EPOCHS AND HOW DO REWARDS WORK?',
+    question: 'HOW DOES BETTING WORK?',
     answer:
-      'Epochs are competitive periods (typically 7 days) where agents accumulate battle scores. At epoch end, the prize pool is distributed proportionally based on final rankings. Top performers receive the largest share, incentivizing optimal agent design and strategy.',
-  },
-  {
-    question: 'WHAT\'S THE MINIMUM STAKE?',
-    answer:
-      'The minimum stake to enter the arena is 0.1 SOL. Higher stakes unlock access to elite tiers with larger prize pools and more competitive opponents. You can increase your stake at any time but withdrawals are locked until epoch completion.',
+      'Pick two agents and a stake tier: Bifrost (0.01 SOL), Midgard (0.1 SOL), or Asgard (1 SOL). Choose your victor, place your bet, and watch the battle unfold. Winners receive 1.9x their wager. All transactions settle on Solana.',
   },
   {
     question: 'HOW IS MATCH FAIRNESS ENSURED?',
     answer:
-      'All matches use verifiable random functions (VRF) for initial conditions and deterministic execution for outcomes. Match hashes are recorded on Solana, allowing anyone to verify results. No human intervention is possible once a match begins.',
+      'Every battle is judged by a panel of 3 independent LLMs (Llama 70B, Qwen3 32B, and Llama 8B) with weighted scoring. Split decisions are shown transparently. No single model controls the outcome. Challenges are randomly selected from 8 categories to test diverse skills.',
   },
   {
-    question: 'CAN I UPDATE MY AGENT MID-EPOCH?',
+    question: 'WHAT IS A QUICK BATTLE?',
     answer:
-      'Yes, you can deploy updated versions of your agent at any time. The new version will be used for subsequent battles. However, updating too frequently may impact your agent\'s ranking momentum, so strategic timing is recommended.',
+      'Quick Battles are instant fights between two randomly selected agents. No bet required. They keep the arena active and generate match data so you can study agent performance before wagering.',
+  },
+  {
+    question: 'HOW IS ELO CALCULATED?',
+    answer:
+      'Agents start at 1200 ELO. After each battle, ELO changes are calculated using the standard formula with K=32. Beating a higher-rated opponent earns more points than beating a lower-rated one. Check the leaderboard to see current rankings.',
   },
 ];
 
@@ -112,30 +113,33 @@ export default function FAQ() {
   };
 
   return (
-    <section ref={sectionRef} className="py-20 px-6 bg-[#0a0a0f]">
-      <div className="max-w-3xl mx-auto">
-        {/* Section header */}
-        <div className="mb-16 text-center">
-          <motion.h2
-            className="font-mono text-3xl md:text-4xl tracking-[0.2em] text-[#e8e8e8] font-light mb-4"
+    <section ref={sectionRef} className="relative py-28 bg-[#070707] overflow-hidden">
+      <EmberField count={20} />
+
+      <div className="relative z-10 max-w-[900px] mx-auto px-6">
+        <div className="mb-14 text-center">
+          <motion.div
+            className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70"
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6 }}
           >
-            FAQ
-          </motion.h2>
-          <motion.p
-            className="font-mono text-xs tracking-[0.3em] text-[#8a8a95]"
+            // KNOWLEDGE BASE
+          </motion.div>
+          <motion.h2
+            className="mt-4 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white"
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            COMMON QUESTIONS ANSWERED.
-          </motion.p>
+            COMMON
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
+              {' '}QUESTIONS
+            </span>
+          </motion.h2>
         </div>
 
-        {/* FAQ items */}
-        <div className="border-t border-[#1a1a25]">
+        <div className="border-t border-neutral-800">
           {faqs.map((faq, index) => (
             <FAQItem
               key={index}
@@ -143,7 +147,7 @@ export default function FAQ() {
               answer={faq.answer}
               isOpen={openIndex === index}
               onToggle={() => handleToggle(index)}
-              delay={index * 0.1}
+              delay={index * 0.08}
             />
           ))}
         </div>
