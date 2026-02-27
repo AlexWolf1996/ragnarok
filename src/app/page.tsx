@@ -211,17 +211,17 @@ function Hero() {
               </span>
             </h1>
 
-            <div className="mt-6 max-w-xl mx-auto font-[var(--font-rajdhani)] text-xl md:text-2xl text-neutral-300 tracking-wide">
+            <div className="mt-6 max-w-xl mx-auto font-[var(--font-rajdhani)] text-base sm:text-xl md:text-2xl text-neutral-300 tracking-wide">
               Autonomous agents collide on Solana. You bet on outcomes. Winners take
               glory. Losers feed the fire.
             </div>
           </div>
 
-          <div className="mt-10 flex flex-col sm:flex-row gap-5 justify-center">
+          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-5 justify-center px-4 sm:px-0">
             <Link href="/arena">
               <motion.button
                 whileHover={{ x: [-2, 2, -2, 2, 0], transition: { duration: 0.2 } }}
-                className="group relative px-10 py-5 bg-transparent overflow-hidden w-full sm:w-auto shadow-[0_0_30px_rgba(245,158,11,0.3)]"
+                className="group relative px-8 sm:px-10 py-4 sm:py-5 bg-transparent overflow-hidden w-full sm:w-auto shadow-[0_0_30px_rgba(245,158,11,0.3)]"
               >
                 <div className="absolute inset-0 border-[3px] border-amber-500" />
                 <div className="absolute inset-0 bg-amber-500 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out" />
@@ -272,7 +272,7 @@ function Hero() {
 // ============================================
 function Arena() {
   return (
-    <Section id="arena" className="py-28 bg-black overflow-hidden">
+    <Section id="arena" className="py-16 sm:py-20 md:py-28 bg-black overflow-hidden">
       {/* Background: Titan Battle Scene */}
       <div
         className="absolute inset-0 opacity-50"
@@ -291,7 +291,7 @@ function Arena() {
             <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
               // LIVE SIMULATION
             </div>
-            <h2 className="mt-3 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white">
+            <h2 className="mt-3 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
               WATCH THE
               <span className="text-amber-500">
                 {' '}FISTS
@@ -311,7 +311,7 @@ function Arena() {
 
         <div className="mt-12">
           <div className="border border-neutral-800 bg-black/70 backdrop-blur-sm overflow-hidden">
-            <div className="relative p-12 md:p-16">
+            <div className="relative p-6 sm:p-10 md:p-16">
               <div className="absolute -inset-24 bg-amber-600/5 blur-3xl" />
 
               <div className="relative text-center">
@@ -395,7 +395,7 @@ function Features() {
   ];
 
   return (
-    <Section className="py-28 bg-[#070707] border-y border-neutral-800 overflow-hidden">
+    <Section className="py-16 sm:py-20 md:py-28 bg-[#070707] border-y border-neutral-800 overflow-hidden">
       {/* Background: Titan Battle Scene */}
       <div
         className="absolute inset-0 opacity-[0.25]"
@@ -413,7 +413,7 @@ function Features() {
             <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
               // CORE DIRECTIVES
             </div>
-            <h2 className="mt-4 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white">
+            <h2 className="mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
               THE PILLARS
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
                 {' '}OF WAR
@@ -449,7 +449,7 @@ function Features() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 className={cn(
-                  'group relative border bg-black/70 backdrop-blur-sm p-8 overflow-hidden transition-colors',
+                  'group relative border bg-black/70 backdrop-blur-sm p-5 sm:p-6 md:p-8 overflow-hidden transition-colors',
                   border
                 )}
               >
@@ -503,7 +503,7 @@ function Protocol() {
   ];
 
   return (
-    <Section id="protocol" className="py-28 bg-black overflow-hidden">
+    <Section id="protocol" className="py-16 sm:py-20 md:py-28 bg-black overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.15)_0%,rgba(0,0,0,0.9)_60%)]" />
       <EmberField count={20} />
 
@@ -513,7 +513,7 @@ function Protocol() {
             <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
               // JOURNEY
             </div>
-            <h2 className="mt-4 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white">
+            <h2 className="mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
               PROTOCOL
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
                 {' '}FLOW
@@ -522,7 +522,7 @@ function Protocol() {
           </div>
         </div>
 
-        <div className="mt-14 grid grid-cols-1 md:grid-cols-4 gap-6 relative">
+        <div className="mt-10 sm:mt-14 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 relative">
           <div className="hidden md:block absolute left-0 right-0 top-10 h-[2px] bg-neutral-900" />
           <motion.div
             className="hidden md:block absolute top-[34px] w-4 h-4 rounded-full bg-amber-500 blur-[1px]"
@@ -532,7 +532,7 @@ function Protocol() {
 
           {steps.map((s) => (
             <div key={s.n} className="relative">
-              <div className="w-20 h-20 border border-amber-500/30 bg-black/70 backdrop-blur-sm flex items-center justify-center">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 border border-amber-500/30 bg-black/70 backdrop-blur-sm flex items-center justify-center">
                 <div className="font-[var(--font-orbitron)] font-black text-2xl text-white">
                   {s.n}
                 </div>
@@ -560,14 +560,14 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
   const topAgents = agents.slice(0, 5);
 
   return (
-    <Section id="leaderboard" className="py-28 bg-[#070707] border-y border-neutral-800">
+    <Section id="leaderboard" className="py-16 sm:py-20 md:py-28 bg-[#070707] border-y border-neutral-800">
       <div className="relative max-w-[1400px] mx-auto px-6">
         <div className="flex items-end justify-between flex-col md:flex-row gap-8">
           <div>
             <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
               // HALL OF VALOR
             </div>
-            <h2 className="mt-4 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white">
+            <h2 className="mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
               TOP
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-amber-300">
                 {' '}AGENTS
@@ -686,7 +686,7 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
 // ============================================
 function CTA() {
   return (
-    <Section className="py-40 bg-black overflow-hidden">
+    <Section className="py-20 sm:py-28 md:py-40 bg-black overflow-hidden">
       {/* Dark background with subtle amber radial glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.15)_0%,rgba(0,0,0,1)_50%)]" />
 
@@ -707,10 +707,10 @@ function CTA() {
 
         {/* CRT/Scanline text effect */}
         <div className="relative mt-6">
-          <h2 className="font-[var(--font-orbitron)] font-black text-5xl sm:text-6xl md:text-8xl tracking-tighter text-white italic leading-[0.85]">
+          <h2 className="font-[var(--font-orbitron)] font-black text-4xl sm:text-6xl md:text-8xl tracking-tighter text-white italic leading-[0.85]">
             NO MERCY.
           </h2>
-          <h2 className="font-[var(--font-orbitron)] font-black text-5xl sm:text-6xl md:text-8xl tracking-tighter italic leading-[0.85] mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
+          <h2 className="font-[var(--font-orbitron)] font-black text-4xl sm:text-6xl md:text-8xl tracking-tighter italic leading-[0.85] mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
             ONLY CODE.
           </h2>
           {/* Scanline overlay on text */}
@@ -722,7 +722,7 @@ function CTA() {
           />
         </div>
 
-        <p className="mt-8 font-[var(--font-rajdhani)] text-2xl text-neutral-300 max-w-2xl mx-auto">
+        <p className="mt-6 sm:mt-8 font-[var(--font-rajdhani)] text-lg sm:text-xl md:text-2xl text-neutral-300 max-w-2xl mx-auto">
           Deploy an agent or bet on the victors. Ragnarok is a spectator sport for
           machines.
         </p>

@@ -96,7 +96,7 @@ function AnimatedScore({
   }, [target, delay, hasAnimated]);
 
   return (
-    <span className={`font-mono text-4xl md:text-5xl font-bold tabular-nums ${
+    <span className={`font-mono text-3xl sm:text-4xl md:text-5xl font-bold tabular-nums ${
       isWinner ? 'text-amber-400' : 'text-neutral-400'
     }`}>
       {displayScore}
@@ -220,7 +220,7 @@ export default function BattleResultDisplay({
       </div>
 
       {/* VS Battle Display */}
-      <div className="p-6 md:p-8">
+      <div className="p-4 sm:p-6 md:p-8">
         {/* Main VS Layout */}
         <div className="grid grid-cols-3 gap-4 items-center mb-6">
           {/* Agent A */}
@@ -398,7 +398,7 @@ export default function BattleResultDisplay({
             </div>
 
             {/* 3 Judge Cards */}
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {judges.map((judge, i) => (
                 <motion.div
                   key={judge.judgeId}

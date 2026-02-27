@@ -332,7 +332,7 @@ export default function DocsPage() {
             <span className="w-8 h-px bg-amber-500/40" />
           </motion.div>
           <motion.h1
-            className="font-[var(--font-orbitron)] text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-3"
+            className="font-[var(--font-orbitron)] text-2xl sm:text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-3"
             initial={{ opacity: 0, y: 20 }}
             animate={isHeroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6 }}
@@ -356,7 +356,7 @@ export default function DocsPage() {
       </div>
 
       {/* Content with sidebar */}
-      <div className="max-w-6xl mx-auto px-6 py-12 flex gap-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 flex gap-10">
         <SideNav activeSection={activeSection} />
 
         <div className="flex-1 min-w-0 space-y-16">

@@ -271,7 +271,7 @@ function LeaderboardContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] py-12 px-4 relative">
+    <div className="min-h-screen bg-[#0a0a12] py-8 px-3 sm:py-12 sm:px-4 relative">
       <CosmicBackground showParticles={true} showRunes={true} particleCount={25} />
       <div className="max-w-5xl mx-auto relative z-10">
         {/* Header */}
@@ -279,13 +279,13 @@ function LeaderboardContent() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-10"
+          className="text-center mb-8 sm:mb-10"
         >
-          <div className="w-16 h-16 rounded-full bg-black/60 border border-amber-600/30 flex items-center justify-center mx-auto mb-6" style={{ boxShadow: '0 0 40px rgba(245, 158, 11, 0.2)' }}>
-            <Trophy size={32} className="text-amber-500" aria-hidden="true" />
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/60 border border-amber-600/30 flex items-center justify-center mx-auto mb-4 sm:mb-6" style={{ boxShadow: '0 0 40px rgba(245, 158, 11, 0.2)' }}>
+            <Trophy size={28} className="text-amber-500" aria-hidden="true" />
           </div>
 
-          <h1 className="font-[var(--font-orbitron)] text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-4" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
+          <h1 className="font-[var(--font-orbitron)] text-2xl sm:text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-3 sm:mb-4" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
             HALL OF THE FALLEN
           </h1>
 
@@ -547,23 +547,23 @@ function LeaderboardContent() {
                               {recentMatches.map((match) => (
                                 <div
                                   key={match.id}
-                                  className="flex items-center justify-between p-3 bg-black/40 border border-neutral-800 rounded-lg font-[var(--font-rajdhani)] text-sm"
+                                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-black/40 border border-neutral-800 rounded-lg font-[var(--font-rajdhani)] text-sm gap-1 sm:gap-2"
                                 >
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-white">
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <span className="text-white truncate">
                                       {match.agent_a?.name ?? 'Unknown'}
                                     </span>
-                                    <span className="text-amber-500 font-[var(--font-orbitron)] text-xs">vs</span>
-                                    <span className="text-white">
+                                    <span className="text-amber-500 font-[var(--font-orbitron)] text-xs flex-shrink-0">vs</span>
+                                    <span className="text-white truncate">
                                       {match.agent_b?.name ?? 'Unknown'}
                                     </span>
                                   </div>
-                                  <div className="flex items-center gap-4">
+                                  <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
                                     <span className="text-neutral-400">
                                       {match.agent_a_score ?? 0} - {match.agent_b_score ?? 0}
                                     </span>
                                     <span
-                                      className={`font-[var(--font-orbitron)] font-bold tracking-[0.1em] ${
+                                      className={`font-[var(--font-orbitron)] font-bold tracking-[0.1em] text-xs ${
                                         match.winner?.name === agent.name
                                           ? 'text-green-500'
                                           : 'text-red-500'

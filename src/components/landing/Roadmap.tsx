@@ -28,7 +28,7 @@ function RoadmapPhase({ quarter, title, items, status, delay }: RoadmapPhaseProp
       transition={{ duration: 0.5, delay }}
     >
       <div
-        className={`group relative border bg-black/70 backdrop-blur-xl p-8 overflow-hidden transition-colors h-full ${
+        className={`group relative border bg-black/70 backdrop-blur-xl p-5 sm:p-6 md:p-8 overflow-hidden transition-colors h-full ${
           status === 'current'
             ? 'border-amber-500/50 hover:border-amber-500'
             : status === 'complete'
@@ -124,7 +124,7 @@ export default function Roadmap() {
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
   return (
-    <section ref={sectionRef} className="relative py-28 bg-black overflow-hidden border-y border-neutral-800">
+    <section ref={sectionRef} className="relative py-16 sm:py-20 md:py-28 bg-black overflow-hidden border-y border-neutral-800">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.08)_0%,rgba(0,0,0,0.9)_60%)]" />
       <EmberField count={25} />
 
@@ -140,7 +140,7 @@ export default function Roadmap() {
               // THE PATH TO VALHALLA
             </motion.div>
             <motion.h2
-              className="mt-4 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white"
+              className="mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white"
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ duration: 0.6, delay: 0.1 }}

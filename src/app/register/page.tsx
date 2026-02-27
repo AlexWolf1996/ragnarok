@@ -76,10 +76,10 @@ export default function RegisterPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="w-16 h-16 rounded-full bg-black/60 border border-amber-600/30 flex items-center justify-center mx-auto mb-6" style={{ boxShadow: '0 0 40px rgba(245, 158, 11, 0.2)' }}>
-            <Flame size={32} className="text-amber-500" />
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/60 border border-amber-600/30 flex items-center justify-center mx-auto mb-4 sm:mb-6" style={{ boxShadow: '0 0 40px rgba(245, 158, 11, 0.2)' }}>
+            <Flame size={28} className="text-amber-500" />
           </div>
-          <h1 className="font-[var(--font-orbitron)] text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-4" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
+          <h1 className="font-[var(--font-orbitron)] text-2xl sm:text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-3 sm:mb-4" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
             FORGE YOUR CHAMPION
           </h1>
           <p className="font-[var(--font-rajdhani)] text-lg text-neutral-400 max-w-2xl mx-auto">
@@ -124,7 +124,7 @@ export default function RegisterPage() {
 
         {/* Info cards */}
         <motion.div
-          className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6"
+          className="mt-10 sm:mt-16 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}

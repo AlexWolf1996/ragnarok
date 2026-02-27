@@ -162,7 +162,7 @@ function MyBetsContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] py-12 px-4 relative">
+    <div className="min-h-screen bg-[#0a0a12] py-8 px-3 sm:py-12 sm:px-4 relative">
       <CosmicBackground showParticles={true} showRunes={true} particleCount={25} />
       <div className="max-w-5xl mx-auto relative z-10">
         {/* Header */}
@@ -170,13 +170,14 @@ function MyBetsContent() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-10"
+          className="text-center mb-8 sm:mb-10"
         >
-          <div className="w-16 h-16 rounded-full bg-black/60 border border-amber-600/30 flex items-center justify-center mx-auto mb-6" style={{ boxShadow: '0 0 40px rgba(245, 158, 11, 0.2)' }}>
-            <Coins size={32} className="text-amber-500" />
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/60 border border-amber-600/30 flex items-center justify-center mx-auto mb-4 sm:mb-6" style={{ boxShadow: '0 0 40px rgba(245, 158, 11, 0.2)' }}>
+            <Coins size={28} className="text-amber-500 sm:hidden" />
+            <Coins size={32} className="text-amber-500 hidden sm:block" />
           </div>
 
-          <h1 className="font-[var(--font-orbitron)] text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-4" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
+          <h1 className="font-[var(--font-orbitron)] text-2xl sm:text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-3 sm:mb-4" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
             MY WAGERS
           </h1>
 
@@ -408,11 +409,11 @@ function StatCard({
   color?: string;
 }) {
   return (
-    <div className="bg-black/40 border border-neutral-800 rounded-lg p-4 text-center">
-      <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">
+    <div className="bg-black/40 border border-neutral-800 rounded-lg p-3 sm:p-4 text-center">
+      <div className="text-[9px] sm:text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.15em] sm:tracking-[0.2em] mb-1 sm:mb-2">
         {label}
       </div>
-      <div className={`font-[var(--font-orbitron)] text-xl font-bold ${color || 'text-white'}`}>
+      <div className={`font-[var(--font-orbitron)] text-lg sm:text-xl font-bold ${color || 'text-white'}`}>
         {value}
       </div>
       {sub && (

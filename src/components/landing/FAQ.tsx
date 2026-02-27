@@ -58,7 +58,7 @@ function FAQItem({ question, answer, isOpen, onToggle, delay }: FAQItemProps) {
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="pb-6 pr-12">
+            <div className="pb-6 pr-4 sm:pr-12">
               <p className="font-[var(--font-rajdhani)] text-base text-neutral-400 leading-relaxed">
                 {answer}
               </p>
@@ -113,7 +113,7 @@ export default function FAQ() {
   };
 
   return (
-    <section ref={sectionRef} className="relative py-28 bg-[#070707] overflow-hidden">
+    <section ref={sectionRef} className="relative py-16 sm:py-20 md:py-28 bg-[#070707] overflow-hidden">
       <EmberField count={20} />
 
       <div className="relative z-10 max-w-[900px] mx-auto px-6">
@@ -127,7 +127,7 @@ export default function FAQ() {
             // KNOWLEDGE BASE
           </motion.div>
           <motion.h2
-            className="mt-4 font-[var(--font-orbitron)] font-black text-5xl md:text-7xl tracking-tighter text-white"
+            className="mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white"
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6, delay: 0.1 }}

@@ -545,7 +545,7 @@ function ArenaContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] py-8 px-6 relative">
+    <div className="min-h-screen bg-[#0a0a12] py-4 px-3 sm:py-8 sm:px-6 relative">
       <CosmicBackground showParticles={true} showRunes={true} particleCount={25} />
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
@@ -554,7 +554,7 @@ function ArenaContent() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="font-[var(--font-orbitron)] text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-2" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
+          <h1 className="font-[var(--font-orbitron)] text-2xl sm:text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-2" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
             HALLS OF BATTLE
           </h1>
           <p className="font-[var(--font-rajdhani)] text-sm tracking-[0.15em] text-neutral-400">
