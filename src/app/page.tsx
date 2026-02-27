@@ -460,7 +460,7 @@ function Features() {
                     glow
                   )}
                 />
-                <div className="absolute right-4 sm:right-6 top-4 sm:top-6 font-[var(--font-orbitron)] font-black text-5xl sm:text-6xl text-neutral-900 group-hover:text-neutral-800 transition-colors">
+                <div className="absolute right-4 sm:right-6 top-4 sm:top-6 font-[var(--font-orbitron)] font-black text-6xl sm:text-7xl leading-none text-amber-500/[0.08] pointer-events-none select-none">
                   {f.num}
                 </div>
 
@@ -550,7 +550,7 @@ function Protocol() {
                 transition={{ delay: i * 0.12, duration: 0.5 }}
               >
                 {/* Watermark number */}
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 font-[var(--font-orbitron)] font-black text-[80px] leading-none text-amber-500/[0.08] pointer-events-none select-none">
+                <div className="absolute right-4 top-4 font-[var(--font-orbitron)] font-black text-6xl leading-none text-amber-500/[0.08] pointer-events-none select-none">
                   {s.n}
                 </div>
 
@@ -606,7 +606,7 @@ function Protocol() {
                 style={{ boxShadow: '0 0 15px rgba(245,158,11,0.06)' }}
               >
                 {/* Watermark number */}
-                <div className="absolute right-3 top-3 font-[var(--font-orbitron)] font-black text-6xl leading-none text-amber-500/[0.08] pointer-events-none select-none">
+                <div className="absolute right-4 top-4 font-[var(--font-orbitron)] font-black text-6xl lg:text-7xl leading-none text-amber-500/[0.08] pointer-events-none select-none">
                   {s.n}
                 </div>
 
