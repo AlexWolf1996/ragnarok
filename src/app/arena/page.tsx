@@ -703,9 +703,9 @@ function ArenaContent() {
                 {/* Quick Battle Card */}
                 {!isQuickBattling && !quickBattleResult && (
                   <div className="bg-black/40 border border-neutral-800 rounded-lg p-6 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
+                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
                     <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
-                      <Zap size={16} className="text-cyan-500" />
+                      <Zap size={16} className="text-amber-500" />
                       QUICK BATTLE
                     </h2>
                     <p className="font-[var(--font-rajdhani)] text-xs text-neutral-400 mb-4">
@@ -714,7 +714,7 @@ function ArenaContent() {
                     <button
                       onClick={handleQuickBattle}
                       disabled={agents.length < 2}
-                      className="w-full py-4 bg-gradient-to-r from-cyan-700 via-cyan-600 to-cyan-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-cyan-600 hover:via-cyan-500 hover:to-cyan-600 shadow-[0_0_30px_rgba(6,182,212,0.3)]"
+                      className="w-full py-4 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-amber-600 hover:via-amber-500 hover:to-amber-600 shadow-[0_0_30px_rgba(245,158,11,0.3)]"
                     >
                       <Zap size={16} />
                       RANDOM BATTLE
@@ -812,7 +812,7 @@ function ArenaContent() {
                   <div>
                     <button
                       onClick={() => setSelectedBattleId(null)}
-                      className="mb-4 font-mono text-xs text-[#71717a] hover:text-[#e8e8e8] transition-colors"
+                      className="mb-4 font-mono text-xs text-neutral-500 hover:text-white transition-colors"
                     >
                       ← Back to Battles
                     </button>

@@ -81,17 +81,17 @@ const TIER_LABELS: Record<BettingTier, string> = {
 };
 
 const TIER_COLORS: Record<BettingTier, string> = {
-  bifrost: 'from-emerald-600 to-emerald-500',
+  bifrost: 'from-amber-700 to-amber-600',
   midgard: 'from-amber-600 to-amber-500',
   asgard: 'from-red-600 to-red-500',
 };
 
 const CATEGORY_META: Record<string, { icon: string; color: string; border: string }> = {
-  reasoning: { icon: '🧠', color: 'text-cyan-400', border: 'border-cyan-500/30 bg-cyan-500/10' },
-  creative: { icon: '🎨', color: 'text-purple-400', border: 'border-purple-500/30 bg-purple-500/10' },
-  strategy: { icon: '♟️', color: 'text-amber-400', border: 'border-amber-500/30 bg-amber-500/10' },
-  code: { icon: '💻', color: 'text-emerald-400', border: 'border-emerald-500/30 bg-emerald-500/10' },
-  knowledge: { icon: '📚', color: 'text-blue-400', border: 'border-blue-500/30 bg-blue-500/10' },
+  reasoning: { icon: '🧠', color: 'text-amber-400', border: 'border-amber-500/30 bg-amber-500/10' },
+  creative: { icon: '🎨', color: 'text-red-400', border: 'border-red-500/30 bg-red-500/10' },
+  strategy: { icon: '♟️', color: 'text-orange-400', border: 'border-orange-500/30 bg-orange-500/10' },
+  code: { icon: '💻', color: 'text-yellow-400', border: 'border-yellow-500/30 bg-yellow-500/10' },
+  knowledge: { icon: '📚', color: 'text-rose-400', border: 'border-rose-500/30 bg-rose-500/10' },
 };
 
 export default function BettingDuelPanel({
@@ -427,7 +427,7 @@ export default function BettingDuelPanel({
                 <div className="font-[var(--font-orbitron)] text-xs text-white truncate">{agentB.name}</div>
                 <div className="font-mono text-[10px] text-neutral-500">{agentB.elo_rating} ELO</div>
                 {odds && (
-                  <div className="font-mono text-xs text-cyan-500 mt-1">{odds.agentB}%</div>
+                  <div className="font-mono text-xs text-red-500 mt-1">{odds.agentB}%</div>
                 )}
               </div>
             </div>
@@ -476,8 +476,8 @@ export default function BettingDuelPanel({
                   onClick={() => setBettorPick('B')}
                   className={`py-4 px-3 rounded-lg border transition-all ${
                     bettorPick === 'B'
-                      ? 'bg-cyan-500/20 border-cyan-500 text-cyan-500'
-                      : 'border-neutral-700 text-neutral-400 hover:border-cyan-500/50'
+                      ? 'bg-red-500/20 border-red-500 text-red-500'
+                      : 'border-neutral-700 text-neutral-400 hover:border-red-500/50'
                   }`}
                 >
                   <div className="text-xl mb-1">{agentB.avatar_url || '⚔️'}</div>
@@ -682,7 +682,7 @@ export default function BettingDuelPanel({
                 {battleResult.battle.judges && battleResult.battle.judges.length > 0 ? (
                   <>
                     <div className="flex items-center justify-center gap-2 mb-2">
-                      <div className="text-[10px] font-[var(--font-orbitron)] text-cyan-500/70 tracking-wider">
+                      <div className="text-[10px] font-[var(--font-orbitron)] text-amber-500/70 tracking-wider">
                         JUDGE PANEL
                       </div>
                       {battleResult.battle.isSplitDecision && (
@@ -718,7 +718,7 @@ export default function BettingDuelPanel({
                             <div className="font-mono text-xs font-bold">
                               <span className={judge.winnerId === 'A' ? 'text-amber-400' : 'text-neutral-500'}>{judge.scoreA}</span>
                               <span className="text-neutral-600 mx-0.5">-</span>
-                              <span className={judge.winnerId === 'B' ? 'text-cyan-400' : 'text-neutral-500'}>{judge.scoreB}</span>
+                              <span className={judge.winnerId === 'B' ? 'text-red-400' : 'text-neutral-500'}>{judge.scoreB}</span>
                             </div>
                           )}
                         </div>
@@ -726,7 +726,7 @@ export default function BettingDuelPanel({
                     </div>
                   </>
                 ) : (
-                  <div className="text-[10px] font-[var(--font-orbitron)] text-cyan-500/70 tracking-wider mb-1">
+                  <div className="text-[10px] font-[var(--font-orbitron)] text-amber-500/70 tracking-wider mb-1">
                     JUDGE VERDICT
                   </div>
                 )}

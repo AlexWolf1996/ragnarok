@@ -37,7 +37,7 @@ export default function BattleRoyaleCard({
   }, [battle]);
 
   const statusConfig = {
-    open: { label: 'OPEN', color: '#4fc3f7', pulse: true },
+    open: { label: 'OPEN', color: '#d4a017', pulse: true },
     in_progress: { label: 'LIVE', color: '#22c55e', pulse: true },
     completed: { label: 'ENDED', color: '#666670', pulse: false },
     cancelled: { label: 'CANCELLED', color: '#ef4444', pulse: false },
@@ -127,7 +127,7 @@ export default function BattleRoyaleCard({
 
         {/* Time remaining or progress */}
         {battle.status === 'open' && (
-          <div className="flex items-center gap-1.5 text-[#4fc3f7] mb-4">
+          <div className="flex items-center gap-1.5 text-[#d4a017] mb-4">
             <Clock size={12} aria-hidden="true" />
             <span className="font-mono text-xs">
               Registration: {formatTimeRemaining(battle.registration_closes_at)}

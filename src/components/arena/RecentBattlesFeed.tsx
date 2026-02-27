@@ -64,7 +64,7 @@ function getDifficultyColor(difficulty: string): string {
   switch (difficulty) {
     case 'easy':
     case 'bifrost':
-      return 'text-emerald-400';
+      return 'text-amber-400';
     case 'medium':
     case 'midgard':
       return 'text-amber-400';
@@ -96,15 +96,15 @@ function getChallengeTypeIcon(type: string): string {
 function getChallengeTypeBadgeColor(type: string): string {
   switch (type.toLowerCase()) {
     case 'reasoning':
-      return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
-    case 'creative':
-      return 'bg-pink-500/20 text-pink-400 border-pink-500/30';
-    case 'strategy':
-      return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-    case 'code':
-      return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-    case 'knowledge':
       return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+    case 'creative':
+      return 'bg-red-500/20 text-red-400 border-red-500/30';
+    case 'strategy':
+      return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
+    case 'code':
+      return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+    case 'knowledge':
+      return 'bg-rose-500/20 text-rose-400 border-rose-500/30';
     default:
       return 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30';
   }
@@ -114,10 +114,10 @@ function getDifficultyBadgeColor(difficulty: string): string {
   switch (difficulty.toLowerCase()) {
     case 'easy':
     case 'bifrost':
-      return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+      return 'bg-amber-600/20 text-amber-300 border-amber-600/30';
     case 'medium':
     case 'midgard':
-      return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+      return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
     case 'hard':
     case 'asgard':
       return 'bg-red-500/20 text-red-400 border-red-500/30';
@@ -327,7 +327,7 @@ export default function RecentBattlesFeed({
                       <div className="text-right">
                         <span
                           className={`font-mono text-sm font-bold ${
-                            isWinnerA ? 'text-emerald-400' : 'text-neutral-500'
+                            isWinnerA ? 'text-amber-400' : 'text-neutral-500'
                           }`}
                         >
                           {battle.agentA.score ?? '-'}
@@ -335,7 +335,7 @@ export default function RecentBattlesFeed({
                         <span className="text-neutral-600 mx-1">:</span>
                         <span
                           className={`font-mono text-sm font-bold ${
-                            isWinnerB ? 'text-emerald-400' : 'text-neutral-500'
+                            isWinnerB ? 'text-amber-400' : 'text-neutral-500'
                           }`}
                         >
                           {battle.agentB.score ?? '-'}
@@ -366,7 +366,7 @@ export default function RecentBattlesFeed({
                         className="overflow-hidden"
                       >
                         <div className="mt-3 pt-3 border-t border-neutral-800">
-                          <span className="text-[10px] font-[var(--font-orbitron)] text-cyan-500/70 tracking-wider">
+                          <span className="text-[10px] font-[var(--font-orbitron)] text-amber-500/70 tracking-wider">
                             JUDGE VERDICT
                           </span>
                           <p className="font-[var(--font-rajdhani)] text-xs text-neutral-400 mt-1 leading-relaxed">

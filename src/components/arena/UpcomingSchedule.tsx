@@ -169,7 +169,7 @@ export default function UpcomingSchedule({ onBattleSelect }: UpcomingSchedulePro
                       <div className="font-mono text-sm text-[#d4a843]">
                         {battle.buy_in_sol} SOL
                       </div>
-                      <div className="flex items-center gap-1 text-[#4fc3f7] mt-1">
+                      <div className="flex items-center gap-1 text-amber-500 mt-1">
                         <Clock size={10} />
                         <span className="font-mono text-[10px]">{timeRemaining}</span>
                       </div>

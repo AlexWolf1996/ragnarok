@@ -125,7 +125,7 @@ function ScoreBar({ scoreA, scoreB }: { scoreA: number; scoreB: number }) {
         transition={{ duration: 1, ease: 'easeOut', delay: 0.8 }}
       />
       <motion.div
-        className="absolute inset-y-0 right-0 bg-gradient-to-l from-cyan-600 to-cyan-400"
+        className="absolute inset-y-0 right-0 bg-gradient-to-l from-red-600 to-red-400"
         initial={{ width: '50%' }}
         animate={{ width: `${100 - animatedPercent}%` }}
         transition={{ duration: 1, ease: 'easeOut', delay: 0.8 }}
@@ -138,11 +138,11 @@ function ScoreBar({ scoreA, scoreB }: { scoreA: number; scoreB: number }) {
 
 function getChallengeTypeColor(type: string): string {
   switch (type.toLowerCase()) {
-    case 'reasoning': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
-    case 'creative': return 'bg-pink-500/20 text-pink-400 border-pink-500/30';
-    case 'strategy': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-    case 'code': return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-    case 'knowledge': return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+    case 'reasoning': return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+    case 'creative': return 'bg-red-500/20 text-red-400 border-red-500/30';
+    case 'strategy': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
+    case 'code': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+    case 'knowledge': return 'bg-rose-500/20 text-rose-400 border-rose-500/30';
     default: return 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30';
   }
 }
@@ -150,9 +150,9 @@ function getChallengeTypeColor(type: string): string {
 function getDifficultyColor(difficulty: string): string {
   switch (difficulty.toLowerCase()) {
     case 'easy':
-    case 'bifrost': return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+    case 'bifrost': return 'bg-amber-600/20 text-amber-300 border-amber-600/30';
     case 'medium':
-    case 'midgard': return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+    case 'midgard': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
     case 'hard':
     case 'asgard': return 'bg-red-500/20 text-red-400 border-red-500/30';
     default: return 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30';
@@ -382,7 +382,7 @@ export default function BattleResultDisplay({
           >
             {/* Decision badge */}
             <div className="flex items-center justify-center gap-2 mb-3">
-              <h4 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-cyan-500/70">
+              <h4 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-amber-500/70">
                 JUDGE PANEL
               </h4>
               {isSplitDecision && (
@@ -432,7 +432,7 @@ export default function BattleResultDisplay({
                         </span>
                         <span className="text-neutral-600 text-xs">-</span>
                         <span className={`font-mono text-lg font-bold ${
-                          judge.winnerId === 'B' ? 'text-cyan-400' : 'text-neutral-500'
+                          judge.winnerId === 'B' ? 'text-red-400' : 'text-neutral-500'
                         }`}>
                           {judge.scoreB}
                         </span>
@@ -441,7 +441,7 @@ export default function BattleResultDisplay({
                       {/* Winner indicator */}
                       <div className={`text-[9px] font-[var(--font-orbitron)] tracking-wider ${
                         judge.winnerId === 'A' ? 'text-amber-400' :
-                        judge.winnerId === 'B' ? 'text-cyan-400' : 'text-neutral-500'
+                        judge.winnerId === 'B' ? 'text-red-400' : 'text-neutral-500'
                       }`}>
                         {judge.winnerId === 'TIE' ? 'DRAW' : judge.winnerId === 'A' ? agentA.name.split(' ')[0] : agentB.name.split(' ')[0]}
                       </div>
@@ -456,9 +456,9 @@ export default function BattleResultDisplay({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 3.0 }}
-              className="mt-3 bg-black/40 border border-cyan-500/20 rounded-lg p-3 relative"
+              className="mt-3 bg-black/40 border border-amber-500/20 rounded-lg p-3 relative"
             >
-              <Quote size={12} className="absolute top-2 left-2 text-cyan-500/30" />
+              <Quote size={12} className="absolute top-2 left-2 text-amber-500/30" />
               <p className="font-[var(--font-rajdhani)] text-xs text-neutral-400 leading-relaxed text-center italic px-4">
                 {judges.filter(j => !j.failed).map(j => j.reasoning).join(' | ')}
               </p>
@@ -470,10 +470,10 @@ export default function BattleResultDisplay({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 2.4 }}
-            className="bg-black/40 border border-cyan-500/20 rounded-lg p-4 mb-6 relative"
+            className="bg-black/40 border border-amber-500/20 rounded-lg p-4 mb-6 relative"
           >
-            <Quote size={16} className="absolute top-3 left-3 text-cyan-500/30" />
-            <h4 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-cyan-500/70 mb-2 text-center">
+            <Quote size={16} className="absolute top-3 left-3 text-amber-500/30" />
+            <h4 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-amber-500/70 mb-2 text-center">
               THE ALLFATHER&apos;S VERDICT
             </h4>
             <p className="font-[var(--font-rajdhani)] text-sm text-neutral-300 leading-relaxed text-center italic px-4">
@@ -582,7 +582,7 @@ export default function BattleResultDisplay({
           <button
             onClick={onFightAgain}
             disabled={isLoading}
-            className="flex-1 py-4 bg-gradient-to-r from-cyan-700 via-cyan-600 to-cyan-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-cyan-600 hover:via-cyan-500 hover:to-cyan-600 shadow-[0_0_30px_rgba(6,182,212,0.3)]"
+            className="flex-1 py-4 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-amber-600 hover:via-amber-500 hover:to-amber-600 shadow-[0_0_30px_rgba(245,158,11,0.3)]"
           >
             <Zap size={16} />
             FIGHT AGAIN

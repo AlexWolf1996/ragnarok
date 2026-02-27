@@ -31,7 +31,7 @@ export default function ModeToggle({
   disabled = false,
 }: ModeToggleProps) {
   return (
-    <div className="inline-flex rounded-sm border border-[#2a2a35] bg-[#0a0a0f] p-1">
+    <div className="inline-flex rounded-sm border border-neutral-800 bg-black/60 p-1">
       {modes.map((m) => {
         const Icon = m.icon;
         const isSelected = mode === m.value;
@@ -45,8 +45,8 @@ export default function ModeToggle({
               relative px-4 py-2 font-mono text-xs tracking-wider
               transition-colors duration-200
               ${isSelected
-                ? 'text-[#e8e8e8]'
-                : 'text-[#666670] hover:text-[#888890]'
+                ? 'text-amber-500'
+                : 'text-neutral-500 hover:text-neutral-400'
               }
               ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
             `}
@@ -56,7 +56,7 @@ export default function ModeToggle({
             {isSelected && (
               <motion.div
                 layoutId="mode-indicator"
-                className="absolute inset-0 rounded-sm bg-[#1a1a25]"
+                className="absolute inset-0 rounded-sm bg-amber-500/10 border border-amber-500/30"
                 transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
               />
             )}
