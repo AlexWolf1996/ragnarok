@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Menu, X } from 'lucide-react';
@@ -11,6 +12,7 @@ const navLinks = [
   { href: '/arena', label: 'ARENA' },
   { href: '/register', label: 'REGISTER' },
   { href: '/leaderboard', label: 'LEADERBOARD' },
+  { href: '/my-bets', label: 'MY BETS' },
   { href: '/docs', label: 'DOCS' },
 ];
 
@@ -18,6 +20,7 @@ export default function LandingHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [logoError, setLogoError] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -99,16 +102,29 @@ export default function LandingHeader() {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-10" role="menubar">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="font-[var(--font-orbitron)] font-semibold text-[11px] tracking-[0.2em] text-neutral-400 hover:text-amber-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded px-1"
-              role="menuitem"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`font-[var(--font-orbitron)] font-semibold text-[11px] tracking-[0.2em] transition-colors relative focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded px-1 ${
+                  isActive
+                    ? 'text-amber-500'
+                    : 'text-neutral-400 hover:text-amber-500'
+                }`}
+                role="menuitem"
+              >
+                {link.label}
+                {isActive && (
+                  <motion.div
+                    className="absolute -bottom-1 left-0 right-0 h-px bg-amber-500"
+                    layoutId="activeNavIndicator"
+                  />
+                )}
+              </Link>
+            );
+          })}
         </div>
 
         {/* Wallet Connect */}
@@ -160,18 +176,25 @@ export default function LandingHeader() {
               aria-label="Mobile navigation"
             >
               <div className="px-6 py-6 space-y-6">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="block font-[var(--font-orbitron)] font-semibold text-sm tracking-[0.2em] text-neutral-400 hover:text-amber-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded px-1"
-                    onClick={closeMobileMenu}
-                    role="menuitem"
-                    tabIndex={mobileMenuOpen ? 0 : -1}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {navLinks.map((link) => {
+                  const isActive = pathname === link.href;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`block font-[var(--font-orbitron)] font-semibold text-sm tracking-[0.2em] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded px-1 ${
+                        isActive
+                          ? 'text-amber-500'
+                          : 'text-neutral-400 hover:text-amber-500'
+                      }`}
+                      onClick={closeMobileMenu}
+                      role="menuitem"
+                      tabIndex={mobileMenuOpen ? 0 : -1}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
                 <div className="pt-6 border-t border-neutral-800">
                   <div className="landing-wallet-btn">
                     <WalletMultiButton />
