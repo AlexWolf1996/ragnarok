@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
 import {
@@ -69,21 +69,45 @@ const sections = [
   { id: 'api', label: 'API Reference' },
 ];
 
+function useActiveSection() {
+  const [activeSection, setActiveSection] = useState('overview');
+
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+
+    sections.forEach((section) => {
+      const el = document.getElementById(section.id);
+      if (!el) return;
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setActiveSection(section.id);
+          }
+        },
+        { rootMargin: '-20% 0px -60% 0px' }
+      );
+      observer.observe(el);
+      observers.push(observer);
+    });
+
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
+
+  return activeSection;
+}
+
 function SideNav({ activeSection }: { activeSection: string }) {
   return (
-    <nav className="hidden lg:block sticky top-24 w-56 flex-shrink-0" aria-label="Documentation sections">
-      <div className="font-[var(--font-orbitron)] text-[10px] tracking-[0.3em] text-amber-500/60 mb-4">
-        NAVIGATION
-      </div>
-      <ul className="space-y-1">
+    <nav className="hidden lg:block sticky top-28 w-52 flex-shrink-0 self-start" aria-label="Documentation sections">
+      <ul className="space-y-0.5 border-l border-neutral-800">
         {sections.map((section) => (
           <li key={section.id}>
             <a
               href={`#${section.id}`}
-              className={`block py-1.5 px-3 font-[var(--font-rajdhani)] text-sm transition-colors rounded-sm ${
+              className={`block py-1.5 pl-4 pr-3 font-[var(--font-rajdhani)] text-sm transition-colors ${
                 activeSection === section.id
-                  ? 'text-amber-500 bg-amber-500/10 border-l-2 border-amber-500'
-                  : 'text-neutral-500 hover:text-neutral-300 border-l-2 border-transparent'
+                  ? 'text-amber-500 border-l-2 border-amber-500 -ml-px'
+                  : 'text-neutral-500 hover:text-neutral-300'
               }`}
             >
               {section.label}
@@ -287,25 +311,28 @@ function StepCard({
 export default function DocsPage() {
   const heroRef = useRef(null);
   const isHeroInView = useInView(heroRef, { once: true });
-  const [activeSection] = useState('overview');
+  const activeSection = useActiveSection();
 
   return (
-    <div className="min-h-screen bg-black relative">
+    <div className="min-h-screen relative" style={{ background: 'linear-gradient(180deg, #0a0a0f 0%, #000 30%, #0a0a0f 100%)' }}>
       {/* Hero */}
-      <section ref={heroRef} className="relative py-20 px-6 overflow-hidden border-b border-neutral-800">
+      <section ref={heroRef} className="relative pt-10 pb-12 px-6 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-amber-500/5 via-transparent to-transparent" />
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <motion.div
-            className="w-14 h-14 rounded-full bg-black/60 border border-amber-500/30 flex items-center justify-center mx-auto mb-6"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={isHeroInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+            className="inline-flex items-center gap-3 font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/60 mb-5"
+            initial={{ opacity: 0 }}
+            animate={isHeroInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Scroll size={28} className="text-amber-500" />
+            <span className="w-8 h-px bg-amber-500/40" />
+            <Scroll size={14} className="text-amber-500/60" />
+            SACRED CODEX
+            <span className="w-8 h-px bg-amber-500/40" />
           </motion.div>
           <motion.h1
-            className="font-[var(--font-orbitron)] text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-4"
+            className="font-[var(--font-orbitron)] text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-3"
             initial={{ opacity: 0, y: 20 }}
             animate={isHeroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6 }}
@@ -313,7 +340,7 @@ export default function DocsPage() {
             DOCUMENTATION
           </motion.h1>
           <motion.p
-            className="font-[var(--font-rajdhani)] text-lg text-neutral-400 max-w-xl mx-auto"
+            className="font-[var(--font-rajdhani)] text-base text-neutral-500 max-w-lg mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={isHeroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -323,11 +350,16 @@ export default function DocsPage() {
         </div>
       </section>
 
+      {/* Subtle divider */}
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="h-px bg-gradient-to-r from-transparent via-neutral-800 to-transparent" />
+      </div>
+
       {/* Content with sidebar */}
-      <div className="max-w-6xl mx-auto px-6 py-16 flex gap-12">
+      <div className="max-w-6xl mx-auto px-6 py-12 flex gap-10">
         <SideNav activeSection={activeSection} />
 
-        <div className="flex-1 min-w-0 space-y-20">
+        <div className="flex-1 min-w-0 space-y-16">
           {/* ======================= OVERVIEW ======================= */}
           <section id="overview">
             <AnimatedSection>
@@ -910,35 +942,33 @@ export default function DocsPage() {
           </section>
 
           {/* ======================= CTA ======================= */}
-          <section className="pt-10 pb-4">
-            <AnimatedSection>
-              <div className="bg-gradient-to-r from-amber-500/5 via-amber-500/10 to-amber-500/5 border border-amber-500/20 p-8 rounded-sm text-center">
-                <h2 className="font-[var(--font-orbitron)] text-xl tracking-[0.15em] text-white font-bold mb-3">
-                  READY FOR BATTLE?
-                </h2>
-                <p className="font-[var(--font-rajdhani)] text-neutral-400 mb-6 max-w-md mx-auto">
-                  Register your agent and enter the arena. The twilight awaits.
-                </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                  <Link
-                    href="/register"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-black font-[var(--font-orbitron)] text-xs tracking-[0.2em] rounded-sm hover:bg-amber-400 transition-colors"
-                  >
-                    FORGE YOUR CHAMPION
-                    <ArrowRight size={14} />
-                  </Link>
-                  <a
-                    href="https://github.com/AlexWolf1996/ragnarok"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 border border-neutral-700 text-neutral-300 font-[var(--font-orbitron)] text-xs tracking-[0.2em] rounded-sm hover:border-neutral-600 hover:text-white transition-colors"
-                  >
-                    VIEW ON GITHUB
-                    <ArrowRight size={14} />
-                  </a>
-                </div>
+          <section className="pt-8">
+            <div className="border-t border-neutral-800 pt-10 pb-2 text-center">
+              <h2 className="font-[var(--font-orbitron)] text-lg tracking-[0.15em] text-white font-bold mb-2">
+                READY FOR BATTLE?
+              </h2>
+              <p className="font-[var(--font-rajdhani)] text-sm text-neutral-500 mb-5">
+                Register your agent and enter the arena.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Link
+                  href="/register"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-amber-500 text-black font-[var(--font-orbitron)] text-xs tracking-[0.2em] rounded-sm hover:bg-amber-400 transition-colors"
+                >
+                  FORGE YOUR CHAMPION
+                  <ArrowRight size={14} />
+                </Link>
+                <a
+                  href="https://github.com/AlexWolf1996/ragnarok"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 border border-neutral-700 text-neutral-400 font-[var(--font-orbitron)] text-xs tracking-[0.2em] rounded-sm hover:border-neutral-600 hover:text-white transition-colors"
+                >
+                  VIEW ON GITHUB
+                  <ArrowRight size={14} />
+                </a>
               </div>
-            </AnimatedSection>
+            </div>
           </section>
         </div>
       </div>
