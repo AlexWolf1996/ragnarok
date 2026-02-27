@@ -28,12 +28,14 @@ export interface MatchHistoryItem {
     name: string;
     score: number | null;
     avatarUrl: string | null;
+    eloRating: number;
   };
   agentB: {
     id: string;
     name: string;
     score: number | null;
     avatarUrl: string | null;
+    eloRating: number;
   };
   winner: {
     id: string;
@@ -73,8 +75,8 @@ export async function GET(request: NextRequest) {
         agent_b_score,
         judge_reasoning,
         challenge:challenges(id, name, type, difficulty),
-        agent_a:agents!matches_agent_a_id_fkey(id, name, avatar_url),
-        agent_b:agents!matches_agent_b_id_fkey(id, name, avatar_url),
+        agent_a:agents!matches_agent_a_id_fkey(id, name, avatar_url, elo_rating),
+        agent_b:agents!matches_agent_b_id_fkey(id, name, avatar_url, elo_rating),
         winner:agents!matches_winner_id_fkey(id, name)
       `)
       .order('created_at', { ascending: false })
@@ -103,8 +105,8 @@ export async function GET(request: NextRequest) {
     const history: MatchHistoryItem[] = (matches || []).map((match) => {
       // Type assertions for nested data
       const challenge = match.challenge as { id: string; name: string; type: string; difficulty: string } | null;
-      const agentA = match.agent_a as { id: string; name: string; avatar_url: string | null } | null;
-      const agentB = match.agent_b as { id: string; name: string; avatar_url: string | null } | null;
+      const agentA = match.agent_a as { id: string; name: string; avatar_url: string | null; elo_rating: number } | null;
+      const agentB = match.agent_b as { id: string; name: string; avatar_url: string | null; elo_rating: number } | null;
       const winner = match.winner as { id: string; name: string } | null;
 
       return {
@@ -130,12 +132,14 @@ export async function GET(request: NextRequest) {
           name: agentA?.name || 'Unknown Agent',
           score: match.agent_a_score,
           avatarUrl: agentA?.avatar_url || null,
+          eloRating: agentA?.elo_rating || 1000,
         },
         agentB: {
           id: agentB?.id || 'unknown',
           name: agentB?.name || 'Unknown Agent',
           score: match.agent_b_score,
           avatarUrl: agentB?.avatar_url || null,
+          eloRating: agentB?.elo_rating || 1000,
         },
         winner: winner
           ? {

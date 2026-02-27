@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import { Swords, Plus, RefreshCw, Loader2, Crown, Link as LinkIcon, Zap, Trophy } from 'lucide-react';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { Tables } from '@/lib/supabase/types';
 import {
   getAgents,
@@ -21,9 +21,12 @@ import {
   getOpenBattles,
   getLiveBattles,
   getCompletedBattles,
+  getBattleById,
+  joinBattle,
   subscribeToOpenBattles,
   unsubscribe,
 } from '@/lib/supabase/battleRoyale';
+import { transferToTreasury, BettingTier } from '@/lib/solana/transfer';
 import { hashMatchToSolana } from '@/lib/solana/matchHash';
 import { ArenaTier, ArenaMode, BattleRoyaleWithRelations } from '@/types/battleRoyale';
 import StatsBar from '@/components/ui/StatsBar';
@@ -73,8 +76,10 @@ function ArenaContent() {
   const searchParams = useSearchParams();
   const justRegistered = searchParams.get('registered') === 'true';
   const wallet = useWallet();
+  const { connection } = useConnection();
   const toast = useToast();
   const hasShownRegistrationToast = useRef(false);
+  const hasTriggeredAutoRef = useRef(false);
 
   // Mode & Tier state
   const [mode, setMode] = useState<ArenaMode>('duel');
@@ -141,6 +146,18 @@ function ArenaContent() {
       prompt: string;
     };
     reasoning: string;
+    judges?: Array<{
+      judgeId: string;
+      judgeName: string;
+      model: string;
+      scoreA: number;
+      scoreB: number;
+      winnerId: 'A' | 'B' | 'TIE';
+      reasoning: string;
+      failed: boolean;
+    }>;
+    isSplitDecision?: boolean;
+    isUnanimous?: boolean;
   } | null>(null);
 
   // Betting state
@@ -166,6 +183,23 @@ function ArenaContent() {
       toast.success('Agent Registered', 'Your agent is ready for battle!');
     }
   }, [justRegistered, toast]);
+
+  // Auto-trigger a battle on arena visit to keep things alive
+  useEffect(() => {
+    if (hasTriggeredAutoRef.current) return;
+    hasTriggeredAutoRef.current = true;
+
+    fetch('/api/battles/auto', { method: 'POST' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          console.log(`[Arena] Auto-battle: ${data.message}`);
+        }
+      })
+      .catch(() => {
+        // Silent fail — auto-trigger is best-effort
+      });
+  }, []);
 
   // Load user's agent
   useEffect(() => {
@@ -390,6 +424,9 @@ function ArenaContent() {
         agentB: data.agentB,
         challenge: data.challenge,
         reasoning: data.reasoning,
+        judges: data.judges,
+        isSplitDecision: data.isSplitDecision,
+        isUnanimous: data.isUnanimous,
       });
 
       toast.success('Battle Complete!', `${data.winner.name} defeats ${data.loser.name}!`);
@@ -402,13 +439,62 @@ function ArenaContent() {
     }
   };
 
-  const handleJoinBattle = (battleId: string) => {
+  const [isJoiningBattle, setIsJoiningBattle] = useState(false);
+
+  const handleJoinBattle = async (battleId: string) => {
     if (!userAgent) {
       toast.warning('Agent Required', 'Please register an agent first.');
       return;
     }
-    // TODO: Implement join flow with payment
-    toast.info('Coming Soon', 'Battle joining will be available soon!');
+    if (!wallet.connected || !wallet.publicKey) {
+      toast.warning('Wallet Required', 'Please connect your wallet to join.');
+      return;
+    }
+    if (isJoiningBattle) return;
+
+    setIsJoiningBattle(true);
+    try {
+      // Fetch battle to get tier/buy-in info
+      const battle = await getBattleById(battleId);
+      if (!battle) {
+        toast.error('Error', 'Battle not found.');
+        return;
+      }
+
+      // Transfer SOL buy-in to treasury
+      toast.info('Payment', `Sending ${battle.buy_in_sol} SOL buy-in...`);
+      const transferResult = await transferToTreasury(
+        wallet as Parameters<typeof transferToTreasury>[0],
+        battle.tier as BettingTier,
+        connection
+      );
+
+      if (!transferResult.success || !transferResult.signature) {
+        toast.error('Payment Failed', transferResult.error || 'Transaction failed');
+        return;
+      }
+
+      // Register in the battle with tx proof
+      toast.info('Joining', 'Verifying payment and registering...');
+      const joinResult = await joinBattle(
+        battleId,
+        userAgent.id,
+        wallet.publicKey.toString(),
+        transferResult.signature
+      );
+
+      if (joinResult.success) {
+        toast.success('Joined!', `${userAgent.name} has entered the battle!`);
+        await loadBattleRoyaleData();
+      } else {
+        toast.error('Join Failed', joinResult.error || 'Could not join battle');
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      toast.error('Join Failed', msg);
+    } finally {
+      setIsJoiningBattle(false);
+    }
   };
 
   const handleViewBattle = (battleId: string) => {
@@ -651,6 +737,9 @@ function ArenaContent() {
                       agentB={quickBattleResult.agentB}
                       challenge={quickBattleResult.challenge}
                       reasoning={quickBattleResult.reasoning}
+                      judges={quickBattleResult.judges}
+                      isSplitDecision={quickBattleResult.isSplitDecision}
+                      isUnanimous={quickBattleResult.isUnanimous}
                       onFightAgain={() => {
                         setQuickBattleResult(null);
                         handleQuickBattle();

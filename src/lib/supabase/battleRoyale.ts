@@ -197,25 +197,29 @@ export async function getCompletedBattles(
 // ============================================================================
 
 /**
- * Join a battle royale (via Edge Function for transaction handling)
+ * Join a battle royale (via Vercel API route)
  */
 export async function joinBattle(
   battleId: string,
   agentId: string,
-  walletAddress: string
+  walletAddress: string,
+  txSignature: string
 ): Promise<{ success: boolean; participant_id?: string; error?: string }> {
-  const { data, error } = await supabase.functions.invoke('battle-royale-join', {
-    body: {
-      battle_id: battleId,
-      agent_id: agentId,
-      wallet_address: walletAddress,
-    },
-  });
-
-  if (error) {
-    return { success: false, error: error.message };
+  try {
+    const response = await fetch('/api/battle-royale/join', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        battle_id: battleId,
+        agent_id: agentId,
+        wallet_address: walletAddress,
+        tx_signature: txSignature,
+      }),
+    });
+    return await response.json();
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : 'Join failed' };
   }
-  return data;
 }
 
 /**
@@ -271,48 +275,52 @@ interface CreateBattleParams {
 }
 
 /**
- * Create a custom battle royale (via Edge Function)
+ * Create a custom battle royale (via Vercel API route)
  */
 export async function createBattle(
   params: CreateBattleParams
 ): Promise<{ success: boolean; battle_id?: string; error?: string }> {
-  const { data, error } = await supabase.functions.invoke('create-battle-royale', {
-    body: {
-      name: params.name,
-      tier: params.tier,
-      buy_in_sol: params.buyInSol,
-      max_agents: params.maxAgents,
-      num_rounds: params.numRounds || 3,
-      payout_structure: params.payoutStructure || 'winner_takes_all',
-      registration_minutes: params.registrationMinutes || 30,
-      wallet_address: params.walletAddress,
-    },
-  });
-
-  if (error) {
-    return { success: false, error: error.message };
+  try {
+    const response = await fetch('/api/battle-royale/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: params.name,
+        tier: params.tier,
+        buy_in_sol: params.buyInSol,
+        max_agents: params.maxAgents,
+        num_rounds: params.numRounds || 3,
+        payout_structure: params.payoutStructure || 'winner_takes_all',
+        registration_minutes: params.registrationMinutes || 30,
+        wallet_address: params.walletAddress,
+      }),
+    });
+    return await response.json();
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : 'Create failed' };
   }
-  return data;
 }
 
 /**
- * Start a battle royale (creator only, via Edge Function)
+ * Start a battle royale (creator only, via Vercel API route)
  */
 export async function startBattle(
   battleId: string,
   walletAddress: string
 ): Promise<{ success: boolean; error?: string }> {
-  const { data, error } = await supabase.functions.invoke('start-battle-royale', {
-    body: {
-      battle_id: battleId,
-      wallet_address: walletAddress,
-    },
-  });
-
-  if (error) {
-    return { success: false, error: error.message };
+  try {
+    const response = await fetch('/api/battle-royale/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        battle_id: battleId,
+        wallet_address: walletAddress,
+      }),
+    });
+    return await response.json();
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : 'Start failed' };
   }
-  return data;
 }
 
 // ============================================================================
@@ -360,6 +368,7 @@ export async function getCurrentRound(battleId: string): Promise<BattleRoyaleRou
 
 /**
  * Place a bet on a battle royale participant
+ * For now, bets are recorded in Supabase directly (no SOL transfer for spectator bets)
  */
 export async function placeBattleBet(
   battleId: string,
@@ -367,19 +376,27 @@ export async function placeBattleBet(
   amountSol: number,
   walletAddress: string
 ): Promise<{ success: boolean; bet_id?: string; error?: string }> {
-  const { data, error } = await supabase.functions.invoke('place-battle-bet', {
-    body: {
-      battle_id: battleId,
-      agent_id: agentId,
-      amount_sol: amountSol,
-      wallet_address: walletAddress,
-    },
-  });
+  try {
+    const { data, error } = await supabase
+      .from('battle_royale_bets')
+      .insert({
+        battle_id: battleId,
+        agent_id: agentId,
+        amount_sol: amountSol,
+        wallet_address: walletAddress,
+        status: 'pending',
+        payout_sol: 0,
+      })
+      .select('id')
+      .single();
 
-  if (error) {
-    return { success: false, error: error.message };
+    if (error) {
+      return { success: false, error: error.message };
+    }
+    return { success: true, bet_id: data.id };
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : 'Bet failed' };
   }
-  return data;
 }
 
 /**
@@ -424,23 +441,50 @@ export async function getUserBattleBets(
 // ============================================================================
 
 /**
- * Join the matchmaking queue
+ * Join the matchmaking queue (direct Supabase insert)
  */
 export async function joinQueue(
   agentId: string,
   tier: ArenaTier
 ): Promise<{ success: boolean; queue_id?: string; position?: number; error?: string }> {
-  const { data, error } = await supabase.functions.invoke('queue-join', {
-    body: {
-      agent_id: agentId,
-      tier: tier,
-    },
-  });
+  try {
+    // Check if already in queue
+    const { data: existing } = await supabase
+      .from('matchmaking_queue')
+      .select('id')
+      .eq('agent_id', agentId)
+      .eq('status', 'waiting')
+      .single();
 
-  if (error) {
-    return { success: false, error: error.message };
+    if (existing) {
+      return { success: false, error: 'Agent is already in queue' };
+    }
+
+    const { data, error } = await supabase
+      .from('matchmaking_queue')
+      .insert({
+        agent_id: agentId,
+        tier,
+        status: 'waiting',
+      })
+      .select('id')
+      .single();
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    // Get position
+    const { count } = await supabase
+      .from('matchmaking_queue')
+      .select('*', { count: 'exact', head: true })
+      .eq('tier', tier)
+      .eq('status', 'waiting');
+
+    return { success: true, queue_id: data.id, position: count || 1 };
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : 'Queue join failed' };
   }
-  return data;
 }
 
 /**

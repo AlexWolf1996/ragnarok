@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { Swords, Loader2, Plus, Zap, Trophy, AlertTriangle, Check, X, ExternalLink } from 'lucide-react';
@@ -57,6 +57,18 @@ interface BattleResult {
     winner: { id: string; name: string };
     loser: { id: string; name: string };
     reasoning: string;
+    judges?: {
+      judgeId: string;
+      judgeName: string;
+      model: string;
+      scoreA: number;
+      scoreB: number;
+      winnerId: 'A' | 'B' | 'TIE';
+      reasoning: string;
+      failed: boolean;
+    }[];
+    isSplitDecision?: boolean;
+    isUnanimous?: boolean;
   };
 }
 
@@ -72,6 +84,14 @@ const TIER_COLORS: Record<BettingTier, string> = {
   bifrost: 'from-emerald-600 to-emerald-500',
   midgard: 'from-amber-600 to-amber-500',
   asgard: 'from-red-600 to-red-500',
+};
+
+const CATEGORY_META: Record<string, { icon: string; color: string; border: string }> = {
+  reasoning: { icon: '🧠', color: 'text-cyan-400', border: 'border-cyan-500/30 bg-cyan-500/10' },
+  creative: { icon: '🎨', color: 'text-purple-400', border: 'border-purple-500/30 bg-purple-500/10' },
+  strategy: { icon: '♟️', color: 'text-amber-400', border: 'border-amber-500/30 bg-amber-500/10' },
+  code: { icon: '💻', color: 'text-emerald-400', border: 'border-emerald-500/30 bg-emerald-500/10' },
+  knowledge: { icon: '📚', color: 'text-blue-400', border: 'border-blue-500/30 bg-blue-500/10' },
 };
 
 export default function BettingDuelPanel({
@@ -97,6 +117,39 @@ export default function BettingDuelPanel({
   const [step, setStep] = useState<BattleStep>('select');
   const [error, setError] = useState<string | null>(null);
   const [battleResult, setBattleResult] = useState<BattleResult | null>(null);
+
+  // Head-to-head record
+  const [h2h, setH2h] = useState<{ aWins: number; bWins: number } | null>(null);
+
+  useEffect(() => {
+    if (!agentA || !agentB) {
+      setH2h(null);
+      return;
+    }
+
+    async function fetchH2H() {
+      try {
+        const res = await fetch(`/api/battles/history?limit=100&status=completed`);
+        const data = await res.json();
+        const matches = data.matches || [];
+        let aWins = 0;
+        let bWins = 0;
+        for (const m of matches) {
+          const isMatchup =
+            (m.agentA.id === agentA!.id && m.agentB.id === agentB!.id) ||
+            (m.agentA.id === agentB!.id && m.agentB.id === agentA!.id);
+          if (!isMatchup || !m.winner) continue;
+          if (m.winner.id === agentA!.id) aWins++;
+          else if (m.winner.id === agentB!.id) bWins++;
+        }
+        setH2h({ aWins, bWins });
+      } catch {
+        setH2h(null);
+      }
+    }
+
+    fetchH2H();
+  }, [agentA, agentB]);
 
   // Calculate expected value based on ELO
   const odds = useMemo(() => {
@@ -233,7 +286,7 @@ export default function BettingDuelPanel({
       </div>
 
       <AnimatePresence mode="wait">
-        {/* STEP 1: Select Agents */}
+        {/* STEP 1: Select Challenge + Agents */}
         {step === 'select' && (
           <motion.div
             key="select"
@@ -242,6 +295,50 @@ export default function BettingDuelPanel({
             exit={{ opacity: 0 }}
             className="space-y-4"
           >
+            {/* Challenge category selection — shown FIRST */}
+            <div>
+              <label className="block text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">
+                TRIAL BY COMBAT
+              </label>
+              <div className="grid grid-cols-3 gap-2 mb-1">
+                <button
+                  onClick={() => setSelectedChallenge('random')}
+                  className={`py-2.5 px-2 rounded-lg border text-center transition-all ${
+                    selectedChallenge === 'random'
+                      ? 'border-amber-500 bg-amber-500/10 text-amber-400'
+                      : 'border-neutral-700 text-neutral-400 hover:border-neutral-500'
+                  }`}
+                >
+                  <div className="text-lg mb-0.5">🎲</div>
+                  <div className="font-[var(--font-orbitron)] text-[9px] tracking-wider">RANDOM</div>
+                </button>
+                {Object.entries(CATEGORY_META).map(([type, meta]) => (
+                  <button
+                    key={type}
+                    onClick={() => {
+                      // Find a random challenge of this type
+                      const matching = challenges.filter(c => c.type === type);
+                      if (matching.length > 0) {
+                        const pick = matching[Math.floor(Math.random() * matching.length)];
+                        setSelectedChallenge(pick.id);
+                      }
+                    }}
+                    className={`py-2.5 px-2 rounded-lg border text-center transition-all ${
+                      selectedChallenge !== 'random' && challenges.find(c => c.id === selectedChallenge)?.type === type
+                        ? `${meta.border} ${meta.color}`
+                        : 'border-neutral-700 text-neutral-400 hover:border-neutral-500'
+                    }`}
+                  >
+                    <div className="text-lg mb-0.5">{meta.icon}</div>
+                    <div className="font-[var(--font-orbitron)] text-[9px] tracking-wider">
+                      {type.toUpperCase()}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Agent selection */}
             <div>
               <label className="block text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">
                 FIRST WARRIOR
@@ -255,8 +352,13 @@ export default function BettingDuelPanel({
               />
             </div>
 
-            <div className="flex items-center justify-center py-2">
+            <div className="flex items-center justify-center py-2 gap-3">
               <span className="font-[var(--font-orbitron)] text-xs text-red-500 font-bold">VS</span>
+              {h2h && (h2h.aWins > 0 || h2h.bWins > 0) && (
+                <span className="font-mono text-[10px] text-neutral-500">
+                  H2H: {h2h.aWins}-{h2h.bWins}
+                </span>
+              )}
             </div>
 
             <div>
@@ -270,24 +372,6 @@ export default function BettingDuelPanel({
                 placeholder="Select second agent"
                 excludeAgentId={agentA?.id}
               />
-            </div>
-
-            <div>
-              <label className="block text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">
-                TRIAL BY
-              </label>
-              <select
-                value={selectedChallenge}
-                onChange={(e) => setSelectedChallenge(e.target.value)}
-                className="w-full px-4 py-3 bg-black/60 border border-neutral-800 rounded-lg focus:outline-none focus:border-amber-500/50 font-[var(--font-rajdhani)] text-sm text-white"
-              >
-                <option value="random">The Norns Decide (Random)</option>
-                {challenges.map((challenge) => (
-                  <option key={challenge.id} value={challenge.id}>
-                    {challenge.type?.replace(/_/g, ' ')} ({challenge.difficulty})
-                  </option>
-                ))}
-              </select>
             </div>
 
             <button
@@ -320,7 +404,14 @@ export default function BettingDuelPanel({
                   <div className="font-mono text-xs text-amber-500 mt-1">{odds.agentA}%</div>
                 )}
               </div>
-              <div className="font-[var(--font-orbitron)] text-red-500 text-sm font-bold">VS</div>
+              <div className="text-center">
+                <div className="font-[var(--font-orbitron)] text-red-500 text-sm font-bold">VS</div>
+                {h2h && (h2h.aWins > 0 || h2h.bWins > 0) && (
+                  <div className="font-mono text-[9px] text-neutral-500 mt-0.5">
+                    H2H: {h2h.aWins}-{h2h.bWins}
+                  </div>
+                )}
+              </div>
               <div className="text-center flex-1">
                 <div className="text-2xl mb-1">{agentB.avatar_url || '⚔️'}</div>
                 <div className="font-[var(--font-orbitron)] text-xs text-white truncate">{agentB.name}</div>
@@ -578,9 +669,57 @@ export default function BettingDuelPanel({
               </div>
 
               <div className="pt-3 border-t border-neutral-800">
-                <div className="text-[10px] font-[var(--font-orbitron)] text-cyan-500/70 tracking-wider mb-1">
-                  JUDGE VERDICT
-                </div>
+                {battleResult.battle.judges && battleResult.battle.judges.length > 0 ? (
+                  <>
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <div className="text-[10px] font-[var(--font-orbitron)] text-cyan-500/70 tracking-wider">
+                        JUDGE PANEL
+                      </div>
+                      {battleResult.battle.isSplitDecision && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded border border-red-500/40 bg-red-500/10 text-red-400 font-[var(--font-orbitron)] animate-pulse">
+                          SPLIT
+                        </span>
+                      )}
+                      {battleResult.battle.isUnanimous && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 font-[var(--font-orbitron)]">
+                          UNANIMOUS
+                        </span>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-3 gap-1.5 mb-2">
+                      {battleResult.battle.judges.map((judge) => (
+                        <div
+                          key={judge.judgeId}
+                          className={`text-center p-1.5 rounded border ${
+                            judge.failed
+                              ? 'border-neutral-700 opacity-50'
+                              : judge.judgeId === 'odin' ? 'border-amber-500/30 bg-amber-500/5'
+                              : judge.judgeId === 'thor' ? 'border-blue-500/30 bg-blue-500/5'
+                              : judge.judgeId === 'freya' ? 'border-pink-500/30 bg-pink-500/5'
+                              : 'border-neutral-700'
+                          }`}
+                        >
+                          <div className="text-[9px] font-[var(--font-orbitron)] text-neutral-400 mb-0.5">
+                            {judge.judgeName}
+                          </div>
+                          {judge.failed ? (
+                            <div className="text-[9px] text-neutral-600 font-mono">OFFLINE</div>
+                          ) : (
+                            <div className="font-mono text-xs font-bold">
+                              <span className={judge.winnerId === 'A' ? 'text-amber-400' : 'text-neutral-500'}>{judge.scoreA}</span>
+                              <span className="text-neutral-600 mx-0.5">-</span>
+                              <span className={judge.winnerId === 'B' ? 'text-cyan-400' : 'text-neutral-500'}>{judge.scoreB}</span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-[10px] font-[var(--font-orbitron)] text-cyan-500/70 tracking-wider mb-1">
+                    JUDGE VERDICT
+                  </div>
+                )}
                 <p className="font-[var(--font-rajdhani)] text-xs text-neutral-400 line-clamp-3">
                   {battleResult.battle.reasoning}
                 </p>

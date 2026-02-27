@@ -150,10 +150,22 @@ export default function AgentSelector({
                         <Bot size={16} className="text-[#666670]" />
                       </div>
                     )}
-                    <div className="text-left flex-1">
-                      <p className="font-mono text-sm text-[#e8e8e8]">{agent.name}</p>
+                    <div className="text-left flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-mono text-sm text-[#e8e8e8] truncate">{agent.name}</p>
+                        {/* Win rate bar */}
+                        {agent.matches_played > 0 && (
+                          <div className="flex-shrink-0 w-12 h-1.5 bg-red-500/30 rounded-full overflow-hidden" title={`${Math.round((agent.wins / agent.matches_played) * 100)}% win rate`}>
+                            <div
+                              className="h-full bg-emerald-500 rounded-full"
+                              style={{ width: `${(agent.wins / agent.matches_played) * 100}%` }}
+                            />
+                          </div>
+                        )}
+                      </div>
                       <p className="text-[10px] font-mono text-[#666670]">
-                        ELO: {agent.elo_rating} | W: {agent.wins} L: {agent.losses}
+                        ELO: {agent.elo_rating} | {agent.wins}W-{agent.losses}L
+                        {agent.matches_played > 0 && ` (${Math.round((agent.wins / agent.matches_played) * 100)}%)`}
                       </p>
                     </div>
                   </button>

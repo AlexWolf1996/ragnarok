@@ -21,12 +21,14 @@ interface BattleHistoryItem {
     name: string;
     score: number | null;
     avatarUrl: string | null;
+    eloRating?: number;
   };
   agentB: {
     id: string;
     name: string;
     score: number | null;
     avatarUrl: string | null;
+    eloRating?: number;
   };
   winner: {
     id: string;
@@ -249,6 +251,14 @@ export default function RecentBattlesFeed({
             const isWinnerB = battle.winner?.id === battle.agentB.id;
             const isExpanded = expandedBattleId === battle.id;
 
+            // Detect upsets: lower-ELO agent wins by 20+ points
+            const eloA = battle.agentA.eloRating || 1000;
+            const eloB = battle.agentB.eloRating || 1000;
+            const eloDiff = Math.abs(eloA - eloB);
+            const isUpset = eloDiff >= 50 && battle.winner && (
+              (isWinnerA && eloA < eloB) || (isWinnerB && eloB < eloA)
+            );
+
             return (
               <motion.div
                 key={battle.id}
@@ -307,8 +317,13 @@ export default function RecentBattlesFeed({
                       </div>
                     </div>
 
-                    {/* Scores */}
+                    {/* Upset badge + Scores */}
                     <div className="flex items-center gap-2 flex-shrink-0">
+                      {isUpset && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded border border-red-500/40 bg-red-500/10 text-red-400 font-[var(--font-orbitron)] animate-pulse whitespace-nowrap">
+                          UPSET
+                        </span>
+                      )}
                       <div className="text-right">
                         <span
                           className={`font-mono text-sm font-bold ${

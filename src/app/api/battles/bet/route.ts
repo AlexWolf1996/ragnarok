@@ -180,6 +180,9 @@ export async function POST(request: NextRequest) {
         winner: result.winner,
         loser: result.loser,
         reasoning: result.reasoning,
+        judges: result.judges,
+        isSplitDecision: result.isSplitDecision,
+        isUnanimous: result.isUnanimous,
       },
     });
 

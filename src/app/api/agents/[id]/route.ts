@@ -100,8 +100,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     let highestElo = 1000;
     const K = 32; // ELO K-factor
 
-    // Track challenge type wins
+    // Track challenge type wins and losses
     const challengeTypeWins: Record<string, number> = {};
+    const challengeTypeLosses: Record<string, number> = {};
 
     // Transform matches and calculate ELO history
     const processedMatches = completedMatches.map(match => {
@@ -117,9 +118,13 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
       const challenge = match.challenge as { id: string; name: string; type: string; difficulty: string } | null;
 
-      // Track challenge type wins
-      if (isWinner && challenge) {
-        challengeTypeWins[challenge.type] = (challengeTypeWins[challenge.type] || 0) + 1;
+      // Track challenge type wins and losses
+      if (challenge) {
+        if (isWinner) {
+          challengeTypeWins[challenge.type] = (challengeTypeWins[challenge.type] || 0) + 1;
+        } else if (!isTie) {
+          challengeTypeLosses[challenge.type] = (challengeTypeLosses[challenge.type] || 0) + 1;
+        }
       }
 
       // Calculate ELO change for this match
@@ -197,6 +202,21 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       }
     }
 
+    // Build category stats (per-type win rate)
+    const allTypes = new Set([...Object.keys(challengeTypeWins), ...Object.keys(challengeTypeLosses)]);
+    const categoryStats = Array.from(allTypes).map(type => {
+      const wins = challengeTypeWins[type] || 0;
+      const losses = challengeTypeLosses[type] || 0;
+      const total = wins + losses;
+      return {
+        type,
+        wins,
+        losses,
+        total,
+        winRate: total > 0 ? Math.round((wins / total) * 100) : 0,
+      };
+    }).sort((a, b) => b.total - a.total); // Sort by most played
+
     // Calculate stats
     const winRate = agent.matches_played > 0
       ? Math.round((agent.wins / agent.matches_played) * 100)
@@ -234,6 +254,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           type: streakType,
         },
         favoriteChallenge,
+        categoryStats,
       },
       matches: matchHistory,
       eloHistory: eloHistory.slice(-50), // Last 50 data points for chart

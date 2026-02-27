@@ -51,6 +51,13 @@ interface AgentProfile {
     type: string;
     wins: number;
   } | null;
+  categoryStats: {
+    type: string;
+    wins: number;
+    losses: number;
+    total: number;
+    winRate: number;
+  }[];
 }
 
 interface MatchHistory {
@@ -399,6 +406,48 @@ export default function AgentProfilePage() {
           </h2>
           <EloChart data={eloHistory} currentElo={agent.eloRating} height={180} />
         </motion.div>
+
+        {/* Category Win Rates */}
+        {agent.categoryStats && agent.categoryStats.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.18 }}
+            className="bg-black/40 border border-neutral-800 rounded-xl p-6 mb-6"
+          >
+            <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
+              <Target size={16} className="text-cyan-500/70" />
+              CATEGORY MASTERY
+            </h2>
+            <div className="space-y-3">
+              {agent.categoryStats.map((cat) => {
+                const colorClass = getChallengeTypeColor(cat.type);
+                const barColor = cat.type === 'reasoning' ? 'bg-cyan-500'
+                  : cat.type === 'creative' ? 'bg-purple-500'
+                  : cat.type === 'strategy' ? 'bg-amber-500'
+                  : cat.type === 'code' ? 'bg-emerald-500'
+                  : cat.type === 'knowledge' ? 'bg-blue-500'
+                  : 'bg-neutral-500';
+                return (
+                  <div key={cat.type} className="flex items-center gap-3">
+                    <span className={`text-[10px] px-2 py-0.5 rounded border whitespace-nowrap min-w-[80px] text-center ${colorClass}`}>
+                      {formatChallengeType(cat.type)}
+                    </span>
+                    <div className="flex-1 h-3 bg-neutral-800 rounded-full overflow-hidden relative">
+                      <div
+                        className={`h-full ${barColor} rounded-full transition-all duration-500`}
+                        style={{ width: `${cat.winRate}%` }}
+                      />
+                    </div>
+                    <span className="font-mono text-xs text-neutral-400 min-w-[70px] text-right">
+                      {cat.winRate}% ({cat.wins}W-{cat.losses}L)
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
 
         {/* Match History */}
         <motion.div

@@ -7,11 +7,12 @@
  */
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Database } from '@/lib/supabase/types';
+import { Database, Json } from '@/lib/supabase/types';
 import {
   generateAgentResponse,
-  judgeResponses,
+  multiJudge,
   calculateEloChange,
+  JudgeVote,
 } from '@/lib/groq/client';
 
 // Types
@@ -53,6 +54,9 @@ export interface BattleResult {
   loser: BattleWinner;
   challenge: BattleChallenge;
   reasoning: string;
+  judges: JudgeVote[];
+  isSplitDecision: boolean;
+  isUnanimous: boolean;
 }
 
 // Create admin client for server-side operations
@@ -142,7 +146,8 @@ export async function executeBattle(
     }
     challenge = data;
   } else {
-    // Get random challenge
+    // Get random challenge with balanced category distribution:
+    // 1) Pick a random category, 2) Pick a random challenge within it
     const { data: challenges, error } = await supabase
       .from('challenges')
       .select('*');
@@ -151,7 +156,10 @@ export async function executeBattle(
       throw new Error('No challenges available');
     }
 
-    challenge = challenges[Math.floor(Math.random() * challenges.length)];
+    const categories = [...new Set(challenges.map(c => c.type))];
+    const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+    const categoryPool = challenges.filter(c => c.type === randomCategory);
+    challenge = categoryPool[Math.floor(Math.random() * categoryPool.length)];
   }
 
   console.log(`[Battle] Challenge: ${challenge.name} (${challenge.type})`);
@@ -215,11 +223,11 @@ export async function executeBattle(
     throw new Error(`Agent B response generation failed: ${errorB instanceof Error ? errorB.message : 'Unknown error'}`);
   }
 
-  // Judge the responses with error handling
+  // Multi-judge panel — 3 independent LLMs score in parallel
   let judgeResult;
   try {
-    console.log(`[Battle] Calling judge for scoring`);
-    judgeResult = await judgeResponses(
+    console.log(`[Battle] Calling multi-judge panel (3 models)`);
+    judgeResult = await multiJudge(
       {
         name: challenge.name,
         type: challenge.type,
@@ -241,10 +249,12 @@ export async function executeBattle(
       throw new Error(`Scores out of range: scoreA=${judgeResult.scoreA}, scoreB=${judgeResult.scoreB}`);
     }
 
-    console.log(`[Battle] Judge result: A=${judgeResult.scoreA}, B=${judgeResult.scoreB}, Winner=${judgeResult.winnerId}`);
+    const validCount = judgeResult.judges.filter(j => !j.failed).length;
+    const decision = judgeResult.isUnanimous ? 'UNANIMOUS' : judgeResult.isSplitDecision ? 'SPLIT' : 'MAJORITY';
+    console.log(`[Battle] Multi-judge result: A=${judgeResult.scoreA}, B=${judgeResult.scoreB}, Winner=${judgeResult.winnerId} [${decision}, ${validCount}/3 judges]`);
   } catch (judgeError) {
-    console.error(`[Battle] Judge call failed:`, judgeError);
-    await markMatchFailed(supabase, match.id, `Judge call failed: ${judgeError instanceof Error ? judgeError.message : 'Unknown error'}`);
+    console.error(`[Battle] Multi-judge panel failed:`, judgeError);
+    await markMatchFailed(supabase, match.id, `Judge panel failed: ${judgeError instanceof Error ? judgeError.message : 'Unknown error'}`);
     throw new Error(`Judge scoring failed: ${judgeError instanceof Error ? judgeError.message : 'Unknown error'}`);
   }
 
@@ -289,7 +299,7 @@ export async function executeBattle(
   const newWinnerElo = winnerAgent.elo_rating + winnerDelta;
   const newLoserElo = Math.max(100, loserAgent.elo_rating + loserDelta);
 
-  // Update match with results
+  // Update match with results (including multi-judge panel data)
   const { error: updateMatchError } = await supabase
     .from('matches')
     .update({
@@ -300,6 +310,9 @@ export async function executeBattle(
       agent_a_score: judgeResult.scoreA,
       agent_b_score: judgeResult.scoreB,
       judge_reasoning: judgeResult.reasoning,
+      judge_scores: JSON.parse(JSON.stringify(judgeResult.judges)) as Json,
+      is_split_decision: judgeResult.isSplitDecision,
+      is_unanimous: judgeResult.isUnanimous,
       completed_at: new Date().toISOString(),
     })
     .eq('id', match.id);
@@ -377,5 +390,8 @@ export async function executeBattle(
       prompt: promptText as string,
     },
     reasoning: judgeResult.reasoning,
+    judges: judgeResult.judges,
+    isSplitDecision: judgeResult.isSplitDecision,
+    isUnanimous: judgeResult.isUnanimous,
   };
 }

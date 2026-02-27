@@ -33,11 +33,25 @@ interface ChallengeInfo {
   prompt: string;
 }
 
+interface JudgeVoteDisplay {
+  judgeId: string;
+  judgeName: string;
+  model: string;
+  scoreA: number;
+  scoreB: number;
+  winnerId: 'A' | 'B' | 'TIE';
+  reasoning: string;
+  failed: boolean;
+}
+
 interface BattleResultDisplayProps {
   agentA: AgentResult;
   agentB: AgentResult;
   challenge: ChallengeInfo;
   reasoning: string;
+  judges?: JudgeVoteDisplay[];
+  isSplitDecision?: boolean;
+  isUnanimous?: boolean;
   onFightAgain: () => void;
   onDismiss: () => void;
   isLoading?: boolean;
@@ -145,11 +159,32 @@ function getDifficultyColor(difficulty: string): string {
   }
 }
 
+function getJudgeColor(judgeId: string): string {
+  switch (judgeId) {
+    case 'odin': return 'text-amber-400 border-amber-500/30 bg-amber-500/10';
+    case 'thor': return 'text-blue-400 border-blue-500/30 bg-blue-500/10';
+    case 'freya': return 'text-pink-400 border-pink-500/30 bg-pink-500/10';
+    default: return 'text-neutral-400 border-neutral-500/30 bg-neutral-500/10';
+  }
+}
+
+function getJudgeIcon(judgeId: string): string {
+  switch (judgeId) {
+    case 'odin': return '👁';
+    case 'thor': return '⚡';
+    case 'freya': return '✨';
+    default: return '⚖️';
+  }
+}
+
 export default function BattleResultDisplay({
   agentA,
   agentB,
   challenge,
   reasoning,
+  judges,
+  isSplitDecision = false,
+  isUnanimous = false,
   onFightAgain,
   onDismiss,
   isLoading = false,
@@ -337,21 +372,115 @@ export default function BattleResultDisplay({
           </div>
         </motion.div>
 
-        {/* Judge Reasoning */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2.4 }}
-          className="bg-black/40 border border-cyan-500/20 rounded-lg p-4 mb-6 relative"
-        >
-          <Quote size={16} className="absolute top-3 left-3 text-cyan-500/30" />
-          <h4 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-cyan-500/70 mb-2 text-center">
-            THE ALLFATHER&apos;S VERDICT
-          </h4>
-          <p className="font-[var(--font-rajdhani)] text-sm text-neutral-300 leading-relaxed text-center italic px-4">
-            &quot;{reasoning}&quot;
-          </p>
-        </motion.div>
+        {/* Multi-Judge Panel */}
+        {judges && judges.length > 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 2.4 }}
+            className="mb-6"
+          >
+            {/* Decision badge */}
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <h4 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-cyan-500/70">
+                JUDGE PANEL
+              </h4>
+              {isSplitDecision && (
+                <span className="text-[10px] px-2 py-0.5 rounded border border-red-500/40 bg-red-500/10 text-red-400 font-[var(--font-orbitron)] tracking-wider animate-pulse">
+                  SPLIT DECISION
+                </span>
+              )}
+              {isUnanimous && (
+                <span className="text-[10px] px-2 py-0.5 rounded border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 font-[var(--font-orbitron)] tracking-wider">
+                  UNANIMOUS
+                </span>
+              )}
+            </div>
+
+            {/* 3 Judge Cards */}
+            <div className="grid grid-cols-3 gap-2">
+              {judges.map((judge, i) => (
+                <motion.div
+                  key={judge.judgeId}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 2.5 + i * 0.15 }}
+                  className={`border rounded-lg p-3 text-center relative ${
+                    judge.failed
+                      ? 'border-neutral-700 bg-neutral-900/50 opacity-50'
+                      : getJudgeColor(judge.judgeId)
+                  }`}
+                >
+                  {/* Judge name */}
+                  <div className="flex items-center justify-center gap-1 mb-2">
+                    <span className="text-sm">{getJudgeIcon(judge.judgeId)}</span>
+                    <span className="font-[var(--font-orbitron)] text-[10px] tracking-[0.15em]">
+                      {judge.judgeName}
+                    </span>
+                  </div>
+
+                  {judge.failed ? (
+                    <div className="text-[10px] text-neutral-500 font-mono">OFFLINE</div>
+                  ) : (
+                    <>
+                      {/* Individual scores */}
+                      <div className="flex items-center justify-center gap-2 mb-1">
+                        <span className={`font-mono text-lg font-bold ${
+                          judge.winnerId === 'A' ? 'text-amber-400' : 'text-neutral-500'
+                        }`}>
+                          {judge.scoreA}
+                        </span>
+                        <span className="text-neutral-600 text-xs">-</span>
+                        <span className={`font-mono text-lg font-bold ${
+                          judge.winnerId === 'B' ? 'text-cyan-400' : 'text-neutral-500'
+                        }`}>
+                          {judge.scoreB}
+                        </span>
+                      </div>
+
+                      {/* Winner indicator */}
+                      <div className={`text-[9px] font-[var(--font-orbitron)] tracking-wider ${
+                        judge.winnerId === 'A' ? 'text-amber-400' :
+                        judge.winnerId === 'B' ? 'text-cyan-400' : 'text-neutral-500'
+                      }`}>
+                        {judge.winnerId === 'TIE' ? 'DRAW' : judge.winnerId === 'A' ? agentA.name.split(' ')[0] : agentB.name.split(' ')[0]}
+                      </div>
+                    </>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Combined reasoning */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 3.0 }}
+              className="mt-3 bg-black/40 border border-cyan-500/20 rounded-lg p-3 relative"
+            >
+              <Quote size={12} className="absolute top-2 left-2 text-cyan-500/30" />
+              <p className="font-[var(--font-rajdhani)] text-xs text-neutral-400 leading-relaxed text-center italic px-4">
+                {judges.filter(j => !j.failed).map(j => j.reasoning).join(' | ')}
+              </p>
+            </motion.div>
+          </motion.div>
+        ) : (
+          /* Fallback: single judge display */
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 2.4 }}
+            className="bg-black/40 border border-cyan-500/20 rounded-lg p-4 mb-6 relative"
+          >
+            <Quote size={16} className="absolute top-3 left-3 text-cyan-500/30" />
+            <h4 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-cyan-500/70 mb-2 text-center">
+              THE ALLFATHER&apos;S VERDICT
+            </h4>
+            <p className="font-[var(--font-rajdhani)] text-sm text-neutral-300 leading-relaxed text-center italic px-4">
+              &quot;{reasoning}&quot;
+            </p>
+          </motion.div>
+        )}
 
         {/* Responses Accordion */}
         <motion.div

@@ -156,7 +156,10 @@ export type Database = {
           completed_at: string | null
           created_at: string
           id: string
+          is_split_decision: boolean
+          is_unanimous: boolean
           judge_reasoning: string | null
+          judge_scores: Json
           payout_tx_signature: string | null
           solana_tx_hash: string | null
           started_at: string | null
@@ -180,7 +183,10 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           id?: string
+          is_split_decision?: boolean
+          is_unanimous?: boolean
           judge_reasoning?: string | null
+          judge_scores?: Json
           payout_tx_signature?: string | null
           solana_tx_hash?: string | null
           started_at?: string | null
@@ -204,7 +210,10 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           id?: string
+          is_split_decision?: boolean
+          is_unanimous?: boolean
           judge_reasoning?: string | null
+          judge_scores?: Json
           payout_tx_signature?: string | null
           solana_tx_hash?: string | null
           started_at?: string | null
