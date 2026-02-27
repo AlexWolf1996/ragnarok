@@ -24,7 +24,6 @@ import LandingHeader from '@/components/landing/LandingHeader';
 import NoiseOverlay from '@/components/effects/NoiseOverlay';
 import EmberField from '@/components/effects/EmberField';
 import Sigils from '@/components/effects/Sigils';
-import LandingStatsBar from '@/components/landing/LandingStatsBar';
 import FAQ from '@/components/landing/FAQ';
 import Roadmap from '@/components/landing/Roadmap';
 import SectionDivider from '@/components/landing/SectionDivider';
@@ -844,7 +843,6 @@ export default function Home() {
           <>
             <Hero />
             <SectionDivider variant="fade" accentColor="gold" />
-            <LandingStatsBar />
             <Arena />
             <SectionDivider variant="line" accentColor="gold" />
             <Features />
