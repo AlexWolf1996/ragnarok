@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/battles/engine';
 import { TIER_CONFIG, ArenaTier, PayoutType } from '@/types/battleRoyale';
+import { isValidWalletAddress } from '@/lib/validation';
 
 export const runtime = 'nodejs';
 
@@ -46,6 +47,14 @@ export async function POST(request: NextRequest) {
     if (!tier || !wallet_address) {
       return NextResponse.json(
         { success: false, error: 'Missing required fields: tier, wallet_address' },
+        { status: 400 }
+      );
+    }
+
+    // Validate wallet address
+    if (!isValidWalletAddress(wallet_address)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid wallet address format' },
         { status: 400 }
       );
     }

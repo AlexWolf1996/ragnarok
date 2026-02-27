@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/battles/engine';
 import { sendPayout } from '@/lib/solana/payout';
+import { isValidUUID } from '@/lib/validation';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -19,6 +20,13 @@ export async function POST(request: NextRequest) {
     if (!match_id) {
       return NextResponse.json(
         { success: false, error: 'match_id is required' },
+        { status: 400 },
+      );
+    }
+
+    if (!isValidUUID(match_id)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid match_id format' },
         { status: 400 },
       );
     }

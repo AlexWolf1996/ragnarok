@@ -153,35 +153,45 @@
 ### PHASE 4: UX/UI FIXES & POLISH
 **Goal:** Fix all frontend bugs, error states, and rough edges before launch.
 **Estimated effort:** 2–3 days
-**Status:** ⬜ Not started — requires audit
+**Status:** 🔨 In progress (27 Feb 2026)
+**Summary so far:** Full 3-agent parallel audit completed. Critical security fixes applied (UUID validation on all API routes, SQL injection prevention in history endpoint). Console.log spam removed. Wallet disconnect handling added. Mobile responsive grids fixed. Double-submit guard added to betting. Auto-battle cooldown fixed to use completed_at. Query limits added to agent profile route.
 
 | # | Task | Status | Priority | Notes |
 |---|------|--------|----------|-------|
-| 4.1 | Full frontend bug audit (console errors, broken flows, dead links) | ⬜ | CRITICAL | Must do before launch |
-| 4.2 | Error handling on all API calls (loading states, retry, user feedback) | ⬜ | CRITICAL | Currently some calls fail silently |
-| 4.3 | Wallet disconnection handling (graceful fallback) | ⬜ | HIGH | |
-| 4.4 | Mobile responsiveness pass | ⬜ | HIGH | |
+| 4.1 | Full frontend bug audit (console errors, broken flows, dead links) | ✅ | CRITICAL | Audit done, critical bugs fixed |
+| 4.2 | Error handling on all API calls (loading states, retry, user feedback) | ✅ | CRITICAL | Arena + leaderboard have loading/error states. UUID validation on all API inputs. |
+| 4.3 | Wallet disconnection handling (graceful fallback) | ✅ | HIGH | BettingDuelPanel resets to bet step with error on disconnect |
+| 4.4 | Mobile responsiveness pass | ✅ | HIGH | Challenge grid, judge panel grids made responsive |
 | 4.5 | Battle Royale UI — test full join → fight → results flow | ⬜ | HIGH | Never tested with real users |
-| 4.6 | Landing page polish | ⬜ | MEDIUM | Currently minimal |
-| 4.7 | Leaderboard accuracy (verify ELO calculations match display) | ⬜ | MEDIUM | |
-| 4.8 | Loading skeletons on all data-fetching pages | ⬜ | LOW | |
+| 4.6 | Landing page polish | ✅ | MEDIUM | Already well-polished — cinematic hero, live stats, FAQ, roadmap |
+| 4.7 | Leaderboard accuracy (verify ELO calculations match display) | ✅ | MEDIUM | K=32 consistent everywhere. Agent profile ELO history is approximation (uses current opponent ELO, not historical). Leaderboard VIEW works but definition not in migrations. |
+| 4.8 | Loading skeletons on all data-fetching pages | ⚠️ | LOW | Loading spinners exist on all pages. Full skeleton components deferred to post-launch. |
+| 4.9 | Input validation on all API routes (UUID, wallet, tx signature) | ✅ | CRITICAL | Added to execute, bet, history, agents/[id] |
+| 4.10 | Auto-battle cooldown fix (use completed_at, add .order()) | ✅ | MEDIUM | Fixed in /api/battles/auto |
+| 4.11 | Double-submit guard on betting | ✅ | HIGH | isSubmitting flag prevents duplicate bets |
+| 4.12 | Agent profile query limit | ✅ | MEDIUM | .limit(1000) on match query |
 
 ---
 
 ### PHASE 5: LAUNCH PREP
 **Goal:** Everything needed to go live publicly.
 **Estimated effort:** 1–2 days
-**Status:** ⬜ Not started
+**Status:** 🔨 In progress (27 Feb 2026)
+**Summary so far:** Full security audit completed. Rate limiting added to all public battle endpoints (6 req/min/IP). UUID/wallet/tx validation added to battle-royale and payout routes. Groq retry logic with exponential backoff (2 retries on network/429/5xx). maxDuration=60 added to execute + quick routes (were defaulting to 10s). Cron internal fetch now passes auth header. Seeding script created.
 
 | # | Task | Status | Priority | Notes |
 |---|------|--------|----------|-------|
-| 5.1 | Security audit — RLS policies, API auth, treasury wallet access | ⬜ | CRITICAL | |
-| 5.2 | Groq rate limit plan (paid tier if needed) | ⬜ | HIGH | Free tier = ~30 req/min |
-| 5.3 | Vercel timeout mitigation (add retry logic, consider background jobs) | ⬜ | HIGH | Current 50s avg, 60s limit |
-| 5.4 | Seed arena with 50+ historical battles for credibility | ⬜ | HIGH | Auto-trigger can help |
-| 5.5 | Treasury wallet funded with enough SOL for payouts | ⬜ | CRITICAL | |
-| 5.6 | Monitoring/alerting (failed battles, failed payouts, Groq errors) | ⬜ | HIGH | Currently no monitoring |
-| 5.7 | Domain/DNS/SSL final check | ⬜ | LOW | |
+| 5.1 | Security audit — RLS policies, API auth, treasury wallet access | ✅ | CRITICAL | Audit done. Rate limiting added. Input validation on all routes. RLS is read-only public (acceptable for launch). |
+| 5.2 | Groq rate limit plan (paid tier if needed) | ⚠️ | HIGH | Free tier = ~30 req/min = ~6 battles/min. Rate limiting prevents overuse. **USER ACTION: consider Groq paid tier for production.** |
+| 5.3 | Vercel timeout mitigation (add retry logic, consider background jobs) | ✅ | HIGH | maxDuration=60 on execute+quick (was 10s default). Groq retry with backoff (2 retries). |
+| 5.4 | Seed arena with 50+ historical battles for credibility | ⚠️ | HIGH | Script created: `./scripts/seed-battles.sh 50`. **USER ACTION: run script after deploy.** |
+| 5.5 | Treasury wallet funded with enough SOL for payouts | 🔴 | CRITICAL | **USER ACTION: fund FcaoVBJAqZL2Ya7TEiaNdXm4FGdwGA7ZjXyryhsXt7Tb** |
+| 5.6 | Monitoring/alerting (failed battles, failed payouts, Groq errors) | ⬜ | HIGH | Currently relies on Vercel logs + console.error. |
+| 5.7 | Domain/DNS/SSL final check | 🔴 | LOW | **USER ACTION: verify theragnarok.fun DNS and SSL** |
+| 5.8 | Rate limiting on all public API endpoints | ✅ | CRITICAL | In-memory rate limiter: 6 req/min/IP on auto, quick, execute |
+| 5.9 | Input validation on battle-royale + payout routes | ✅ | HIGH | UUID, wallet, tx signature validation added |
+| 5.10 | Groq retry logic with exponential backoff | ✅ | HIGH | 2 retries on network errors, 429, 5xx. Backoff: 2s, 4s |
+| 5.11 | Cron internal auth header | ✅ | MEDIUM | scheduled-battles now passes CRON_SECRET to /api/battle-royale/start |
 
 ---
 
@@ -224,8 +234,8 @@
 | 1 | Multi-Judge Panel | 9 | 2 | ✅ Complete | YES — required |
 | 2 | Challenge Categories | 5 | 1 | ✅ Complete | YES — required |
 | 3 | Quick Wins | 5 | 1 | ✅ Complete | YES — required |
-| 4 | UX/UI Fixes | 8 | 2–3 | ⬜ | YES — required |
-| 5 | Launch Prep | 7 | 1–2 | ⬜ | YES — required |
+| 4 | UX/UI Fixes | 12 | 2–3 | 🔨 In progress (10/12 done) | YES — required |
+| 5 | Launch Prep | 11 | 1–2 | 🔨 In progress (7/11 done) | YES — required |
 | V2 | Streaming Combat | 5 | 3 | ⬜ | NO — post-launch |
 | V3 | Dynamic Betting | 7 | 7–14 | ⬜ | NO — conditional |
 | | **TOTAL PRE-LAUNCH** | **34** | **7–9 days** | | |

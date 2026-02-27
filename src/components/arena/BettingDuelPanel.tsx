@@ -103,9 +103,6 @@ export default function BettingDuelPanel({
   const wallet = useWallet();
   const { connection } = useConnection();
 
-  console.log('[BETTING] RPC URL:', process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'UNDEFINED — using fallback');
-  console.log('[BETTING] Connection endpoint:', connection.rpcEndpoint);
-
   // Selection state
   const [agentA, setAgentA] = useState<Agent | null>(null);
   const [agentB, setAgentB] = useState<Agent | null>(null);
@@ -117,6 +114,14 @@ export default function BettingDuelPanel({
   const [step, setStep] = useState<BattleStep>('select');
   const [error, setError] = useState<string | null>(null);
   const [battleResult, setBattleResult] = useState<BattleResult | null>(null);
+
+  // Handle wallet disconnect during payment flow
+  useEffect(() => {
+    if (!wallet.connected && (step === 'paying' || step === 'verifying')) {
+      setStep('bet');
+      setError('Wallet disconnected. Please reconnect and try again.');
+    }
+  }, [wallet.connected, step]);
 
   // Head-to-head record
   const [h2h, setH2h] = useState<{ aWins: number; bWins: number } | null>(null);
@@ -174,9 +179,12 @@ export default function BettingDuelPanel({
     }
   };
 
-  const handlePlaceBet = async () => {
-    if (!canPlaceBet || !wallet.publicKey || !agentA || !agentB) return;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const handlePlaceBet = async () => {
+    if (!canPlaceBet || !wallet.publicKey || !agentA || !agentB || isSubmitting) return;
+
+    setIsSubmitting(true);
     setStep('paying');
     setError(null);
     onBattleStart?.();
@@ -224,6 +232,8 @@ export default function BettingDuelPanel({
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       setError(errorMessage);
       setStep('bet');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -300,7 +310,7 @@ export default function BettingDuelPanel({
               <label className="block text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">
                 TRIAL BY COMBAT
               </label>
-              <div className="grid grid-cols-3 gap-2 mb-1">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-1">
                 <button
                   onClick={() => setSelectedChallenge('random')}
                   className={`py-2.5 px-2 rounded-lg border text-center transition-all ${
@@ -686,7 +696,7 @@ export default function BettingDuelPanel({
                         </span>
                       )}
                     </div>
-                    <div className="grid grid-cols-3 gap-1.5 mb-2">
+                    <div className="grid grid-cols-3 gap-1.5 mb-2 max-sm:grid-cols-1">
                       {battleResult.battle.judges.map((judge) => (
                         <div
                           key={judge.judgeId}

@@ -7,6 +7,10 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { executeBattle, getSupabaseAdmin } from '@/lib/battles/engine';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+
+export const runtime = 'nodejs';
+export const maxDuration = 60;
 
 /**
  * GET /api/battles/quick
@@ -14,8 +18,18 @@ import { executeBattle, getSupabaseAdmin } from '@/lib/battles/engine';
  * Triggers a random battle between two random agents with a random challenge.
  * Useful for testing and demonstrations.
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    // Rate limit: 6 quick battles per minute per IP
+    const ip = getClientIp(request);
+    const { allowed, retryAfterMs } = checkRateLimit(`quick:${ip}`, 6);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Try again later.', retryAfterMs },
+        { status: 429 }
+      );
+    }
+
     // Check required env vars
     if (!process.env.GROQ_API_KEY) {
       return NextResponse.json(

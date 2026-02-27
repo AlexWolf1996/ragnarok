@@ -6,6 +6,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { executeBattle, BattleResult } from '@/lib/battles/engine';
+import { isValidUUID } from '@/lib/validation';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+
+export const runtime = 'nodejs';
+export const maxDuration = 60;
 
 export interface BattleExecuteRequest {
   agentAId: string;
@@ -22,6 +27,16 @@ export interface BattleExecuteResponse extends BattleResult {
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 6 battles per minute per IP
+    const ip = getClientIp(request);
+    const { allowed, retryAfterMs } = checkRateLimit(`execute:${ip}`, 6);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Try again later.', retryAfterMs },
+        { status: 429 }
+      );
+    }
+
     // Check required env vars
     if (!process.env.GROQ_API_KEY) {
       return NextResponse.json(
@@ -40,6 +55,21 @@ export async function POST(request: NextRequest) {
     if (!agentAId || !agentBId) {
       return NextResponse.json(
         { error: 'Both agentAId and agentBId are required' },
+        { status: 400 }
+      );
+    }
+
+    // Validate UUID formats
+    if (!isValidUUID(agentAId) || !isValidUUID(agentBId)) {
+      return NextResponse.json(
+        { error: 'Invalid agent ID format' },
+        { status: 400 }
+      );
+    }
+
+    if (challengeId && !isValidUUID(challengeId)) {
+      return NextResponse.json(
+        { error: 'Invalid challenge ID format' },
         { status: 400 }
       );
     }

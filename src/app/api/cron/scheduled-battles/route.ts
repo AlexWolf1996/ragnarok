@@ -51,7 +51,10 @@ export async function GET(request: Request) {
           try {
             const res = await fetch(`${baseUrl}/api/battle-royale/start`, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.CRON_SECRET}`,
+              },
               body: JSON.stringify({ battle_id: battle.id }),
             });
             const data = await res.json();

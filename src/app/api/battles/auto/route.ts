@@ -10,8 +10,9 @@
  * - Manual trigger to keep arena alive
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { executeBattle, getSupabaseAdmin } from '@/lib/battles/engine';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -19,18 +20,28 @@ export const maxDuration = 60;
 // Cooldown period in minutes - agents can't fight again within this window
 const COOLDOWN_MINUTES = 5;
 
-export async function GET() {
-  return handleAutoBattle();
+export async function GET(request: NextRequest) {
+  return handleAutoBattle(request);
 }
 
-export async function POST() {
-  return handleAutoBattle();
+export async function POST(request: NextRequest) {
+  return handleAutoBattle(request);
 }
 
-async function handleAutoBattle() {
+async function handleAutoBattle(request: NextRequest) {
   const startTime = Date.now();
 
   try {
+    // Rate limit: 6 auto-battles per minute per IP
+    const ip = getClientIp(request);
+    const { allowed, retryAfterMs } = checkRateLimit(`auto:${ip}`, 6);
+    if (!allowed) {
+      return NextResponse.json(
+        { success: false, error: 'Too many requests. Try again later.', retryAfterMs },
+        { status: 429 }
+      );
+    }
+
     const supabase = getSupabaseAdmin();
 
     // Get the cooldown timestamp
@@ -56,9 +67,10 @@ async function handleAutoBattle() {
     // Get recent matches to find agents on cooldown
     const { data: recentMatches, error: matchesError } = await supabase
       .from('matches')
-      .select('agent_a_id, agent_b_id')
-      .gte('created_at', cooldownTime)
-      .in('status', ['completed', 'in_progress']);
+      .select('agent_a_id, agent_b_id, completed_at')
+      .or(`completed_at.gte.${cooldownTime},and(status.eq.in_progress,created_at.gte.${cooldownTime})`)
+      .in('status', ['completed', 'in_progress'])
+      .order('completed_at', { ascending: false });
 
     if (matchesError) {
       console.error('[AutoBattle] Error fetching recent matches:', matchesError);

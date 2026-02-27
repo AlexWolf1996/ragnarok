@@ -70,51 +70,75 @@ export async function callGroq(options: CallGroqOptions): Promise<string> {
     ? [{ role: 'system', content: systemPrompt }, ...messages]
     : messages;
 
-  let response: Response;
-  try {
-    response = await fetch(GROQ_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: useModel,
-        messages: allMessages,
-        temperature,
-        max_tokens: maxTokens,
-      }),
-    });
-  } catch (fetchError) {
-    throw new Error(`Failed to connect to Groq API: ${fetchError instanceof Error ? fetchError.message : 'Network error'}`);
-  }
+  const MAX_RETRIES = 2;
+  let lastError: Error | null = null;
 
-  // Read response body as text first to handle non-JSON responses
-  const responseText = await response.text();
-
-  if (!response.ok) {
-    // Check if it's HTML (common when API key is invalid or URL is wrong)
-    if (responseText.trim().startsWith('<!') || responseText.trim().startsWith('<html')) {
-      throw new Error(`Groq API returned HTML instead of JSON (status ${response.status}). This usually means the API key is invalid or missing.`);
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    if (attempt > 0) {
+      // Exponential backoff: 2s, 4s
+      const delay = Math.pow(2, attempt) * 1000;
+      console.log(`[Groq] Retry ${attempt}/${MAX_RETRIES} after ${delay}ms (model: ${useModel})`);
+      await new Promise(resolve => setTimeout(resolve, delay));
     }
-    throw new Error(`Groq API error (${response.status}): ${responseText}`);
+
+    let response: Response;
+    try {
+      response = await fetch(GROQ_API_URL, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: useModel,
+          messages: allMessages,
+          temperature,
+          max_tokens: maxTokens,
+        }),
+      });
+    } catch (fetchError) {
+      lastError = new Error(`Failed to connect to Groq API: ${fetchError instanceof Error ? fetchError.message : 'Network error'}`);
+      continue; // Retry on network errors
+    }
+
+    // Read response body as text first to handle non-JSON responses
+    const responseText = await response.text();
+
+    if (!response.ok) {
+      // Check if it's HTML (common when API key is invalid or URL is wrong)
+      if (responseText.trim().startsWith('<!') || responseText.trim().startsWith('<html')) {
+        throw new Error(`Groq API returned HTML instead of JSON (status ${response.status}). This usually means the API key is invalid or missing.`);
+      }
+
+      // Retry on rate limit (429) or server errors (5xx)
+      if (response.status === 429 || response.status >= 500) {
+        lastError = new Error(`Groq API error (${response.status}): ${responseText}`);
+        continue;
+      }
+
+      // Don't retry on client errors (4xx except 429)
+      throw new Error(`Groq API error (${response.status}): ${responseText}`);
+    }
+
+    // Parse JSON response
+    let data: GroqResponse;
+    try {
+      data = JSON.parse(responseText);
+    } catch (parseError) {
+      // Response is not valid JSON
+      const preview = responseText.substring(0, 100);
+      throw new Error(`Groq API returned invalid JSON. Response preview: ${preview}...`);
+    }
+
+    if (!data.choices || data.choices.length === 0) {
+      throw new Error('No response from Groq API');
+    }
+
+    return data.choices[0].message.content;
   }
 
-  // Parse JSON response
-  let data: GroqResponse;
-  try {
-    data = JSON.parse(responseText);
-  } catch (parseError) {
-    // Response is not valid JSON
-    const preview = responseText.substring(0, 100);
-    throw new Error(`Groq API returned invalid JSON. Response preview: ${preview}...`);
-  }
-
-  if (!data.choices || data.choices.length === 0) {
-    throw new Error('No response from Groq API');
-  }
-
-  return data.choices[0].message.content;
+  // All retries exhausted
+  throw lastError || new Error('Groq API call failed after retries');
 }
 
 /**

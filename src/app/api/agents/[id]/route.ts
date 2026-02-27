@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/supabase/types';
+import { isValidUUID } from '@/lib/validation';
 
 function getSupabase() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -25,6 +26,15 @@ interface RouteParams {
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
+
+    // Validate agent ID format
+    if (!isValidUUID(id)) {
+      return NextResponse.json(
+        { error: 'Invalid agent ID format' },
+        { status: 400 }
+      );
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const matchLimit = Math.min(100, Math.max(1, parseInt(searchParams.get('matchLimit') || '20', 10)));
 
@@ -72,7 +82,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       `)
       .or(`agent_a_id.eq.${id},agent_b_id.eq.${id}`)
       .eq('status', 'completed')
-      .order('completed_at', { ascending: true }); // Oldest first for ELO history calculation
+      .order('completed_at', { ascending: true }) // Oldest first for ELO history calculation
+      .limit(1000); // Cap to prevent unbounded queries
 
     if (allMatchesError) {
       console.error('Failed to fetch matches:', allMatchesError);

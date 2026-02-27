@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/battles/engine';
 import { verifyTransactionDetails, BettingTier } from '@/lib/solana/transfer';
+import { isValidUUID, isValidWalletAddress, isValidTransactionSignature } from '@/lib/validation';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -19,6 +20,28 @@ export async function POST(request: NextRequest) {
     if (!battle_id || !agent_id || !wallet_address || !tx_signature) {
       return NextResponse.json(
         { success: false, error: 'Missing required fields: battle_id, agent_id, wallet_address, tx_signature' },
+        { status: 400 }
+      );
+    }
+
+    // Validate formats
+    if (!isValidUUID(battle_id) || !isValidUUID(agent_id)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid ID format' },
+        { status: 400 }
+      );
+    }
+
+    if (!isValidWalletAddress(wallet_address)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid wallet address format' },
+        { status: 400 }
+      );
+    }
+
+    if (!isValidTransactionSignature(tx_signature)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid transaction signature format' },
         { status: 400 }
       );
     }

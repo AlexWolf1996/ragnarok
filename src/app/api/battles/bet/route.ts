@@ -18,6 +18,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { executeBattle, getSupabaseAdmin } from '@/lib/battles/engine';
 import { verifyTransactionDetails, BETTING_TIERS, solToLamports, lamportsToSol, BettingTier } from '@/lib/solana/transfer';
 import { sendPayout } from '@/lib/solana/payout';
+import { isValidUUID, isValidWalletAddress, isValidTransactionSignature } from '@/lib/validation';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -43,6 +44,30 @@ export async function POST(request: NextRequest) {
     if (!agentAId || !agentBId || !bettorWallet || !bettorPickId || !tier || !txSignature) {
       return NextResponse.json(
         { success: false, error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    // Validate UUID formats
+    if (!isValidUUID(agentAId) || !isValidUUID(agentBId) || !isValidUUID(bettorPickId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid agent ID format' },
+        { status: 400 }
+      );
+    }
+
+    // Validate wallet address format
+    if (!isValidWalletAddress(bettorWallet)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid wallet address format' },
+        { status: 400 }
+      );
+    }
+
+    // Validate transaction signature format
+    if (!isValidTransactionSignature(txSignature)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid transaction signature format' },
         { status: 400 }
       );
     }

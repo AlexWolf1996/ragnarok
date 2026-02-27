@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/supabase/types';
+import { isValidUUID } from '@/lib/validation';
 
 // Use anon key for read-only operations
 function getSupabase() {
@@ -84,6 +85,9 @@ export async function GET(request: NextRequest) {
 
     // Apply filters
     if (agentId) {
+      if (!isValidUUID(agentId)) {
+        return NextResponse.json({ error: 'Invalid agentId format' }, { status: 400 });
+      }
       query = query.or(`agent_a_id.eq.${agentId},agent_b_id.eq.${agentId}`);
     }
 
