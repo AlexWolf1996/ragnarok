@@ -70,6 +70,29 @@ export function getSupabaseAdmin(): SupabaseAdmin {
 }
 
 /**
+ * Sanitize internal error messages before sending to the client.
+ * Keeps server logs detailed but shows users a friendly message.
+ */
+function sanitizeBattleError(rawMessage: string): string {
+  if (rawMessage.includes('429') || rawMessage.toLowerCase().includes('rate limit')) {
+    return 'The arena is overloaded. Please try again in a minute.';
+  }
+  if (rawMessage.includes('500') || rawMessage.includes('502') || rawMessage.includes('503')) {
+    return 'The judges are temporarily unavailable. Please try again shortly.';
+  }
+  if (rawMessage.toLowerCase().includes('network') || rawMessage.toLowerCase().includes('failed to fetch')) {
+    return 'Network error reaching the judges. Please try again.';
+  }
+  if (rawMessage.toLowerCase().includes('timeout')) {
+    return 'The battle took too long. Please try again.';
+  }
+  if (rawMessage.toLowerCase().includes('empty response')) {
+    return 'An agent failed to respond. Please try again.';
+  }
+  return 'Battle execution failed. Please try again.';
+}
+
+/**
  * Mark a match as failed without updating ELO
  */
 export async function markMatchFailed(
@@ -205,8 +228,9 @@ export async function executeBattle(
     console.log(`[Battle] Agent A response received (${responseA.length} chars)`);
   } catch (errorA) {
     console.error(`[Battle] Agent A (${agentA.name}) Groq call failed:`, errorA);
-    await markMatchFailed(supabase, match.id, `Agent A Groq call failed: ${errorA instanceof Error ? errorA.message : 'Unknown error'}`);
-    throw new Error(`Agent A response generation failed: ${errorA instanceof Error ? errorA.message : 'Unknown error'}`);
+    const rawMsg = errorA instanceof Error ? errorA.message : 'Unknown error';
+    await markMatchFailed(supabase, match.id, `Agent A Groq call failed: ${rawMsg}`);
+    throw new Error(sanitizeBattleError(rawMsg));
   }
 
   try {
@@ -219,8 +243,9 @@ export async function executeBattle(
     console.log(`[Battle] Agent B response received (${responseB.length} chars)`);
   } catch (errorB) {
     console.error(`[Battle] Agent B (${agentB.name}) Groq call failed:`, errorB);
-    await markMatchFailed(supabase, match.id, `Agent B Groq call failed: ${errorB instanceof Error ? errorB.message : 'Unknown error'}`);
-    throw new Error(`Agent B response generation failed: ${errorB instanceof Error ? errorB.message : 'Unknown error'}`);
+    const rawMsg = errorB instanceof Error ? errorB.message : 'Unknown error';
+    await markMatchFailed(supabase, match.id, `Agent B Groq call failed: ${rawMsg}`);
+    throw new Error(sanitizeBattleError(rawMsg));
   }
 
   // Multi-judge panel — 3 independent LLMs score in parallel
@@ -254,8 +279,9 @@ export async function executeBattle(
     console.log(`[Battle] Multi-judge result: A=${judgeResult.scoreA}, B=${judgeResult.scoreB}, Winner=${judgeResult.winnerId} [${decision}, ${validCount}/3 judges]`);
   } catch (judgeError) {
     console.error(`[Battle] Multi-judge panel failed:`, judgeError);
-    await markMatchFailed(supabase, match.id, `Judge panel failed: ${judgeError instanceof Error ? judgeError.message : 'Unknown error'}`);
-    throw new Error(`Judge scoring failed: ${judgeError instanceof Error ? judgeError.message : 'Unknown error'}`);
+    const rawMsg = judgeError instanceof Error ? judgeError.message : 'Unknown error';
+    await markMatchFailed(supabase, match.id, `Judge panel failed: ${rawMsg}`);
+    throw new Error(sanitizeBattleError(rawMsg));
   }
 
   // Determine winner
