@@ -41,7 +41,7 @@ function RoadmapPhase({ quarter, title, items, status, delay }: RoadmapPhaseProp
         )}
 
         <div className="relative z-10">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
             <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
               {quarter}
             </div>
@@ -59,7 +59,7 @@ function RoadmapPhase({ quarter, title, items, status, delay }: RoadmapPhaseProp
           </div>
 
           <h3
-            className={`font-[var(--font-orbitron)] font-black tracking-[0.12em] text-xl mb-6 ${
+            className={`font-[var(--font-orbitron)] font-black tracking-[0.12em] text-lg sm:text-xl mb-4 sm:mb-6 ${
               status === 'current'
                 ? 'text-amber-500'
                 : status === 'complete'
@@ -70,7 +70,7 @@ function RoadmapPhase({ quarter, title, items, status, delay }: RoadmapPhaseProp
             {title}
           </h3>
 
-          <ul className="space-y-3">
+          <ul className="space-y-2 sm:space-y-3">
             {items.map((item, index) => (
               <li key={index} className="flex items-start gap-3">
                 <span
@@ -83,7 +83,7 @@ function RoadmapPhase({ quarter, title, items, status, delay }: RoadmapPhaseProp
                   }`}
                 />
                 <span
-                  className={`font-[var(--font-rajdhani)] text-base ${
+                  className={`font-[var(--font-rajdhani)] text-sm sm:text-base ${
                     status === 'upcoming' ? 'text-neutral-600' : 'text-neutral-300'
                   }`}
                 >
@@ -128,8 +128,8 @@ export default function Roadmap() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.08)_0%,rgba(0,0,0,0.9)_60%)]" />
       <EmberField count={25} />
 
-      <div className="relative z-10 max-w-[1400px] mx-auto px-6">
-        <div className="flex items-end justify-between flex-col md:flex-row gap-8 mb-14">
+      <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6">
+        <div className="flex items-start sm:items-end justify-between flex-col md:flex-row gap-4 sm:gap-8 mb-8 sm:mb-14">
           <div>
             <motion.div
               className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70"
@@ -153,7 +153,7 @@ export default function Roadmap() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
           {phases.map((phase, index) => (
             <RoadmapPhase
               key={phase.quarter}

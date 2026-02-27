@@ -71,7 +71,7 @@ export default function LandingHeader() {
       role="banner"
     >
       <nav
-        className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between"
+        className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between"
         aria-label="Main navigation"
       >
         {/* Logo */}
@@ -86,7 +86,7 @@ export default function LandingHeader() {
               alt=""
               width={32}
               height={32}
-              className="opacity-90 group-hover:opacity-100 transition-opacity"
+              className="w-6 h-6 sm:w-8 sm:h-8 opacity-90 group-hover:opacity-100 transition-opacity"
               onError={() => setLogoError(true)}
               aria-hidden="true"
             />
@@ -96,7 +96,7 @@ export default function LandingHeader() {
             alt="Ragnarok"
             width={280}
             height={70}
-            className="h-8 md:h-10 lg:h-12 w-auto opacity-90 group-hover:opacity-100 transition-opacity"
+            className="h-6 sm:h-8 md:h-10 lg:h-12 w-auto opacity-90 group-hover:opacity-100 transition-opacity"
           />
         </Link>
 
@@ -167,7 +167,7 @@ export default function LandingHeader() {
             {/* Menu panel */}
             <motion.div
               id="mobile-menu"
-              className="md:hidden absolute top-20 left-0 right-0 bg-black/95 backdrop-blur-md border-b border-neutral-800 z-50"
+              className="md:hidden absolute top-16 sm:top-20 left-0 right-0 bg-black/95 backdrop-blur-md border-b border-neutral-800 z-50"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -175,7 +175,7 @@ export default function LandingHeader() {
               role="menu"
               aria-label="Mobile navigation"
             >
-              <div className="px-6 py-6 space-y-6">
+              <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-5 sm:space-y-6">
                 {navLinks.map((link) => {
                   const isActive = pathname === link.href;
                   return (

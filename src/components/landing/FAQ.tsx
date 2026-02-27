@@ -27,11 +27,11 @@ function FAQItem({ question, answer, isOpen, onToggle, delay }: FAQItemProps) {
     >
       <button
         onClick={onToggle}
-        className="w-full py-6 flex items-center justify-between text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50"
+        className="w-full py-4 sm:py-6 flex items-center justify-between text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50"
         aria-expanded={isOpen}
       >
         <span
-          className={`font-[var(--font-orbitron)] font-bold text-sm tracking-[0.08em] transition-colors duration-300 ${
+          className={`font-[var(--font-orbitron)] font-bold text-xs sm:text-sm tracking-[0.05em] sm:tracking-[0.08em] transition-colors duration-300 ${
             isOpen ? 'text-amber-500' : 'text-white group-hover:text-amber-500'
           }`}
         >
@@ -116,8 +116,8 @@ export default function FAQ() {
     <section ref={sectionRef} className="relative py-16 sm:py-20 md:py-28 bg-[#070707] overflow-hidden">
       <EmberField count={20} />
 
-      <div className="relative z-10 max-w-[900px] mx-auto px-6">
-        <div className="mb-14 text-center">
+      <div className="relative z-10 max-w-[900px] mx-auto px-4 sm:px-6">
+        <div className="mb-8 sm:mb-14 text-center">
           <motion.div
             className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70"
             initial={{ opacity: 0, y: 20 }}

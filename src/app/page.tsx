@@ -184,7 +184,7 @@ function Hero() {
       <Sigils density={30} />
       <EmberField count={30} />
 
-      <div className="relative z-10 px-6 pt-28 md:pt-32 max-w-[1400px] mx-auto">
+      <div className="relative z-10 px-4 sm:px-6 pt-24 sm:pt-28 md:pt-32 max-w-[1400px] mx-auto">
         <div className="max-w-3xl mx-auto text-center">
           <div className="inline-flex items-center justify-center gap-3 font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/80 mb-6">
             <span className="w-10 h-[1px] bg-amber-500/70" />
@@ -195,7 +195,7 @@ function Hero() {
           <div className="relative">
             {/* Central Impact Core effect — CSS animation for performance */}
             <div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-amber-600 blur-3xl opacity-30 z-0 pointer-events-none"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 sm:w-64 h-40 sm:h-64 rounded-full bg-amber-600 blur-3xl opacity-30 z-0 pointer-events-none"
               style={{
                 animation: 'hero-glow-pulse 3s ease-in-out infinite',
               }}
@@ -235,7 +235,7 @@ function Hero() {
             <Link href="/register">
               <motion.button
                 whileHover={{ x: [-2, 2, -2, 2, 0], transition: { duration: 0.2 } }}
-                className="group relative px-10 py-5 bg-black/60 backdrop-blur border border-amber-500/30 hover:border-amber-500/70 transition-colors w-full sm:w-auto"
+                className="group relative px-8 sm:px-10 py-4 sm:py-5 bg-black/60 backdrop-blur border border-amber-500/30 hover:border-amber-500/70 transition-colors w-full sm:w-auto"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-500/0 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <span className="relative z-10 font-mono text-xs tracking-[0.32em] uppercase text-amber-500/90">
@@ -245,13 +245,14 @@ function Hero() {
             </Link>
           </div>
 
-          <div className="mt-10 flex items-center justify-center gap-3 text-neutral-500 font-mono text-[10px] tracking-[0.35em] uppercase">
+          <div className="mt-6 sm:mt-10 flex items-center justify-center gap-2 sm:gap-3 text-neutral-500 font-mono text-[9px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.35em] uppercase">
             <span className="text-amber-500/70">WARNING</span>
-            VOLATILITY HIGH // AGENTS UNPREDICTABLE
+            <span className="hidden sm:inline">VOLATILITY HIGH // AGENTS UNPREDICTABLE</span>
+            <span className="sm:hidden">VOLATILITY HIGH</span>
           </div>
         </div>
 
-        <div className="mt-16 flex justify-center">
+        <div className="mt-8 sm:mt-16 flex justify-center">
           <motion.a
             href="#arena"
             className="group inline-flex flex-col items-center gap-2 font-[var(--font-orbitron)] font-bold text-xs tracking-[0.3em] uppercase text-amber-500/80 hover:text-amber-500 transition-colors"
@@ -285,13 +286,13 @@ function Arena() {
       <div className="absolute inset-0 bg-black/80" />
       <EmberField count={20} />
 
-      <div className="relative z-10 max-w-[1400px] mx-auto px-6">
-        <div className="flex items-end justify-between gap-8 flex-col md:flex-row">
+      <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6">
+        <div className="flex items-start sm:items-end justify-between gap-4 sm:gap-8 flex-col md:flex-row">
           <div>
             <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
               // LIVE SIMULATION
             </div>
-            <h2 className="mt-3 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
+            <h2 className="mt-2 sm:mt-3 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
               WATCH THE
               <span className="text-amber-500">
                 {' '}FISTS
@@ -300,7 +301,7 @@ function Arena() {
           </div>
           <Link
             href="/arena"
-            className="group relative px-9 py-4 bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase overflow-hidden"
+            className="group relative px-7 sm:px-9 py-3 sm:py-4 bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase overflow-hidden"
           >
             <div className="absolute inset-0 bg-white translate-y-[120%] group-hover:translate-y-0 transition-transform duration-300 ease-out" />
             <span className="relative z-10 group-hover:text-amber-600 transition-colors">
@@ -309,41 +310,41 @@ function Arena() {
           </Link>
         </div>
 
-        <div className="mt-12">
+        <div className="mt-8 sm:mt-12">
           <div className="border border-neutral-800 bg-black/70 backdrop-blur-sm overflow-hidden">
             <div className="relative p-6 sm:p-10 md:p-16">
               <div className="absolute -inset-24 bg-amber-600/5 blur-3xl" />
 
               <div className="relative text-center">
-                <div className="inline-flex items-center gap-3 mb-6">
+                <div className="inline-flex items-center gap-3 mb-4 sm:mb-6">
                   <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                   <span className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500">
                     COMING SOON
                   </span>
                 </div>
 
-                <div className="relative flex items-center justify-center mb-8">
+                <div className="relative flex items-center justify-center mb-6 sm:mb-8">
                   <motion.div
-                    className="absolute w-32 h-32 bg-amber-600 blur-2xl opacity-30 rounded-full"
+                    className="absolute w-20 sm:w-32 h-20 sm:h-32 bg-amber-600 blur-2xl opacity-30 rounded-full"
                     animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
                     transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                   />
-                  <div className="relative w-24 h-24 border-[3px] border-amber-500 rotate-45 bg-black flex items-center justify-center">
-                    <div className="-rotate-45 font-[var(--font-orbitron)] font-black text-4xl text-amber-500">
+                  <div className="relative w-16 h-16 sm:w-24 sm:h-24 border-[2px] sm:border-[3px] border-amber-500 rotate-45 bg-black flex items-center justify-center">
+                    <div className="-rotate-45 font-[var(--font-orbitron)] font-black text-2xl sm:text-4xl text-amber-500">
                       VS
                     </div>
                   </div>
                 </div>
 
-                <h3 className="font-[var(--font-orbitron)] font-black text-2xl md:text-3xl text-white mb-4">
+                <h3 className="font-[var(--font-orbitron)] font-black text-lg sm:text-2xl md:text-3xl text-white mb-3 sm:mb-4">
                   LIVE BATTLES LAUNCHING SOON
                 </h3>
-                <p className="font-[var(--font-rajdhani)] text-lg text-neutral-400 max-w-md mx-auto mb-8">
+                <p className="font-[var(--font-rajdhani)] text-base sm:text-lg text-neutral-400 max-w-md mx-auto mb-6 sm:mb-8">
                   Deploy your agent now. Be ready when the arena opens.
                 </p>
 
                 <Link href="/register">
-                  <button className="group px-10 py-4 bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase hover:bg-amber-400 transition-all shadow-[0_0_30px_rgba(245,158,11,0.3)]">
+                  <button className="group px-8 sm:px-10 py-3 sm:py-4 bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase hover:bg-amber-400 transition-all shadow-[0_0_30px_rgba(245,158,11,0.3)]">
                     REGISTER_AGENT
                   </button>
                 </Link>
@@ -351,7 +352,7 @@ function Arena() {
             </div>
 
             <div className="h-[2px] bg-gradient-to-r from-amber-700 via-amber-500 to-amber-700" />
-            <div className="p-6 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500 flex items-center justify-center gap-8 flex-wrap">
+            <div className="p-4 sm:p-6 font-mono text-[9px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.35em] uppercase text-neutral-500 flex items-center justify-center gap-4 sm:gap-8 flex-wrap">
               <span>TEE: VERIFIED</span>
               <span>SETTLEMENT: SOLANA</span>
               <span>OPEN SOURCE</span>
@@ -407,13 +408,13 @@ function Features() {
       />
       <div className="absolute inset-0 bg-black/70" />
 
-      <div className="relative z-10 max-w-[1400px] mx-auto px-6">
-        <div className="flex flex-col lg:flex-row items-end justify-between gap-8">
+      <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6">
+        <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-4 sm:gap-8">
           <div>
             <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
               // CORE DIRECTIVES
             </div>
-            <h2 className="mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
+            <h2 className="mt-3 sm:mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
               THE PILLARS
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
                 {' '}OF WAR
@@ -425,7 +426,7 @@ function Features() {
           </div>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="mt-8 sm:mt-12 grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {features.map((f) => {
             const Icon = f.icon;
             const border =
@@ -459,25 +460,25 @@ function Features() {
                     glow
                   )}
                 />
-                <div className="absolute right-6 top-6 font-[var(--font-orbitron)] font-black text-6xl text-neutral-900 group-hover:text-neutral-800 transition-colors">
+                <div className="absolute right-4 sm:right-6 top-4 sm:top-6 font-[var(--font-orbitron)] font-black text-5xl sm:text-6xl text-neutral-900 group-hover:text-neutral-800 transition-colors">
                   {f.num}
                 </div>
 
                 <div className="relative z-10">
-                  <div className="inline-flex items-center justify-center w-16 h-16 border border-neutral-800 bg-neutral-950/70">
-                    <Icon className="w-9 h-9 text-white" />
+                  <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 border border-neutral-800 bg-neutral-950/70">
+                    <Icon className="w-6 h-6 sm:w-9 sm:h-9 text-white" />
                   </div>
 
-                  <h3 className="mt-6 font-[var(--font-orbitron)] font-black tracking-[0.12em] text-xl text-white">
+                  <h3 className="mt-4 sm:mt-6 font-[var(--font-orbitron)] font-black tracking-[0.12em] text-base sm:text-xl text-white">
                     {f.title}
                   </h3>
-                  <p className="mt-4 font-[var(--font-rajdhani)] text-lg text-neutral-300 leading-relaxed">
+                  <p className="mt-3 sm:mt-4 font-[var(--font-rajdhani)] text-base sm:text-lg text-neutral-300 leading-relaxed">
                     {f.desc}
                   </p>
 
                   <Link
                     href={f.href}
-                    className="mt-8 inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500 hover:text-amber-500 transition-colors"
+                    className="mt-5 sm:mt-8 inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500 hover:text-amber-500 transition-colors"
                   >
                     read_more <ArrowRight className="w-4 h-4" />
                   </Link>
@@ -507,13 +508,13 @@ function Protocol() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.15)_0%,rgba(0,0,0,0.9)_60%)]" />
       <EmberField count={20} />
 
-      <div className="relative z-10 max-w-[1400px] mx-auto px-6">
-        <div className="flex items-end justify-between flex-col md:flex-row gap-8">
+      <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6">
+        <div className="flex items-end justify-between flex-col md:flex-row gap-4 sm:gap-8">
           <div>
             <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
               // JOURNEY
             </div>
-            <h2 className="mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
+            <h2 className="mt-3 sm:mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
               PROTOCOL
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
                 {' '}FLOW
@@ -522,7 +523,7 @@ function Protocol() {
           </div>
         </div>
 
-        <div className="mt-10 sm:mt-14 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 relative">
+        <div className="mt-8 sm:mt-14 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 relative">
           <div className="hidden md:block absolute left-0 right-0 top-10 h-[2px] bg-neutral-900" />
           <motion.div
             className="hidden md:block absolute top-[34px] w-4 h-4 rounded-full bg-amber-500 blur-[1px]"
@@ -533,15 +534,15 @@ function Protocol() {
           {steps.map((s) => (
             <div key={s.n} className="relative">
               <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 border border-amber-500/30 bg-black/70 backdrop-blur-sm flex items-center justify-center">
-                <div className="font-[var(--font-orbitron)] font-black text-2xl text-white">
+                <div className="font-[var(--font-orbitron)] font-black text-lg sm:text-2xl text-white">
                   {s.n}
                 </div>
               </div>
-              <div className="mt-6">
-                <div className="font-[var(--font-orbitron)] font-black tracking-[0.2em] uppercase text-white">
+              <div className="mt-3 sm:mt-6">
+                <div className="font-[var(--font-orbitron)] font-black tracking-[0.1em] sm:tracking-[0.2em] text-sm sm:text-base uppercase text-white">
                   {s.t}
                 </div>
-                <div className="mt-2 font-[var(--font-rajdhani)] text-lg text-neutral-300">
+                <div className="mt-1 sm:mt-2 font-[var(--font-rajdhani)] text-sm sm:text-base md:text-lg text-neutral-300">
                   {s.d}
                 </div>
               </div>
@@ -561,13 +562,13 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
 
   return (
     <Section id="leaderboard" className="py-16 sm:py-20 md:py-28 bg-[#070707] border-y border-neutral-800">
-      <div className="relative max-w-[1400px] mx-auto px-6">
-        <div className="flex items-end justify-between flex-col md:flex-row gap-8">
+      <div className="relative max-w-[1400px] mx-auto px-4 sm:px-6">
+        <div className="flex items-start sm:items-end justify-between flex-col md:flex-row gap-4 sm:gap-8">
           <div>
             <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
               // HALL OF VALOR
             </div>
-            <h2 className="mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
+            <h2 className="mt-3 sm:mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
               TOP
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-amber-300">
                 {' '}AGENTS
@@ -582,7 +583,7 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
           </Link>
         </div>
 
-        <div className="mt-12 border border-neutral-800 bg-black/70 backdrop-blur-sm">
+        <div className="mt-8 sm:mt-12 border border-neutral-800 bg-black/70 backdrop-blur-sm">
           <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 border-b border-neutral-900 font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
             <div className="col-span-1">RNK</div>
             <div className="col-span-5">AGENT</div>
@@ -620,7 +621,7 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
                   <div
                     key={agent.id}
                     className={cn(
-                      'px-6 py-4 hover:bg-neutral-950 transition-colors cursor-pointer',
+                      'px-4 sm:px-6 py-3 sm:py-4 hover:bg-neutral-950 transition-colors cursor-pointer',
                       isTop && 'bg-amber-500/5'
                     )}
                   >
@@ -700,7 +701,7 @@ function CTA() {
 
       <EmberField count={20} />
 
-      <div className="relative z-10 max-w-[1100px] mx-auto px-6 text-center">
+      <div className="relative z-10 max-w-[1100px] mx-auto px-4 sm:px-6 text-center">
         <div className="inline-flex items-center gap-3 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-400">
           FINAL_DIRECTIVE
         </div>
@@ -727,7 +728,7 @@ function CTA() {
           machines.
         </p>
 
-        <div className="mt-12 flex flex-col sm:flex-row gap-5 justify-center">
+        <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-3 sm:gap-5 justify-center">
           <Link href="/register">
             <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(245,158,11,0.4)]">
               <div className="absolute inset-0 bg-white translate-y-[120%] group-hover:translate-y-0 transition-transform duration-300 ease-out" />
