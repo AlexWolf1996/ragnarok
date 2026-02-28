@@ -5,6 +5,8 @@
 
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_MODEL = 'llama-3.3-70b-versatile';
+// Fallback models when primary is rate-limited (each has its own token bucket)
+const FALLBACK_MODELS = ['llama-3.1-8b-instant', 'gemma2-9b-it'] as const;
 
 // Multi-judge panel configuration
 // Each judge has a Norse name, model, and weight for score aggregation
@@ -63,24 +65,19 @@ export async function callGroq(options: CallGroqOptions): Promise<string> {
 
   const { messages, temperature = 0.7, maxTokens = 2048, systemPrompt, model } = options;
 
-  const useModel = model || GROQ_MODEL;
+  const requestedModel = model || GROQ_MODEL;
+
+  // Build model chain: requested model first, then fallbacks (skip duplicates)
+  const modelChain = [requestedModel, ...FALLBACK_MODELS.filter(m => m !== requestedModel)];
 
   // Prepend system prompt if provided
   const allMessages: GroqMessage[] = systemPrompt
     ? [{ role: 'system', content: systemPrompt }, ...messages]
     : messages;
 
-  const MAX_RETRIES = 2;
   let lastError: Error | null = null;
 
-  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-    if (attempt > 0) {
-      // Exponential backoff: 2s, 4s
-      const delay = Math.pow(2, attempt) * 1000;
-      console.log(`[Groq] Retry ${attempt}/${MAX_RETRIES} after ${delay}ms (model: ${useModel})`);
-      await new Promise(resolve => setTimeout(resolve, delay));
-    }
-
+  for (const useModel of modelChain) {
     let response: Response;
     try {
       response = await fetch(GROQ_API_URL, {
@@ -98,34 +95,30 @@ export async function callGroq(options: CallGroqOptions): Promise<string> {
       });
     } catch (fetchError) {
       lastError = new Error(`Failed to connect to Groq API: ${fetchError instanceof Error ? fetchError.message : 'Network error'}`);
-      continue; // Retry on network errors
+      continue; // Try next model
     }
 
-    // Read response body as text first to handle non-JSON responses
     const responseText = await response.text();
 
     if (!response.ok) {
-      // Check if it's HTML (common when API key is invalid or URL is wrong)
       if (responseText.trim().startsWith('<!') || responseText.trim().startsWith('<html')) {
         throw new Error(`Groq API returned HTML instead of JSON (status ${response.status}). This usually means the API key is invalid or missing.`);
       }
 
-      // Retry on rate limit (429) or server errors (5xx)
+      // Rate limit (429) or server error (5xx): try next model in chain
       if (response.status === 429 || response.status >= 500) {
+        console.warn(`[Groq] ${useModel} returned ${response.status}, trying fallback...`);
         lastError = new Error(`Groq API error (${response.status}): ${responseText}`);
         continue;
       }
 
-      // Don't retry on client errors (4xx except 429)
       throw new Error(`Groq API error (${response.status}): ${responseText}`);
     }
 
-    // Parse JSON response
     let data: GroqResponse;
     try {
       data = JSON.parse(responseText);
-    } catch (parseError) {
-      // Response is not valid JSON
+    } catch {
       const preview = responseText.substring(0, 100);
       throw new Error(`Groq API returned invalid JSON. Response preview: ${preview}...`);
     }
@@ -134,11 +127,15 @@ export async function callGroq(options: CallGroqOptions): Promise<string> {
       throw new Error('No response from Groq API');
     }
 
+    if (useModel !== requestedModel) {
+      console.log(`[Groq] Used fallback model ${useModel} (requested: ${requestedModel})`);
+    }
+
     return data.choices[0].message.content;
   }
 
-  // All retries exhausted
-  throw lastError || new Error('Groq API call failed after retries');
+  // All models exhausted
+  throw lastError || new Error('Groq API call failed — all models rate-limited');
 }
 
 /**
@@ -160,7 +157,7 @@ export async function generateAgentResponse(
     ],
     systemPrompt,
     temperature: 0.8,
-    maxTokens: 2048,
+    maxTokens: 1024, // Conserve token budget (100k/day free tier)
   });
 }
 
