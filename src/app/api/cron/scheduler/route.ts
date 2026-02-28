@@ -4,10 +4,10 @@
  * The core game loop: schedules matches, manages betting windows,
  * starts battles, and queues the next match.
  *
- * Runs every minute (Pro plan) or daily (Hobby plan).
+ * Triggered every minute via QStash, or daily via Vercel cron (fallback).
  * Uses scheduler_lock table to prevent concurrent execution.
  *
- * GET /api/cron/scheduler
+ * GET|POST /api/cron/scheduler
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -16,6 +16,7 @@ import { executeBattle } from '@/lib/battles/engine';
 import { selectMatchup } from '@/lib/matchmaking';
 import { settleMatch } from '@/lib/bets/parimutuel';
 import { processPayoutQueue } from '@/lib/payouts/processor';
+import { verifyCronAuth } from '@/lib/qstash/verify';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -27,14 +28,10 @@ const STUCK_IN_PROGRESS_MS = 5 * 60 * 1000; // Force-complete after 5 min
 const STUCK_BETTING_MS = 15 * 60 * 1000;    // Force-start after 15 min
 const LOCK_TIMEOUT_S = 50; // Lock expires after 50 seconds
 
-export async function GET(request: NextRequest) {
-  // Verify cron secret
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+async function handler(request: NextRequest) {
+  // Verify auth: QStash signature OR CRON_SECRET
+  const authError = await verifyCronAuth(request);
+  if (authError) return authError;
 
   const supabase = getSupabaseAdmin();
 
@@ -231,6 +228,10 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+// GET: Vercel cron fallback | POST: QStash trigger
+export const GET = handler;
+export const POST = handler;
 
 /**
  * Start a battle for a match: update status, execute, settle.

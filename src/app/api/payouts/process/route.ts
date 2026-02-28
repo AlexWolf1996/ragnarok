@@ -1,26 +1,23 @@
 /**
  * Payout Queue Processor Endpoint
  *
- * Called by cron (or manually) to process pending payouts one at a time.
+ * Called by QStash (every minute) or Vercel cron (daily fallback).
  * Uses FOR UPDATE SKIP LOCKED internally — safe to call concurrently.
  *
- * GET /api/payouts/process
+ * GET|POST /api/payouts/process
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { processPayoutQueue } from '@/lib/payouts/processor';
+import { verifyCronAuth } from '@/lib/qstash/verify';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
 
-export async function GET(request: NextRequest) {
-  // Verify cron secret (skip in development)
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+async function handler(request: NextRequest) {
+  // Verify auth: QStash signature OR CRON_SECRET
+  const authError = await verifyCronAuth(request);
+  if (authError) return authError;
 
   try {
     // Process up to 5 pending payouts per invocation
@@ -55,3 +52,7 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+// GET: Vercel cron fallback | POST: QStash trigger
+export const GET = handler;
+export const POST = handler;

@@ -34,6 +34,18 @@ Read `SPECS.md` for the active task list. Execute tasks in the order specified i
 - **ELO matchmaking** — ±200 range, dynamic K-factor (40/20/10 by battle count)
 - **Bet tiers:** Bifrost 0.01, Midgard 0.05, Asgard 0.1 SOL
 
+### Cron / QStash
+- Vercel Hobby plan only runs crons 1x/day — we use **Upstash QStash** (free) for high-frequency triggers
+- QStash schedules (configured in QStash dashboard, NOT vercel.json):
+  - `/api/cron/scheduler` — every minute (`* * * * *`)
+  - `/api/payouts/process` — every minute (`* * * * *`)
+- `vercel.json` crons are kept as daily fallback safety net
+- Both endpoints accept GET (Vercel cron) and POST (QStash)
+- Auth: QStash signature (`Upstash-Signature` header) OR `CRON_SECRET` (`Authorization: Bearer`)
+- Shared auth logic: `src/lib/qstash/verify.ts`
+- Env vars needed: `QSTASH_CURRENT_SIGNING_KEY`, `QSTASH_NEXT_SIGNING_KEY` (from QStash dashboard → Signing Keys)
+- QStash setup: go to https://console.upstash.com/qstash → create 2 schedules pointing to your Vercel URL
+
 ### Pitfalls
 - Vercel has a 60s function timeout — battles must complete within this
 - Groq rate limits — 3 judge calls per battle, add retry logic
