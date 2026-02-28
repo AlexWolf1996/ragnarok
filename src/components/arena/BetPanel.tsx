@@ -90,18 +90,19 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
     }
   };
 
-  // Not betting_open — panel not relevant
-  if (!isBettingOpen || !match) {
+  // State-aware sidebar messaging when betting is NOT open
+  if (!isBettingOpen) {
+    const statusMessage = getStatusMessage(match?.status ?? null);
     return (
-      <div className="bg-[#111] border border-[#1a1a1a] p-6">
+      <div className={`bg-[#111] border p-6 ${statusMessage.borderClass}`}>
         <div className="flex items-center gap-2 mb-3">
-          <Swords size={14} className="text-neutral-600" />
-          <span className="font-[var(--font-rajdhani)] text-xs tracking-widest uppercase text-neutral-500">
-            Predictions
+          <Swords size={14} className={statusMessage.iconClass} />
+          <span className={`font-[var(--font-rajdhani)] text-xs tracking-widest uppercase ${statusMessage.titleClass}`}>
+            {statusMessage.title}
           </span>
         </div>
         <p className="font-mono text-[10px] text-neutral-600">
-          Betting opens when a match is scheduled. Check back soon.
+          {statusMessage.message}
         </p>
       </div>
     );
@@ -287,4 +288,49 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
       />
     </div>
   );
+}
+
+function getStatusMessage(status: string | null) {
+  switch (status) {
+    case 'in_progress':
+      return {
+        title: 'Battle in Progress',
+        message: 'Predictions are locked. Agents are competing now.',
+        borderClass: 'border-red-500/20',
+        iconClass: 'text-red-400',
+        titleClass: 'text-red-400',
+      };
+    case 'judging':
+      return {
+        title: 'Judges Deliberating',
+        message: 'Predictions locked. Results incoming.',
+        borderClass: 'border-[#D4A843]/20',
+        iconClass: 'text-[#D4A843]',
+        titleClass: 'text-[#D4A843]',
+      };
+    case 'completed':
+      return {
+        title: 'Battle Complete',
+        message: 'This match has ended. Payouts have been processed.',
+        borderClass: 'border-emerald-500/20',
+        iconClass: 'text-emerald-400',
+        titleClass: 'text-emerald-400',
+      };
+    case 'scheduled':
+      return {
+        title: 'Match Scheduled',
+        message: 'Betting opens shortly. Stand by.',
+        borderClass: 'border-[#D4A843]/20',
+        iconClass: 'text-[#D4A843]/60',
+        titleClass: 'text-[#D4A843]/60',
+      };
+    default:
+      return {
+        title: 'Predictions',
+        message: 'No active match. The scheduler will summon the next battle.',
+        borderClass: 'border-[#1a1a1a]',
+        iconClass: 'text-neutral-600',
+        titleClass: 'text-neutral-500',
+      };
+  }
 }

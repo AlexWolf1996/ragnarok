@@ -227,7 +227,7 @@ function ArenaContent() {
           </p>
         </motion.div>
 
-        {/* Mode & Tier Selection */}
+        {/* Mode toggle + Tier (tier only in Ragnarok mode) */}
         <motion.div
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
           initial={{ opacity: 0, y: 20 }}
@@ -235,7 +235,9 @@ function ArenaContent() {
           transition={{ delay: 0.05 }}
         >
           <ModeToggle mode={mode} onModeChange={setMode} />
-          <TierSelector selectedTier={tier} onTierChange={setTier} />
+          {mode === 'ragnarok' && (
+            <TierSelector selectedTier={tier} onTierChange={setTier} />
+          )}
         </motion.div>
 
         {/* Stats Bar */}
