@@ -24,8 +24,10 @@ import StatsBar from '@/components/ui/StatsBar';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import CosmicBackground from '@/components/ui/CosmicBackground';
 import { useToast } from '@/hooks/useToast';
+import { useCurrentMatch } from '@/hooks/useCurrentMatch';
 import MatchLiveView from '@/components/arena/MatchLiveView';
 import RecentMatchesFeed from '@/components/arena/RecentMatchesFeed';
+import BetPanel from '@/components/arena/BetPanel';
 import {
   TierSelector,
   ModeToggle,
@@ -54,7 +56,8 @@ function ArenaContent() {
   // User's agent
   const [userAgent, setUserAgent] = useState<Agent | null>(null);
 
-  // Duel mode: selected side for betting
+  // Duel mode: current match + selected side for betting
+  const { match: currentMatch } = useCurrentMatch();
   const [selectedSide, setSelectedSide] = useState<'A' | 'B' | null>(null);
 
   // Battle Royale state
@@ -271,8 +274,12 @@ function ArenaContent() {
                 </section>
               </div>
 
-              {/* Right Sidebar — BetPanel will go here in F03 */}
+              {/* Right Sidebar — Betting + Schedule */}
               <aside className="space-y-6">
+                {/* Bet Panel */}
+                <BetPanel match={currentMatch} selectedSide={selectedSide} />
+
+                {/* Upcoming Matches */}
                 <div className="bg-[#111] border border-[#1a1a1a] p-6">
                   <div className="font-[var(--font-rajdhani)] text-xs tracking-widest uppercase text-[#D4A843] mb-3">
                     Upcoming Matches
