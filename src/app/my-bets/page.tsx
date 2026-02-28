@@ -64,6 +64,7 @@ function MyBetsContent() {
   const [bets, setBets] = useState<BetMatch[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<'all' | 'pending' | 'won' | 'lost'>('all');
 
   const loadBets = useCallback(async () => {
     if (!wallet.publicKey) return;
@@ -109,6 +110,17 @@ function MyBetsContent() {
       return sum;
     }, 0);
   const netPnl = totalWon - totalWagered;
+
+  // Filter bets
+  const filteredBets = bets.filter((b) => {
+    if (filter === 'all') return true;
+    if (filter === 'won') return b.bet_status === 'won' || b.bet_status === 'paid';
+    if (filter === 'lost') return b.bet_status === 'lost';
+    // pending = everything else (not won, not lost, not paid)
+    return b.bet_status !== 'won' && b.bet_status !== 'paid' && b.bet_status !== 'lost';
+  });
+
+  const pendingCount = bets.filter((b) => b.bet_status !== 'won' && b.bet_status !== 'paid' && b.bet_status !== 'lost').length;
 
   // Not connected
   if (!wallet.connected || !wallet.publicKey) {
@@ -207,17 +219,37 @@ function MyBetsContent() {
           />
         </motion.div>
 
-        {/* Refresh */}
+        {/* Filter tabs + Refresh */}
         <motion.div
-          className="flex justify-end mb-4"
+          className="flex items-center justify-between mb-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
         >
+          <div className="flex gap-1">
+            {([
+              { key: 'all' as const, label: 'ALL', count: totalBets },
+              { key: 'pending' as const, label: 'PENDING', count: pendingCount },
+              { key: 'won' as const, label: 'WON', count: wins },
+              { key: 'lost' as const, label: 'LOST', count: losses },
+            ]).map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setFilter(tab.key)}
+                className={`px-3 py-1.5 font-mono text-[10px] tracking-widest uppercase border transition-colors ${
+                  filter === tab.key
+                    ? 'border-[#D4A843] bg-[#D4A843]/10 text-[#D4A843]'
+                    : 'border-neutral-800 text-neutral-500 hover:border-neutral-600'
+                }`}
+              >
+                {tab.label} {tab.count > 0 && <span className="text-[9px] opacity-70">({tab.count})</span>}
+              </button>
+            ))}
+          </div>
           <button
             onClick={loadBets}
             disabled={loading}
-            className="px-4 py-2 bg-black/60 border border-neutral-800 rounded-lg hover:border-amber-500/50 transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-black/60 border border-neutral-800 hover:border-amber-500/50 transition-colors flex items-center gap-2"
           >
             <RefreshCw size={14} className={`text-neutral-500 ${loading ? 'animate-spin' : ''}`} />
             <span className="font-[var(--font-orbitron)] text-xs text-neutral-400">Refresh</span>
@@ -252,16 +284,16 @@ function MyBetsContent() {
             </div>
           </div>
 
-          {bets.length === 0 ? (
+          {filteredBets.length === 0 ? (
             <div className="p-12 text-center">
               <Coins size={48} className="text-amber-500/30 mx-auto mb-4" />
               <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
-                No wagers placed yet. Enter the arena and test your fate.
+                {bets.length === 0 ? 'No wagers placed yet. Enter the arena and test your fate.' : `No ${filter} bets found.`}
               </p>
             </div>
           ) : (
             <div className="divide-y divide-neutral-800/50">
-              {bets.map((bet, index) => {
+              {filteredBets.map((bet, index) => {
                 const badge = getStatusBadge(bet.bet_status);
                 const amountSol = bet.bet_amount_lamports
                   ? lamportsToSol(bet.bet_amount_lamports)
