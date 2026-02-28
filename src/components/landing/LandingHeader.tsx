@@ -136,7 +136,7 @@ export default function LandingHeader() {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-white p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+          className="md:hidden text-white p-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
           onClick={toggleMobileMenu}
           aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={mobileMenuOpen}

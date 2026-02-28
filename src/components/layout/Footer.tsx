@@ -28,14 +28,14 @@ export default function Footer() {
             height={40}
             className="h-8 w-auto opacity-50"
           />
-          <div className="flex gap-6 sm:gap-8 font-[var(--font-orbitron)] text-[10px] sm:text-xs tracking-[0.2em] uppercase text-neutral-500">
-            <a href="https://x.com/TheRagnarokAI" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500 transition-colors">
+          <div className="flex gap-6 sm:gap-8 font-[var(--font-orbitron)] text-xs tracking-[0.2em] uppercase text-neutral-500">
+            <a href="https://x.com/TheRagnarokAI" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500 transition-colors py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded">
               TWITTER
             </a>
-            <a href="https://github.com/AlexWolf1996/ragnarok" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500 transition-colors">
+            <a href="https://github.com/AlexWolf1996/ragnarok" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500 transition-colors py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded">
               GITHUB
             </a>
-            <Link href="/docs" className="hover:text-amber-500 transition-colors">
+            <Link href="/docs" className="hover:text-amber-500 transition-colors py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded">
               DOCS
             </Link>
           </div>

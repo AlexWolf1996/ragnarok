@@ -89,6 +89,12 @@ body {
   background: #4a4a55;
 }
 
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #333340 var(--bg-secondary);
+}
+
 /* Animation keyframes */
 @keyframes float {
   0%, 100% {
@@ -740,9 +746,9 @@ body {
     animation: none;
   }
 
-  /* Disable ember particles for reduced motion */
+  /* Reduce ember particles — show static, hide animation */
   [style*="ember-rise"] {
     animation: none !important;
-    opacity: 0 !important;
+    opacity: 0.02 !important;
   }
 }

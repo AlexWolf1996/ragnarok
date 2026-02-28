@@ -604,8 +604,8 @@ function ArenaContent() {
                     </h2>
                     <button
                       onClick={loadDuelData}
-                      className="p-2 hover:bg-amber-500/10 rounded-lg transition-colors"
-                      title="Refresh"
+                      className="p-3 hover:bg-amber-500/10 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                      aria-label="Refresh battles"
                     >
                       <RefreshCw size={16} className="text-neutral-500 hover:text-amber-500" />
                     </button>

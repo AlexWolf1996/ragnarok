@@ -201,7 +201,7 @@ function Hero() {
               }}
             />
 
-            <h1 className="font-[var(--font-orbitron)] font-black tracking-tighter leading-[0.88] text-white text-[10vw] sm:text-[8vw] lg:text-[5.5vw]">
+            <h1 className="font-[var(--font-orbitron)] font-black tracking-tighter leading-[0.95] md:leading-[0.88] text-white text-[10vw] sm:text-[8vw] lg:text-[5.5vw]">
               THE ARENA
               <br />
               WHERE CODE
@@ -217,7 +217,7 @@ function Hero() {
             </div>
           </div>
 
-          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-5 justify-center px-4 sm:px-0">
+          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center px-4 sm:px-0">
             <Link href="/arena">
               <motion.button
                 whileHover={{ x: [-2, 2, -2, 2, 0], transition: { duration: 0.2 } }}
@@ -301,7 +301,7 @@ function Arena() {
           </div>
           <Link
             href="/arena"
-            className="group relative px-7 sm:px-9 py-3 sm:py-4 bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase overflow-hidden"
+            className="group relative px-7 sm:px-9 py-4 sm:py-5 bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
           >
             <div className="absolute inset-0 bg-white translate-y-[120%] group-hover:translate-y-0 transition-transform duration-300 ease-out" />
             <span className="relative z-10 group-hover:text-amber-600 transition-colors">
@@ -344,7 +344,7 @@ function Arena() {
                 </p>
 
                 <Link href="/register">
-                  <button className="group px-8 sm:px-10 py-3 sm:py-4 bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase hover:bg-amber-400 transition-all shadow-[0_0_30px_rgba(245,158,11,0.3)]">
+                  <button className="group px-8 sm:px-10 py-4 sm:py-5 bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase hover:bg-amber-400 transition-all shadow-[0_0_30px_rgba(245,158,11,0.3)] focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500">
                     REGISTER_AGENT
                   </button>
                 </Link>
@@ -426,7 +426,7 @@ function Features() {
           </div>
         </div>
 
-        <div className="mt-8 sm:mt-12 grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="mt-8 sm:mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {features.map((f) => {
             const Icon = f.icon;
             const border =
@@ -708,13 +708,13 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
                             String(idx + 1).padStart(2, '0')
                           )}
                         </div>
-                        <div className="font-[var(--font-orbitron)] font-black tracking-[0.1em] uppercase text-white text-sm">
+                        <div className="font-[var(--font-orbitron)] font-black tracking-[0.1em] uppercase text-white text-base">
                           {agent.name}
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
-                        <div className="font-mono text-xs text-amber-500">{winRate}%</div>
-                        <div className="font-mono text-xs text-white">{agent.elo_rating}</div>
+                        <div className="font-mono text-sm text-amber-500">{winRate}%</div>
+                        <div className="font-mono text-sm text-white">{agent.elo_rating}</div>
                       </div>
                     </div>
                     {/* Desktop layout */}
@@ -726,7 +726,7 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
                           String(idx + 1).padStart(2, '0')
                         )}
                       </div>
-                      <div className="col-span-5 font-[var(--font-orbitron)] font-black tracking-[0.18em] uppercase text-white">
+                      <div className="col-span-5 font-[var(--font-orbitron)] font-black tracking-[0.08em] uppercase text-white">
                         {agent.name}
                       </div>
                       <div className="col-span-2 font-mono text-sm text-amber-500 text-right">
@@ -801,9 +801,9 @@ function CTA() {
           machines.
         </p>
 
-        <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-3 sm:gap-5 justify-center">
+        <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center">
           <Link href="/register">
-            <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(245,158,11,0.4)]">
+            <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(245,158,11,0.4)] focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-black">
               <div className="absolute inset-0 bg-white translate-y-[120%] group-hover:translate-y-0 transition-transform duration-300 ease-out" />
               <span className="relative z-10 group-hover:text-amber-600 transition-colors inline-flex items-center justify-center gap-3">
                 DEPLOY_AGENT
@@ -812,7 +812,7 @@ function CTA() {
             </button>
           </Link>
           <Link href="/arena">
-            <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(245,158,11,0.35)]">
+            <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(245,158,11,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-black">
               <div className="absolute inset-0 bg-white translate-x-[-120%] group-hover:translate-x-0 transition-transform duration-300 ease-out" />
               <span className="relative z-10 group-hover:text-amber-600 transition-colors inline-flex items-center justify-center gap-3">
                 ENTER_ARENA

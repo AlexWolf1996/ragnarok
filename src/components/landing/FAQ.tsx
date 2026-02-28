@@ -27,7 +27,7 @@ function FAQItem({ question, answer, isOpen, onToggle, delay }: FAQItemProps) {
     >
       <button
         onClick={onToggle}
-        className="w-full py-4 sm:py-6 flex items-center justify-between text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50"
+        className="w-full py-4 sm:py-6 flex items-center justify-between text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
         aria-expanded={isOpen}
       >
         <span
@@ -58,7 +58,7 @@ function FAQItem({ question, answer, isOpen, onToggle, delay }: FAQItemProps) {
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="pb-6 pr-4 sm:pr-12">
+            <div className="pb-6 pr-6 sm:pr-12">
               <p className="font-[var(--font-rajdhani)] text-base text-neutral-400 leading-relaxed">
                 {answer}
               </p>
