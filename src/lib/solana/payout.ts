@@ -1,5 +1,4 @@
 import {
-  Connection,
   Keypair,
   PublicKey,
   Transaction,
@@ -7,7 +6,7 @@ import {
   sendAndConfirmTransaction,
 } from '@solana/web3.js';
 import bs58 from 'bs58';
-import { calculatePayout, lamportsToSol } from './transfer';
+import { lamportsToSol } from './transfer';
 
 interface PayoutResult {
   success: boolean;
@@ -34,14 +33,13 @@ function getTreasuryKeypair(): Keypair {
  * Server-side only — uses TREASURY_PRIVATE_KEY to sign.
  *
  * @param bettorWallet  - The winner's wallet address
- * @param betAmountLamports - Original bet amount in lamports
+ * @param payoutLamports - Exact payout amount in lamports (already calculated by parimutuel system)
  * @returns PayoutResult with tx signature on success
  */
 export async function sendPayout(
   bettorWallet: string,
-  betAmountLamports: number,
+  payoutLamports: number,
 ): Promise<PayoutResult> {
-  const payoutLamports = calculatePayout(betAmountLamports);
 
   console.log(
     `[Payout] Sending ${lamportsToSol(payoutLamports)} SOL (${payoutLamports} lamports) to ${bettorWallet}`,
@@ -51,10 +49,8 @@ export async function sendPayout(
     const treasuryKeypair = getTreasuryKeypair();
     const recipient = new PublicKey(bettorWallet);
 
-    const rpcUrl =
-      process.env.NEXT_PUBLIC_SOLANA_RPC_URL ||
-      'https://api.mainnet-beta.solana.com';
-    const connection = new Connection(rpcUrl, 'confirmed');
+    const { getConnection } = await import('./config');
+    const connection = await getConnection();
 
     // Verify treasury has enough balance
     const balance = await connection.getBalance(treasuryKeypair.publicKey);

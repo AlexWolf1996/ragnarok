@@ -1,4 +1,5 @@
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import { Connection } from '@solana/web3.js';
 
 // Default fallback URL for build time
 const DEFAULT_RPC_URL = 'https://api.mainnet-beta.solana.com';
@@ -37,3 +38,30 @@ export const getSolanaConfig = () => ({
   network: getSolanaNetwork(),
   endpoint: getSolanaEndpoint(),
 });
+
+/**
+ * Server-side RPC connection with failover.
+ * Tries Helius first, then NEXT_PUBLIC_SOLANA_RPC_URL, then public mainnet.
+ * Each endpoint is health-checked with getLatestBlockhash before use.
+ */
+export async function getConnection(): Promise<Connection> {
+  const endpoints = [
+    process.env.HELIUS_RPC_URL,
+    process.env.NEXT_PUBLIC_SOLANA_RPC_URL,
+    DEFAULT_RPC_URL,
+  ].filter((url): url is string => Boolean(url && url.startsWith('http')));
+
+  // Deduplicate
+  const unique = [...new Set(endpoints)];
+
+  for (const endpoint of unique) {
+    try {
+      const conn = new Connection(endpoint, 'confirmed');
+      await conn.getLatestBlockhash();
+      return conn;
+    } catch {
+      console.warn(`[Solana RPC] ${endpoint} failed, trying next...`);
+    }
+  }
+  throw new Error('All Solana RPC endpoints failed');
+}

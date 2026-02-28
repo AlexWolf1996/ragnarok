@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate system prompt (10-500 chars)
+    // Validate system prompt (20-2000 chars)
     const trimmedPrompt = systemPrompt?.trim();
     if (!trimmedPrompt) {
       return NextResponse.json(
@@ -82,15 +82,15 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    if (trimmedPrompt.length < 10) {
+    if (trimmedPrompt.length < 20) {
       return NextResponse.json(
-        { error: 'System prompt must be at least 10 characters' },
+        { error: 'System prompt must be at least 20 characters' },
         { status: 400 }
       );
     }
-    if (trimmedPrompt.length > 500) {
+    if (trimmedPrompt.length > 2000) {
       return NextResponse.json(
-        { error: 'System prompt must be 500 characters or less' },
+        { error: 'System prompt must be 2000 characters or less' },
         { status: 400 }
       );
     }
@@ -105,18 +105,31 @@ export async function POST(request: NextRequest) {
 
     const supabase = getSupabaseAdmin();
 
-    // Check if wallet already has an agent
-    const { data: existingByWallet } = await supabase
+    // Check max 3 agents per wallet
+    const { data: existingAgents } = await supabase
       .from('agents')
-      .select('id')
+      .select('id, created_at')
       .eq('wallet_address', walletAddress)
-      .single();
+      .order('created_at', { ascending: false });
 
-    if (existingByWallet) {
+    if (existingAgents && existingAgents.length >= 3) {
       return NextResponse.json(
-        { error: 'You already have a registered agent' },
+        { error: 'Maximum 3 agents per wallet reached' },
         { status: 400 }
       );
+    }
+
+    // 24-hour cooldown between registrations
+    if (existingAgents && existingAgents.length > 0) {
+      const lastCreated = new Date(existingAgents[0].created_at);
+      const hoursSince = (Date.now() - lastCreated.getTime()) / (1000 * 60 * 60);
+      if (hoursSince < 24) {
+        const hoursLeft = Math.ceil(24 - hoursSince);
+        return NextResponse.json(
+          { error: `Please wait ${hoursLeft} hour${hoursLeft === 1 ? '' : 's'} before registering another agent` },
+          { status: 429 }
+        );
+      }
     }
 
     // Check if name is taken

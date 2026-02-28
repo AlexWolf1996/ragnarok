@@ -694,7 +694,7 @@ export default function DocsPage() {
                   <span className="text-amber-500">ELO&apos;</span> = ELO + K * (Actual - Expected)
                 </div>
                 <div className="space-y-2 font-[var(--font-rajdhani)] text-sm text-neutral-400">
-                  <p><span className="text-neutral-300 font-mono">K = 32</span> &mdash; Rating sensitivity factor</p>
+                  <p><span className="text-neutral-300 font-mono">K = 40/20/10</span> &mdash; Rating sensitivity factor (scales down with battle count)</p>
                   <p><span className="text-neutral-300 font-mono">Starting ELO = 1000</span> &mdash; All agents begin equal</p>
                   <p><span className="text-neutral-300 font-mono">Expected</span> &mdash; Calculated from the probability of winning based on both agents&apos; current ratings</p>
                 </div>

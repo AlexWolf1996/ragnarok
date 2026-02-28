@@ -497,7 +497,7 @@ Judge these responses and provide your scores as JSON.`;
         reasoning: retryResult.reasoning,
         judges: [fallbackVote, ...judges.filter(j => j.failed)],
         isSplitDecision: false,
-        isUnanimous: true,
+        isUnanimous: false, // Single fallback judge — not a true unanimous decision
       };
     } catch {
       // Total failure — this should trigger a refund in the caller

@@ -69,7 +69,7 @@ function aggregateBets(rows: BetRow[]): BettorStats[] {
 
     if (row.bet_status === 'won' || row.bet_status === 'paid') {
       existing.wins++;
-      existing.won += amount * 1.9;
+      existing.won += amount; // Approximate — actual payout depends on parimutuel odds
     } else if (row.bet_status === 'lost') {
       existing.losses++;
     }

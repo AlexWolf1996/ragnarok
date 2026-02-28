@@ -16,8 +16,10 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { executeBattle, getSupabaseAdmin } from '@/lib/battles/engine';
-import { verifyTransactionDetails, BETTING_TIERS, solToLamports, lamportsToSol, BettingTier } from '@/lib/solana/transfer';
-import { sendPayout } from '@/lib/solana/payout';
+import { verifyTransactionDetails, BETTING_TIERS, solToLamports, BettingTier } from '@/lib/solana/transfer';
+import { processPayoutQueue } from '@/lib/payouts/processor';
+import { settleMatch } from '@/lib/bets/parimutuel';
+import { logTreasuryMovement, getTreasuryBalance } from '@/lib/treasury/logger';
 import { isValidUUID, isValidWalletAddress, isValidTransactionSignature } from '@/lib/validation';
 
 export const runtime = 'nodejs';
@@ -88,6 +90,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Idempotency check: if this TX signature was already used, return the existing match
+    const supabaseCheck = getSupabaseAdmin();
+    const { data: existingMatch } = await supabaseCheck
+      .from('matches')
+      .select('*')
+      .eq('bet_tx_signature', txSignature)
+      .single();
+
+    if (existingMatch) {
+      console.log(`[BetBattle] Duplicate TX signature detected: ${txSignature}, returning existing match ${existingMatch.id}`);
+      return NextResponse.json({
+        success: true,
+        matchId: existingMatch.id,
+        duplicate: true,
+        message: 'This transaction was already processed.',
+      });
+    }
+
     // Verify the transaction on-chain (amount, recipient, confirmation)
     console.log(`[BetBattle] Verifying transaction: ${txSignature} for tier: ${tier}`);
     const verification = await verifyTransactionDetails(txSignature, tier);
@@ -110,7 +130,7 @@ export async function POST(request: NextRequest) {
     const betAmountLamports = solToLamports(BETTING_TIERS[tier]);
     const betWon = result.winner.id === bettorPickId;
 
-    // Initial update with bet info
+    // Update match with betting info
     await supabase
       .from('matches')
       .update({
@@ -118,53 +138,63 @@ export async function POST(request: NextRequest) {
         bettor_wallet: bettorWallet,
         bettor_pick_id: bettorPickId,
         bet_tx_signature: txSignature,
-        bet_status: betWon ? 'won' : 'lost',
         tier: tier,
       })
       .eq('id', result.matchId);
 
-    // Auto-payout if bettor won
-    let payoutTxSignature: string | null = null;
-    let payoutSol = 0;
-    let payoutStatus: string = betWon ? 'won' : 'lost';
+    // Insert bet into bets table (for parimutuel odds calculation)
+    await supabase.from('bets').insert({
+      match_id: result.matchId,
+      wallet_address: bettorWallet,
+      agent_id: bettorPickId,
+      amount_sol: BETTING_TIERS[tier],
+      tx_signature: txSignature,
+    });
+
+    // Log bet received in treasury audit log
+    getTreasuryBalance().then((balance) => {
+      logTreasuryMovement({
+        type: 'bet_received',
+        matchId: result.matchId,
+        walletAddress: bettorWallet,
+        amountSol: BETTING_TIERS[tier],
+        txSignature: txSignature,
+        balanceAfter: balance,
+      }).catch((err) => console.error('[BetBattle] Treasury log error:', err));
+    });
+
+    // Settle match: calculate parimutuel payouts, queue them, mark bet statuses
+    let payoutStatus: string = 'lost';
 
     if (betWon) {
-      console.log(`[BetBattle] Bettor won! Initiating auto-payout for match ${result.matchId}`);
+      console.log(`[BetBattle] Bettor won! Settling match ${result.matchId}`);
       try {
-        const payoutResult = await sendPayout(bettorWallet, betAmountLamports);
+        const settlement = await settleMatch(result.matchId, result.winner.id);
+        console.log(`[BetBattle] Settlement: ${settlement.bettorsSettled} bettors, ${settlement.totalPayouts} SOL total`);
+        payoutStatus = 'queued';
 
-        if (payoutResult.success && payoutResult.signature) {
-          payoutTxSignature = payoutResult.signature;
-          payoutSol = lamportsToSol(payoutResult.payoutLamports || 0);
-          payoutStatus = 'paid';
+        await supabase
+          .from('matches')
+          .update({ bet_status: 'queued' })
+          .eq('id', result.matchId);
 
-          await supabase
-            .from('matches')
-            .update({
-              payout_tx_signature: payoutResult.signature,
-              bet_status: 'paid',
-            })
-            .eq('id', result.matchId);
-
-          console.log(`[BetBattle] Payout sent: ${payoutResult.signature}`);
-        } else {
-          payoutStatus = 'payout_failed';
-          await supabase
-            .from('matches')
-            .update({ bet_status: 'payout_failed' })
-            .eq('id', result.matchId);
-
-          console.error(`[BetBattle] Payout failed: ${payoutResult.error}`);
-        }
-      } catch (payoutErr) {
+        // Process queue inline (non-blocking best-effort)
+        processPayoutQueue().catch((err) => {
+          console.error('[BetBattle] Inline payout processing error:', err);
+        });
+      } catch (settleErr) {
+        console.error('[BetBattle] Settlement error:', settleErr);
         payoutStatus = 'payout_failed';
         await supabase
           .from('matches')
           .update({ bet_status: 'payout_failed' })
           .eq('id', result.matchId);
-
-        console.error('[BetBattle] Payout error:', payoutErr);
       }
+    } else {
+      await supabase
+        .from('matches')
+        .update({ bet_status: 'lost' })
+        .eq('id', result.matchId);
     }
 
     const duration = Date.now() - startTime;
@@ -179,9 +209,6 @@ export async function POST(request: NextRequest) {
         amountLamports: betAmountLamports,
         pickedAgent: bettorPickId,
         won: betWon,
-        potentialPayout: betWon ? BETTING_TIERS[tier] * 1.9 : 0,
-        payoutSol,
-        payoutTxSignature,
         payoutStatus,
       },
       battle: {

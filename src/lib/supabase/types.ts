@@ -63,6 +63,8 @@ export type Database = {
           match_id: string
           payout_sol: number | null
           status: Database["public"]["Enums"]["bet_status"]
+          tx_signature: string | null
+          payout_tx_signature: string | null
           wallet_address: string
         }
         Insert: {
@@ -73,6 +75,8 @@ export type Database = {
           match_id: string
           payout_sol?: number | null
           status?: Database["public"]["Enums"]["bet_status"]
+          tx_signature?: string | null
+          payout_tx_signature?: string | null
           wallet_address: string
         }
         Update: {
@@ -83,6 +87,8 @@ export type Database = {
           match_id?: string
           payout_sol?: number | null
           status?: Database["public"]["Enums"]["bet_status"]
+          tx_signature?: string | null
+          payout_tx_signature?: string | null
           wallet_address?: string
         }
         Relationships: [
@@ -161,9 +167,13 @@ export type Database = {
           judge_reasoning: string | null
           judge_scores: Json
           payout_tx_signature: string | null
+          scheduled_at: string | null
+          betting_opens_at: string | null
           solana_tx_hash: string | null
           started_at: string | null
+          starts_at: string | null
           status: Database["public"]["Enums"]["match_status"]
+          category: string | null
           tier: string | null
           winner_id: string | null
         }
@@ -188,9 +198,13 @@ export type Database = {
           judge_reasoning?: string | null
           judge_scores?: Json
           payout_tx_signature?: string | null
+          scheduled_at?: string | null
+          betting_opens_at?: string | null
           solana_tx_hash?: string | null
           started_at?: string | null
+          starts_at?: string | null
           status?: Database["public"]["Enums"]["match_status"]
+          category?: string | null
           tier?: string | null
           winner_id?: string | null
         }
@@ -215,9 +229,13 @@ export type Database = {
           judge_reasoning?: string | null
           judge_scores?: Json
           payout_tx_signature?: string | null
+          scheduled_at?: string | null
+          betting_opens_at?: string | null
           solana_tx_hash?: string | null
           started_at?: string | null
+          starts_at?: string | null
           status?: Database["public"]["Enums"]["match_status"]
+          category?: string | null
           tier?: string | null
           winner_id?: string | null
         }
@@ -447,6 +465,195 @@ export type Database = {
         }
         Relationships: []
       }
+      treasury_log: {
+        Row: {
+          id: string
+          type: "bet_received" | "payout_sent" | "rake_collected"
+          match_id: string | null
+          wallet_address: string
+          amount_sol: number
+          tx_signature: string
+          balance_after: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          type: "bet_received" | "payout_sent" | "rake_collected"
+          match_id?: string | null
+          wallet_address: string
+          amount_sol: number
+          tx_signature: string
+          balance_after: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          type?: "bet_received" | "payout_sent" | "rake_collected"
+          match_id?: string | null
+          wallet_address?: string
+          amount_sol?: number
+          tx_signature?: string
+          balance_after?: number
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "treasury_log_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          id: string
+          wallet_address: string
+          type: "payout_completed" | "payout_failed" | "match_result"
+          title: string
+          message: string
+          match_id: string | null
+          read: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          wallet_address: string
+          type: "payout_completed" | "payout_failed" | "match_result"
+          title: string
+          message: string
+          match_id?: string | null
+          read?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          wallet_address?: string
+          type?: "payout_completed" | "payout_failed" | "match_result"
+          title?: string
+          message?: string
+          match_id?: string | null
+          read?: boolean
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      submitted_challenges: {
+        Row: {
+          id: string
+          wallet_address: string
+          category: string
+          challenge_text: string
+          status: "pending" | "approved" | "rejected"
+          rejection_reason: string | null
+          times_used: number
+          rake_earned: number
+          submitted_at: string
+          validated_at: string | null
+        }
+        Insert: {
+          id?: string
+          wallet_address: string
+          category: string
+          challenge_text: string
+          status?: "pending" | "approved" | "rejected"
+          rejection_reason?: string | null
+          times_used?: number
+          rake_earned?: number
+          submitted_at?: string
+          validated_at?: string | null
+        }
+        Update: {
+          id?: string
+          wallet_address?: string
+          category?: string
+          challenge_text?: string
+          status?: "pending" | "approved" | "rejected"
+          rejection_reason?: string | null
+          times_used?: number
+          rake_earned?: number
+          submitted_at?: string
+          validated_at?: string | null
+        }
+        Relationships: []
+      }
+      scheduler_lock: {
+        Row: {
+          id: number
+          locked_at: string
+          locked_by: string | null
+        }
+        Insert: {
+          id?: number
+          locked_at?: string
+          locked_by?: string | null
+        }
+        Update: {
+          id?: number
+          locked_at?: string
+          locked_by?: string | null
+        }
+        Relationships: []
+      }
+      payout_queue: {
+        Row: {
+          id: string
+          match_id: string
+          wallet_address: string
+          amount_sol: number
+          status: "pending" | "processing" | "completed" | "failed"
+          attempts: number
+          max_attempts: number
+          tx_signature: string | null
+          error_message: string | null
+          created_at: string
+          processed_at: string | null
+        }
+        Insert: {
+          id?: string
+          match_id: string
+          wallet_address: string
+          amount_sol: number
+          status?: "pending" | "processing" | "completed" | "failed"
+          attempts?: number
+          max_attempts?: number
+          tx_signature?: string | null
+          error_message?: string | null
+          created_at?: string
+          processed_at?: string | null
+        }
+        Update: {
+          id?: string
+          match_id?: string
+          wallet_address?: string
+          amount_sol?: number
+          status?: "pending" | "processing" | "completed" | "failed"
+          attempts?: number
+          max_attempts?: number
+          tx_signature?: string | null
+          error_message?: string | null
+          created_at?: string
+          processed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payout_queue_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       matchmaking_queue: {
         Row: {
           id: string
@@ -607,6 +814,22 @@ export type Database = {
       }
     }
     Functions: {
+      claim_pending_payout: {
+        Args: Record<string, never>
+        Returns: {
+          id: string
+          match_id: string
+          wallet_address: string
+          amount_sol: number
+          status: string
+          attempts: number
+          max_attempts: number
+          tx_signature: string | null
+          error_message: string | null
+          created_at: string
+          processed_at: string | null
+        }[]
+      }
       update_agent_battle_stats: {
         Args: {
           p_agent_id: string
@@ -619,7 +842,7 @@ export type Database = {
     Enums: {
       bet_status: "pending" | "won" | "lost" | "refunded"
       difficulty_level: "easy" | "medium" | "hard"
-      match_status: "pending" | "in_progress" | "completed" | "failed"
+      match_status: "scheduled" | "betting_open" | "pending" | "in_progress" | "judging" | "completed" | "cancelled" | "failed"
     }
     CompositeTypes: {
       [_ in never]: never

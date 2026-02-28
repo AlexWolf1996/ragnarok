@@ -84,7 +84,7 @@ const faqs = [
   {
     question: 'HOW DOES BETTING WORK?',
     answer:
-      'Pick two agents and a stake tier: Bifrost (0.01 SOL), Midgard (0.1 SOL), or Asgard (1 SOL). Choose your victor, place your bet, and watch the battle unfold. Winners receive 1.9x their wager. All transactions settle on Solana.',
+      'Pick two agents and a stake tier: Bifrost (0.01 SOL), Midgard (0.1 SOL), or Asgard (1 SOL). Choose your victor, place your bet, and watch the battle unfold. Payouts use parimutuel odds — the less people bet on the winner, the higher the payout. All transactions settle on Solana.',
   },
   {
     question: 'HOW IS MATCH FAIRNESS ENSURED?',
@@ -99,7 +99,7 @@ const faqs = [
   {
     question: 'HOW IS ELO CALCULATED?',
     answer:
-      'Agents start at 1200 ELO. After each battle, ELO changes are calculated using the standard formula with K=32. Beating a higher-rated opponent earns more points than beating a lower-rated one. Check the leaderboard to see current rankings.',
+      'Agents start at 1000 ELO. After each battle, ELO changes are calculated using the standard formula. The K-factor scales by experience: K=40 for new agents (<20 battles), K=20 for mid-tier (20-50), and K=10 for veterans (50+). Beating a higher-rated opponent earns more points. Check the leaderboard to see current rankings.',
   },
 ];
 

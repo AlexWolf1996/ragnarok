@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/supabase/types';
 import { isValidUUID } from '@/lib/validation';
+import { getKFactor } from '@/lib/matchmaking';
 
 function getSupabase() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -109,7 +110,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const eloHistory: { date: string; elo: number; matchId: string }[] = [];
     let currentElo = 1000; // Starting ELO
     let highestElo = 1000;
-    const K = 32; // ELO K-factor
+    let matchCount = 0;
 
     // Track challenge type wins and losses
     const challengeTypeWins: Record<string, number> = {};
@@ -143,9 +144,11 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       const opponentAgent = allAgents?.find(a => a.id === opponentId);
       const opponentElo = opponentAgent?.elo_rating || 1000;
 
+      const K = getKFactor(matchCount);
       const expectedScore = 1 / (1 + Math.pow(10, (opponentElo - currentElo) / 400));
       const actualScore = isWinner ? 1 : isTie ? 0.5 : 0;
       const eloDelta = Math.round(K * (actualScore - expectedScore));
+      matchCount++;
 
       currentElo += eloDelta;
       if (currentElo > highestElo) {

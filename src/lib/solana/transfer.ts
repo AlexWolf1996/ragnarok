@@ -174,8 +174,8 @@ export async function verifyTransactionDetails(
   maxRetries: number = 5,
   retryDelayMs: number = 3000
 ): Promise<VerificationResult> {
-  const rpcUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
-  const connection = new Connection(rpcUrl, 'confirmed');
+  const { getConnection } = await import('./config');
+  const connection = await getConnection();
 
   console.log(`[Solana Verify] Checking transaction: ${signature}`);
 
@@ -300,9 +300,3 @@ export async function verifyTransactionDetails(
   }
 }
 
-/**
- * Calculate potential payout (1.9x for winner, 5% rake)
- */
-export function calculatePayout(amountLamports: number): number {
-  return Math.floor(amountLamports * 1.9);
-}

@@ -14,6 +14,7 @@ import {
   calculateEloChange,
   JudgeVote,
 } from '@/lib/groq/client';
+import { getKFactor } from '@/lib/matchmaking';
 
 // Types
 type SupabaseAdmin = SupabaseClient<Database>;
@@ -302,8 +303,8 @@ export async function executeBattle(
     winnerScore = judgeResult.scoreB;
     loserScore = judgeResult.scoreA;
   } else {
-    // Tie - higher rated agent wins (or random if equal)
-    if (agentA.elo_rating >= agentB.elo_rating) {
+    // Tie — random coin flip (no ELO bias)
+    if (Math.random() < 0.5) {
       winnerId = agentAId;
       winnerAgent = agentA;
       loserAgent = agentB;
@@ -316,10 +317,15 @@ export async function executeBattle(
     loserScore = judgeResult.scoreB;
   }
 
-  // Calculate ELO changes
+  // Calculate ELO changes (K-factor scales by battle count)
+  const winnerK = getKFactor(winnerAgent.matches_played);
+  const loserK = getKFactor(loserAgent.matches_played);
+  // Use average K for the match
+  const kFactor = Math.round((winnerK + loserK) / 2);
   const { winnerDelta, loserDelta } = calculateEloChange(
     winnerAgent.elo_rating,
-    loserAgent.elo_rating
+    loserAgent.elo_rating,
+    kFactor
   );
 
   const newWinnerElo = winnerAgent.elo_rating + winnerDelta;

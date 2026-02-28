@@ -1,88 +1,44 @@
-# CLAUDE.md — Automatic instructions for Claude Code
+# RAGNARÖK
 
-## Project: Ragnarok (theragnarok.fun)
-AI battle arena on Solana. Tech: Next.js 16, Supabase, Groq LLM, Vercel, Solana Web3.js.
+## What
+Onchain AI battle arena on Solana. AI agents compete in real-time, users bet via parimutuel prediction markets. Built with Next.js (App Router), Supabase, Groq (Llama), Solana, Tailwind.
 
-## Current Status
-- Battles: WORKING (Groq LLM engine, 10 agents, auto-battle daily cron)
-- Agent registration: WORKING (custom system prompts, avatars)
-- Agent profiles: WORKING (stats, match history, ELO chart)
-- Landing page: WORKING (deployed)
-- Betting: BROKEN — frontend + backend complete, but Solana RPC fails in browser
-  - Error: "failed to get recent blockhash: TypeError: Failed to fetch"
-  - Likely cause: NEXT_PUBLIC_SOLANA_RPC_URL not injected into client JS bundle
-  - Treasury wallet: FcaoVBJAqZL2Ya7TEiaNdXm4FGdwGA7ZjXyryhsXt7Tb
+## Why
+Transform from "bet triggers instant battle" to "scheduled matches with betting windows and live spectacle." The user is a **bettor first** — arrive, see a match, pick a side, watch, win or lose.
 
-## Key Commands
-- `npm run build` — must pass before any commit
-- `npm run dev` — local dev server
-- `npx vercel --prod` — deploy (GitHub webhook is unreliable, use CLI)
-- `npx vercel env pull .env.local` — sync env vars from Vercel
+## How
 
-## ALWAYS do first
-1. Run `git status` to check for uncommitted files before starting
+### Commands
+```bash
+npm run dev          # local dev server
+npm run build        # production build
+npm run lint         # ESLint
+```
 
-## ALWAYS do last
-1. `npm run build` — if it fails, fix before committing
-2. `git status` — if new files are untracked, `git add` them
-3. `git push origin main` — verify push succeeded
-4. Report the commit hash
+### Conventions
+- TypeScript strict — no `any` in financial logic
+- All SOL amounts stored as `numeric` in Supabase, never floating point
+- snake_case for DB columns, camelCase for TypeScript
+- Commits: `feat:` / `fix:` / `refactor:` / `chore:`
+- UNIQUE constraint on every transaction signature column
+- Idempotency on all financial endpoints — same input = same output
 
-## Pre-flight checklist before saying "Done"
-- [ ] `npm run build` passes
-- [ ] All new files are `git add`ed
-- [ ] Changes are pushed
-- [ ] No `process.env` reads at module level (must be inside functions)
-- [ ] DB column names match code
-- [ ] If fixing a bug in one route, grep for same pattern in ALL routes
+### Current sprint
+Read `SPECS.md` for the active task list. Execute tasks in the order specified in "Execution Order." Verify each task's checklist before moving to the next.
 
-## Common pitfalls — NEVER repeat these
+### Architecture (do not change without discussion)
+- **Parimutuel odds** — pool-based, 5% rake, treasury never pays from reserves
+- **3-judge LLM panel** — independent scoring, ties = random coin flip (not ELO)
+- **Sequential payouts** — `payout_queue` with `FOR UPDATE SKIP LOCKED`, never parallel
+- **Match lifecycle:** `scheduled → betting_open → in_progress → judging → completed`
+- **ELO matchmaking** — ±200 range, dynamic K-factor (40/20/10 by battle count)
+- **Bet tiers:** Bifrost 0.01, Midgard 0.05, Asgard 0.1 SOL
 
-### Next.js build-time
-- `next build` prerenders static pages with NO env vars available
-- NEVER: `const url = process.env.NEXT_PUBLIC_SUPABASE_URL!` at file top level
-- ALWAYS: read env vars inside functions at runtime
-- ALWAYS: add fallback values for client-side env vars:
-  `const RPC = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com'`
-- Test with `npm run build` before pushing
+### Pitfalls
+- Vercel has a 60s function timeout — battles must complete within this
+- Groq rate limits — 3 judge calls per battle, add retry logic
+- Always get fresh blockhash before building Solana transactions
+- Check actual Supabase column names with `\d table_name` before assuming
 
-### Environment variables
-- `NEXT_PUBLIC_` vars are baked into the JS bundle AT BUILD TIME, not runtime
-- If a NEXT_PUBLIC_ var is undefined in Vercel when you build, it will be undefined forever in that deploy
-- To fix: set the var in Vercel dashboard, then redeploy with `npx vercel --prod`
-- To verify locally: `npx vercel env pull .env.local` then check the file
-- ALWAYS add hardcoded fallbacks for RPC URLs so the app never breaks
-
-### Supabase
-- DB columns: `agent_a_id` not `agent_a`, `agent_a_score` not `score_a`
-- When adding DB columns, also update `src/lib/supabase/types.ts`
-- When seeding data, check NOT NULL constraints first
-
-### Solana
-- Treasury wallet MUST differ from user wallet
-- Don't await `confirmTransaction()` on frontend — it times out
-- Verify transactions on backend with retry loop (5x, 3s apart)
-- Use Helius RPC (`https://mainnet.helius-rpc.com/?api-key=KEY`), not public endpoints
-- Fallback RPC: `https://api.mainnet-beta.solana.com` (slow but works)
-- NEVER use devnet URLs as fallback — everything is mainnet
-
-### Vercel
-- After push, check Vercel build logs for correct commit hash
-- If wrong commit deploys: use `npx vercel --prod` from local
-- Hobby plan: cron must be daily (`0 0 * * *`), not every 15 min
-- If build cache causes issues: redeploy without cache
-
-### Code quality
-- When fixing a bug in `/api/battles/quick`, check `/api/battles/execute` and `/api/battles/bet` too
-- Extract shared logic into helper functions (e.g., `src/lib/battles/engine.ts`)
-- If a component exists but feature doesn't work: check `git status` for uncommitted files
-
-## When stuck on the same error twice
-STOP. Do not try another variation of the same fix. Instead:
-1. `grep -r "PATTERN" src/` to find ALL occurrences
-2. Identify the real root cause (not the symptom)
-3. Fix every instance at once
-4. `npm run build` to verify
-
-## Architecture
-See BATTLEPLAN.md for DB schema, API routes, and feature specs.
+### Outdated files (ignore these)
+`BATTLEPLAN.md`, `tasks/todo.md`, `tasks/lessons.md` — all superseded by this file + `SPECS.md`

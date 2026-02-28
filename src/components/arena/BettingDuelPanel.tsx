@@ -515,7 +515,7 @@ export default function BettingDuelPanel({
             </button>
 
             <p className="font-mono text-[10px] text-neutral-600 text-center">
-              Win = 1.9x payout • 5% platform fee
+              Parimutuel odds • 5% platform fee
             </p>
           </motion.div>
         )}

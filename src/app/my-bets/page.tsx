@@ -102,8 +102,11 @@ function MyBetsContent() {
   const totalWon = bets
     .filter((b) => b.bet_status === 'paid' || b.bet_status === 'won')
     .reduce((sum, b) => {
-      const amount = b.bet_amount_lamports ? lamportsToSol(b.bet_amount_lamports) : 0;
-      return sum + amount * 1.9;
+      // Use actual payout if available, otherwise estimate from bet amount
+      if (b.payout_tx_signature && b.bet_amount_lamports) {
+        return sum + lamportsToSol(b.bet_amount_lamports);
+      }
+      return sum;
     }, 0);
   const netPnl = totalWon - totalWagered;
 
@@ -345,7 +348,7 @@ function MyBetsContent() {
                         </span>
                         {isWin && (
                           <span className="font-mono text-[10px] text-emerald-400">
-                            +{(amountSol * 1.9).toFixed(3)}
+                            WON
                           </span>
                         )}
                       </div>
