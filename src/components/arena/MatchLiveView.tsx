@@ -24,9 +24,39 @@ export default function MatchLiveView({ selectedSide, onSelectSide }: MatchLiveV
 
   if (loading) {
     return (
-      <div className="bg-[#111] border border-[#1a1a1a] p-12 text-center">
-        <Loader2 size={24} className="text-[#D4A843] animate-spin mx-auto mb-3" />
-        <p className="font-mono text-xs text-neutral-500 tracking-widest">SCANNING THE ARENA...</p>
+      <div className="space-y-4">
+        {/* Skeleton status bar */}
+        <div className="h-8 bg-[#111] border border-[#1a1a1a] animate-pulse" />
+        {/* Skeleton agent cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="bg-[#111] border border-[#1a1a1a] p-5 space-y-3 animate-pulse">
+            <div className="h-3 w-20 bg-[#1a1a1a]" />
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-[#1a1a1a]" />
+              <div className="space-y-2 flex-1">
+                <div className="h-4 w-28 bg-[#1a1a1a]" />
+                <div className="h-3 w-16 bg-[#1a1a1a]" />
+              </div>
+            </div>
+            <div className="h-3 w-32 bg-[#1a1a1a]" />
+            <div className="h-8 w-full bg-[#1a1a1a]" />
+          </div>
+          <div className="bg-[#111] border border-[#1a1a1a] p-5 space-y-3 animate-pulse">
+            <div className="h-3 w-20 bg-[#1a1a1a]" />
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-[#1a1a1a]" />
+              <div className="space-y-2 flex-1">
+                <div className="h-4 w-28 bg-[#1a1a1a]" />
+                <div className="h-3 w-16 bg-[#1a1a1a]" />
+              </div>
+            </div>
+            <div className="h-3 w-32 bg-[#1a1a1a]" />
+            <div className="h-8 w-full bg-[#1a1a1a]" />
+          </div>
+        </div>
+        {/* Skeleton odds bar */}
+        <div className="h-3 bg-[#1a1a1a] animate-pulse" />
+        <p className="font-mono text-xs text-neutral-500 tracking-widest text-center">SCANNING THE ARENA...</p>
       </div>
     );
   }

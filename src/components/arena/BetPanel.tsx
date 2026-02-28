@@ -203,7 +203,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
                   key={t.key}
                   onClick={() => setSelectedTier(t.key)}
                   disabled={isLoading}
-                  className={`py-2 border font-mono text-[10px] tracking-wider uppercase transition-colors ${
+                  className={`min-h-[44px] py-2 border font-mono text-[10px] tracking-wider uppercase transition-colors ${
                     selectedTier === t.key
                       ? 'border-[#D4A843] bg-[#D4A843]/10 text-[#D4A843]'
                       : 'border-[#1a1a1a] text-neutral-500 hover:border-neutral-600'
@@ -239,7 +239,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
           <button
             onClick={handlePlaceBet}
             disabled={isLoading}
-            className={`w-full py-3 border font-[var(--font-rajdhani)] text-xs tracking-widest uppercase transition-all ${
+            className={`w-full min-h-[44px] py-3 border font-[var(--font-rajdhani)] text-xs tracking-widest uppercase transition-all ${
               isLoading
                 ? 'border-neutral-700 bg-neutral-800 text-neutral-500 cursor-not-allowed'
                 : 'border-[#D4A843] bg-gradient-to-r from-[#D4A843]/20 via-[#D4A843]/10 to-[#D4A843]/20 text-[#D4A843] hover:bg-[#D4A843]/30'
