@@ -19,11 +19,11 @@
     },
     {
       "path": "/api/payouts/process",
-      "schedule": "0 */6 * * *"
+      "schedule": "0 0 * * *"
     },
     {
       "path": "/api/cron/scheduler",
-      "schedule": "0 */1 * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
