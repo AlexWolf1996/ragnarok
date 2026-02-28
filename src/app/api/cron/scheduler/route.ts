@@ -250,8 +250,8 @@ async function startBattle(
     .eq('id', match.id);
 
   try {
-    // Execute the battle
-    const result = await executeBattle(match.agent_a_id, match.agent_b_id, match.challenge_id);
+    // Execute the battle (pass existing match ID to avoid duplicate records)
+    const result = await executeBattle(match.agent_a_id, match.agent_b_id, match.challenge_id, match.id);
 
     // Settle bets (if any)
     if (result.winner?.id) {

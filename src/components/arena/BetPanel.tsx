@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Swords, Check, Loader2, AlertTriangle } from 'lucide-react';
+import { Swords, Check, Loader2, AlertTriangle, TrendingUp } from 'lucide-react';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { usePlaceBet } from '@/hooks/usePlaceBet';
 import { useMatchOdds, calculateOdds } from '@/hooks/useMatchOdds';
+import { useMyBet } from '@/hooks/useMyBet';
 import { transferToTreasury, BETTING_TIERS, BettingTier } from '@/lib/solana/transfer';
 import { useToast } from '@/hooks/useToast';
 import type { CurrentMatch } from '@/hooks/useCurrentMatch';
@@ -31,16 +32,17 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
     match?.id ?? null,
     match?.status ?? null,
   );
+  const { hasBet, totalBet, betAgentId, betStatus, payout, refresh: refreshBets } = useMyBet(match?.id ?? null);
 
   const [selectedTier, setSelectedTier] = useState<BettingTier>('midgard');
   const [transferring, setTransferring] = useState(false);
+  const [showBetForm, setShowBetForm] = useState(false);
 
   const isBettingOpen = match?.status === 'betting_open';
   const selectedAgent = selectedSide === 'A' ? match?.agentA : selectedSide === 'B' ? match?.agentB : null;
   const selectedAgentId = selectedSide === 'A' ? match?.agent_a_id : selectedSide === 'B' ? match?.agent_b_id : null;
 
   // Use live odds if available, otherwise fall back to match.odds
-  // Use || instead of ?? so that backend 0 values also fall back to defaults
   const hasLiveOdds = poolA > 0 || poolB > 0;
   const displayOddsA = hasLiveOdds ? oddsA : (match?.odds?.oddsA || 2.0);
   const displayOddsB = hasLiveOdds ? oddsB : (match?.odds?.oddsB || 2.0);
@@ -52,12 +54,16 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
 
   const isLoading = transferring || placingBet;
 
+  // Resolve which agent the user bet on
+  const betAgent = betAgentId === match?.agent_a_id ? match?.agentA : betAgentId === match?.agent_b_id ? match?.agentB : null;
+  const betSide: 'A' | 'B' | null = betAgentId === match?.agent_a_id ? 'A' : betAgentId === match?.agent_b_id ? 'B' : null;
+  const betOdds = betSide === 'A' ? displayOddsA : betSide === 'B' ? displayOddsB : 0;
+
   const handlePlaceBet = async () => {
     if (!match || !selectedAgentId || !wallet.publicKey || !wallet.connected) return;
 
     setTransferring(true);
     try {
-      // Step 1: Transfer SOL to treasury
       toast.info('Payment', `Sending ${betAmount} SOL to treasury...`);
       const transferResult = await transferToTreasury(
         wallet as Parameters<typeof transferToTreasury>[0],
@@ -73,7 +79,6 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
 
       setTransferring(false);
 
-      // Step 2: Record bet on backend
       toast.info('Recording', 'Verifying and recording your prediction...');
       await placeBet({
         match_id: match.id,
@@ -84,6 +89,9 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
       });
 
       toast.success('Prediction Placed', `${betAmount} SOL on ${selectedAgent?.name ?? 'your champion'}`);
+      setShowBetForm(false);
+      // Refresh bets to pick up the new bet
+      refreshBets();
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to place bet';
       toast.error('Bet Failed', msg);
@@ -91,7 +99,107 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
     }
   };
 
-  // State-aware sidebar messaging when betting is NOT open
+  // ──────────────────────────────────────────────
+  // RENDER: User has an active bet — show position
+  // ──────────────────────────────────────────────
+  if (hasBet && !showBetForm) {
+    return (
+      <div className="bg-[#111] border border-emerald-500/30 p-6 space-y-4">
+        {/* Header */}
+        <div className="flex items-center gap-2">
+          <TrendingUp size={14} className="text-emerald-400" />
+          <span className="font-[var(--font-rajdhani)] text-xs tracking-widest uppercase text-emerald-400">
+            Your Position
+          </span>
+        </div>
+
+        {/* Position details */}
+        <div className="space-y-2">
+          <div className="flex justify-between font-mono text-[10px]">
+            <span className="text-neutral-500">Backing</span>
+            <span className={betSide === 'A' ? 'text-[#D4A843]' : 'text-[#c0392b]'}>
+              {betAgent?.name ?? 'Unknown'}
+            </span>
+          </div>
+          <div className="flex justify-between font-mono text-[10px]">
+            <span className="text-neutral-500">Your Stake</span>
+            <span className="text-white">{totalBet} SOL</span>
+          </div>
+          <div className="flex justify-between font-mono text-[10px]">
+            <span className="text-neutral-500">Current Odds</span>
+            <span className="text-white">{betOdds > 0 ? `${betOdds.toFixed(2)}x` : '—'}</span>
+          </div>
+          <div className="flex justify-between font-mono text-[10px]">
+            <span className="text-neutral-500">Potential Return</span>
+            <span className="text-emerald-400">
+              {betOdds > 0 ? `${(totalBet * betOdds).toFixed(4)} SOL` : '—'}
+            </span>
+          </div>
+        </div>
+
+        {/* Status-specific message */}
+        <div className="pt-2 border-t border-[#1a1a1a]">
+          {betStatus === 'won' && (
+            <div className="text-center space-y-1">
+              <div className="font-[var(--font-rajdhani)] text-sm tracking-widest uppercase text-emerald-400">
+                You Won!
+              </div>
+              <div className="font-mono text-[10px] text-emerald-400">
+                Payout: {payout.toFixed(4)} SOL
+              </div>
+            </div>
+          )}
+          {betStatus === 'lost' && (
+            <div className="text-center">
+              <div className="font-[var(--font-rajdhani)] text-sm tracking-widest uppercase text-red-400">
+                Defeated
+              </div>
+              <div className="font-mono text-[9px] text-neutral-600 mt-1">
+                Better luck next battle.
+              </div>
+            </div>
+          )}
+          {(!betStatus || betStatus === 'pending') && match?.status === 'in_progress' && (
+            <div className="text-center">
+              <div className="font-mono text-[10px] text-red-400 tracking-widest uppercase">
+                Battle in Progress
+              </div>
+              <div className="font-mono text-[9px] text-neutral-600 mt-1">
+                Agents are competing. Your prediction is locked.
+              </div>
+            </div>
+          )}
+          {(!betStatus || betStatus === 'pending') && match?.status === 'judging' && (
+            <div className="text-center">
+              <div className="font-mono text-[10px] text-[#D4A843] tracking-widest uppercase">
+                Judges Deliberating
+              </div>
+              <div className="font-mono text-[9px] text-neutral-600 mt-1">
+                Results incoming. Final payout based on closing odds.
+              </div>
+            </div>
+          )}
+          {(!betStatus || betStatus === 'pending') && isBettingOpen && (
+            <div className="text-center space-y-2">
+              <div className="font-mono text-[9px] text-neutral-600">
+                Odds update in real-time. Final payout based on closing odds.
+              </div>
+              <button
+                onClick={() => { reset(); setShowBetForm(true); }}
+                className="font-mono text-[10px] text-neutral-500 hover:text-[#D4A843] tracking-widest uppercase transition-colors"
+              >
+                Place Another Prediction
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ──────────────────────────────────────────────
+  // RENDER: Betting not open (and no active bet)
+  // ──────────────────────────────────────────────
   if (!isBettingOpen) {
     const statusMessage = getStatusMessage(match?.status ?? null);
     return (
@@ -109,7 +217,9 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
     );
   }
 
-  // Wallet not connected
+  // ──────────────────────────────────────────────
+  // RENDER: Wallet not connected
+  // ──────────────────────────────────────────────
   if (!wallet.connected) {
     return (
       <div className="bg-[#111] border border-[#1a1a1a] p-6">
@@ -129,8 +239,10 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
     );
   }
 
-  // Bet already placed successfully
-  if (betPlaced) {
+  // ──────────────────────────────────────────────
+  // RENDER: Bet just placed (ephemeral confirmation before useMyBet picks it up)
+  // ──────────────────────────────────────────────
+  if (betPlaced && !showBetForm) {
     return (
       <div className="bg-[#111] border border-emerald-500/30 p-6">
         <div className="text-center space-y-3">
@@ -147,7 +259,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
             Odds update in real-time. Final payout based on closing odds.
           </div>
           <button
-            onClick={reset}
+            onClick={() => { reset(); setShowBetForm(true); }}
             className="font-mono text-[10px] text-neutral-500 hover:text-[#D4A843] tracking-widest uppercase transition-colors"
           >
             Place Another
@@ -157,6 +269,9 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
     );
   }
 
+  // ──────────────────────────────────────────────
+  // RENDER: Betting form
+  // ──────────────────────────────────────────────
   return (
     <div className="bg-[#111] border border-[#D4A843]/30 p-6 space-y-4">
       {/* Header */}

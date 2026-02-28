@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useCurrentMatch } from '@/hooks/useCurrentMatch';
 import { useMatchOdds, calculateOdds } from '@/hooks/useMatchOdds';
 import { useUpcomingMatches } from '@/hooks/useUpcomingMatches';
@@ -144,9 +145,9 @@ export default function MatchLiveView({ selectedSide, onSelectSide }: MatchLiveV
         </div>
       )}
 
-      {/* In-progress state (mock for Phase 2a) */}
+      {/* In-progress state */}
       {match.status === 'in_progress' && (
-        <InProgressView agentAName={match.agentA?.name} agentBName={match.agentB?.name} />
+        <InProgressView agentAName={match.agentA?.name} agentBName={match.agentB?.name} startedAt={match.started_at} />
       )}
 
       {/* Judging state (mock for Phase 2a) */}
@@ -191,26 +192,34 @@ function NoMatchView() {
   );
 }
 
-function InProgressView({ agentAName, agentBName }: { agentAName?: string; agentBName?: string }) {
+function InProgressView({ agentAName, agentBName, startedAt }: { agentAName?: string; agentBName?: string; startedAt?: string | null }) {
   return (
     <div className="bg-[#111] border border-red-500/20 p-6">
-      <div className="text-center mb-4">
-        <span className="font-mono text-[10px] text-red-400 tracking-widest uppercase">Agents are responding...</span>
+      <div className="text-center mb-4 space-y-1">
+        <span className="font-mono text-[10px] text-red-400 tracking-widest uppercase block">
+          Battle in Progress
+        </span>
+        <span className="font-mono text-[9px] text-neutral-600 block">
+          Agents are generating responses and judges are scoring...
+        </span>
+        {startedAt && (
+          <ElapsedTime startedAt={startedAt} />
+        )}
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="border border-[#D4A843]/20 p-4" style={{ borderTop: '2px solid #D4A843' }}>
           <div className="font-mono text-[10px] text-[#D4A843] tracking-widest uppercase mb-2">{agentAName ?? 'Agent A'}</div>
           <div className="space-y-1">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-2 bg-neutral-800 animate-pulse" style={{ width: `${70 + Math.random() * 30}%`, animationDelay: `${i * 200}ms` }} />
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="h-2 bg-neutral-800 animate-pulse" style={{ width: `${75 + i * 5}%`, animationDelay: `${i * 200}ms` }} />
             ))}
           </div>
         </div>
         <div className="border border-[#c0392b]/20 p-4" style={{ borderTop: '2px solid #c0392b' }}>
           <div className="font-mono text-[10px] text-[#c0392b] tracking-widest uppercase mb-2">{agentBName ?? 'Agent B'}</div>
           <div className="space-y-1">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-2 bg-neutral-800 animate-pulse" style={{ width: `${60 + Math.random() * 40}%`, animationDelay: `${i * 300}ms` }} />
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="h-2 bg-neutral-800 animate-pulse" style={{ width: `${65 + i * 8}%`, animationDelay: `${i * 300}ms` }} />
             ))}
           </div>
         </div>
@@ -222,8 +231,11 @@ function InProgressView({ agentAName, agentBName }: { agentAName?: string; agent
 function JudgingView() {
   return (
     <div className="bg-[#111] border border-[#D4A843]/20 p-6 text-center">
-      <div className="font-mono text-[10px] text-[#D4A843] tracking-widest uppercase mb-4">
+      <div className="font-mono text-[10px] text-[#D4A843] tracking-widest uppercase mb-2">
         Three judges deliberating...
+      </div>
+      <div className="font-mono text-[9px] text-neutral-600 mb-4">
+        Scoring responses on creativity, accuracy, and style
       </div>
       <div className="flex justify-center gap-4">
         {['JUDGE I', 'JUDGE II', 'JUDGE III'].map((name, i) => (
@@ -237,5 +249,26 @@ function JudgingView() {
         ))}
       </div>
     </div>
+  );
+}
+
+function ElapsedTime({ startedAt }: { startedAt: string }) {
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    const start = new Date(startedAt).getTime();
+    const tick = () => setElapsed(Math.floor((Date.now() - start) / 1000));
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [startedAt]);
+
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
+
+  return (
+    <span className="font-mono text-[9px] text-neutral-500 block">
+      Elapsed: {mins}:{secs.toString().padStart(2, '0')}
+    </span>
   );
 }

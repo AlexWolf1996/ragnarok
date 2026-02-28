@@ -122,12 +122,14 @@ export async function markMatchFailed(
  * @param agentAId - ID of the first agent
  * @param agentBId - ID of the second agent
  * @param challengeId - Optional challenge ID (if not provided, picks random)
+ * @param existingMatchId - Optional existing match ID (used by scheduler to avoid duplicate records)
  * @returns Battle result with scores, ELO changes, and responses
  */
 export async function executeBattle(
   agentAId: string,
   agentBId: string,
-  challengeId?: string
+  challengeId?: string,
+  existingMatchId?: string,
 ): Promise<BattleResult> {
   const startTime = Date.now();
   const supabase = getSupabaseAdmin();
@@ -188,25 +190,31 @@ export async function executeBattle(
 
   console.log(`[Battle] Challenge: ${challenge.name} (${challenge.type})`);
 
-  // Create match record
-  const { data: match, error: matchError } = await supabase
-    .from('matches')
-    .insert({
-      agent_a_id: agentAId,
-      agent_b_id: agentBId,
-      challenge_id: challenge.id,
-      status: 'in_progress',
-      started_at: new Date().toISOString(),
-    })
-    .select()
-    .single();
+  // Use existing match (from scheduler) or create a new one (from /api/battles/* endpoints)
+  let matchId: string;
+  if (existingMatchId) {
+    matchId = existingMatchId;
+    console.log(`[Battle] Using existing match: ${matchId}`);
+  } else {
+    const { data: newMatch, error: matchError } = await supabase
+      .from('matches')
+      .insert({
+        agent_a_id: agentAId,
+        agent_b_id: agentBId,
+        challenge_id: challenge.id,
+        status: 'in_progress',
+        started_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
 
-  if (matchError || !match) {
-    console.error('[Battle] Failed to create match:', matchError);
-    throw new Error('Failed to create match record');
+    if (matchError || !newMatch) {
+      console.error('[Battle] Failed to create match:', matchError);
+      throw new Error('Failed to create match record');
+    }
+    matchId = newMatch.id;
+    console.log(`[Battle] Match created: ${matchId}`);
   }
-
-  console.log(`[Battle] Match created: ${match.id}`);
 
   // Extract prompt text from challenge
   const promptText = typeof challenge.prompt === 'object'
@@ -230,7 +238,7 @@ export async function executeBattle(
   } catch (errorA) {
     console.error(`[Battle] Agent A (${agentA.name}) Groq call failed:`, errorA);
     const rawMsg = errorA instanceof Error ? errorA.message : 'Unknown error';
-    await markMatchFailed(supabase, match.id, `Agent A Groq call failed: ${rawMsg}`);
+    await markMatchFailed(supabase, matchId, `Agent A Groq call failed: ${rawMsg}`);
     throw new Error(sanitizeBattleError(rawMsg));
   }
 
@@ -245,7 +253,7 @@ export async function executeBattle(
   } catch (errorB) {
     console.error(`[Battle] Agent B (${agentB.name}) Groq call failed:`, errorB);
     const rawMsg = errorB instanceof Error ? errorB.message : 'Unknown error';
-    await markMatchFailed(supabase, match.id, `Agent B Groq call failed: ${rawMsg}`);
+    await markMatchFailed(supabase, matchId, `Agent B Groq call failed: ${rawMsg}`);
     throw new Error(sanitizeBattleError(rawMsg));
   }
 
@@ -281,7 +289,7 @@ export async function executeBattle(
   } catch (judgeError) {
     console.error(`[Battle] Multi-judge panel failed:`, judgeError);
     const rawMsg = judgeError instanceof Error ? judgeError.message : 'Unknown error';
-    await markMatchFailed(supabase, match.id, `Judge panel failed: ${rawMsg}`);
+    await markMatchFailed(supabase, matchId, `Judge panel failed: ${rawMsg}`);
     throw new Error(sanitizeBattleError(rawMsg));
   }
 
@@ -347,7 +355,7 @@ export async function executeBattle(
       is_unanimous: judgeResult.isUnanimous,
       completed_at: new Date().toISOString(),
     })
-    .eq('id', match.id);
+    .eq('id', matchId);
 
   if (updateMatchError) {
     console.error('[Battle] Failed to update match:', updateMatchError);
@@ -379,7 +387,7 @@ export async function executeBattle(
 
   return {
     success: true,
-    matchId: match.id,
+    matchId,
     agentA: {
       id: agentA.id,
       name: agentA.name,

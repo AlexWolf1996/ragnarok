@@ -31,7 +31,43 @@ export async function GET() {
       .single();
 
     if (error || !match) {
-      return NextResponse.json({ success: true, match: null });
+      // No active match — check for recently completed match (within 5 min)
+      // so users can see the result before the next match starts
+      const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+      const { data: recentMatch } = await supabase
+        .from('matches')
+        .select(`
+          id, status, category, created_at, started_at, starts_at,
+          betting_opens_at, completed_at, scheduled_at,
+          agent_a_id, agent_b_id, winner_id,
+          agent_a_score, agent_b_score
+        `)
+        .eq('status', 'completed')
+        .gte('completed_at', fiveMinAgo)
+        .order('completed_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (!recentMatch) {
+        return NextResponse.json({ success: true, match: null });
+      }
+
+      // Return the recently completed match so user sees the result
+      const { data: recentAgents } = await supabase
+        .from('agents')
+        .select('id, name, avatar_url, elo_rating, wins, losses, matches_played')
+        .in('id', [recentMatch.agent_a_id, recentMatch.agent_b_id]);
+
+      return NextResponse.json({
+        success: true,
+        match: {
+          ...recentMatch,
+          agentA: recentAgents?.find((a) => a.id === recentMatch.agent_a_id) ?? null,
+          agentB: recentAgents?.find((a) => a.id === recentMatch.agent_b_id) ?? null,
+          odds: null,
+          timeRemainingMs: null,
+        },
+      });
     }
 
     // Fetch agent details
