@@ -3,18 +3,10 @@
 import { Suspense, useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
-import { Swords, Plus, RefreshCw, Loader2, Crown, Link as LinkIcon, Zap, Trophy } from 'lucide-react';
+import { Swords, Plus, RefreshCw, Loader2, Crown } from 'lucide-react';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { Tables } from '@/lib/supabase/types';
 import {
-  getAgents,
-  getRecentMatches,
-  getLiveMatches,
-  getChallenges,
-  subscribeToMatches,
-  runMatch,
-  getMatchById,
-  updateMatchSolanaTxHash,
   getAgentByWallet,
 } from '@/lib/supabase/client';
 import {
@@ -27,16 +19,13 @@ import {
   unsubscribe,
 } from '@/lib/supabase/battleRoyale';
 import { transferToTreasury, BettingTier } from '@/lib/solana/transfer';
-import { hashMatchToSolana } from '@/lib/solana/matchHash';
 import { ArenaTier, ArenaMode, BattleRoyaleWithRelations } from '@/types/battleRoyale';
 import StatsBar from '@/components/ui/StatsBar';
-import MatchCard from '@/components/ui/MatchCard';
-import AgentSelector from '@/components/ui/AgentSelector';
-import BetPanel from '@/components/ui/BetPanel';
-import MatchCommentary from '@/components/ui/MatchCommentary';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import CosmicBackground from '@/components/ui/CosmicBackground';
 import { useToast } from '@/hooks/useToast';
+import MatchLiveView from '@/components/arena/MatchLiveView';
+import RecentMatchesFeed from '@/components/arena/RecentMatchesFeed';
 import {
   TierSelector,
   ModeToggle,
@@ -46,31 +35,9 @@ import {
   CreateBattleRoyale,
   BettingModal,
   UpcomingSchedule,
-  RecentBattlesFeed,
-  BattleResultDisplay,
-  BattleLoadingState,
-  BettingDuelPanel,
 } from '@/components/arena';
 
 type Agent = Tables<'agents'>;
-type Challenge = Tables<'challenges'>;
-type MatchWithRelations = Tables<'matches'> & {
-  agent_a: Agent | null;
-  agent_b: Agent | null;
-  winner?: Agent | null;
-  challenge: Challenge | null;
-};
-
-// Type guard to validate match data
-function isValidMatchArray(data: unknown): data is MatchWithRelations[] {
-  if (!Array.isArray(data)) return false;
-  return data.every(item =>
-    typeof item === 'object' &&
-    item !== null &&
-    'id' in item &&
-    'status' in item
-  );
-}
 
 function ArenaContent() {
   const searchParams = useSearchParams();
@@ -79,7 +46,6 @@ function ArenaContent() {
   const { connection } = useConnection();
   const toast = useToast();
   const hasShownRegistrationToast = useRef(false);
-  const hasTriggeredAutoRef = useRef(false);
 
   // Mode & Tier state
   const [mode, setMode] = useState<ArenaMode>('duel');
@@ -88,13 +54,8 @@ function ArenaContent() {
   // User's agent
   const [userAgent, setUserAgent] = useState<Agent | null>(null);
 
-  // Duel mode state
-  const [agents, setAgents] = useState<Agent[]>([]);
-  const [challenges, setChallenges] = useState<Challenge[]>([]);
-  const [liveMatches, setLiveMatches] = useState<MatchWithRelations[]>([]);
-  const [recentMatches, setRecentMatches] = useState<MatchWithRelations[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  // Duel mode: selected side for betting
+  const [selectedSide, setSelectedSide] = useState<'A' | 'B' | null>(null);
 
   // Battle Royale state
   const [openBattles, setOpenBattles] = useState<BattleRoyaleWithRelations[]>([]);
@@ -104,77 +65,7 @@ function ArenaContent() {
   const [showCreateBattle, setShowCreateBattle] = useState(false);
   const [showBettingModal, setShowBettingModal] = useState(false);
   const [bettingAgentId, setBettingAgentId] = useState<string | undefined>();
-
-  // Duel match state
-  const [agentA, setAgentA] = useState<Agent | null>(null);
-  const [agentB, setAgentB] = useState<Agent | null>(null);
-  const [selectedChallenge, setSelectedChallenge] = useState<string>('random');
-  const [isStartingMatch, setIsStartingMatch] = useState(false);
-  const [matchResult, setMatchResult] = useState<MatchWithRelations | null>(null);
-
-  // On-chain hashing state
-  const [isHashing, setIsHashing] = useState(false);
-
-  // Quick Battle state
-  const [isQuickBattling, setIsQuickBattling] = useState(false);
-  const [quickBattleResult, setQuickBattleResult] = useState<{
-    agentA: {
-      id: string;
-      name: string;
-      score: number;
-      elo: number;
-      newElo: number;
-      eloDelta: number;
-      isWinner: boolean;
-      response: string;
-    };
-    agentB: {
-      id: string;
-      name: string;
-      score: number;
-      elo: number;
-      newElo: number;
-      eloDelta: number;
-      isWinner: boolean;
-      response: string;
-    };
-    challenge: {
-      id: string;
-      name: string;
-      type: string;
-      difficulty: string;
-      prompt: string;
-    };
-    reasoning: string;
-    judges?: Array<{
-      judgeId: string;
-      judgeName: string;
-      model: string;
-      scoreA: number;
-      scoreB: number;
-      winnerId: 'A' | 'B' | 'TIE';
-      reasoning: string;
-      failed: boolean;
-    }>;
-    isSplitDecision?: boolean;
-    isUnanimous?: boolean;
-  } | null>(null);
-
-  // Betting state
-  const [betMatch, setBetMatch] = useState<MatchWithRelations | null>(null);
-  const [showBetPanel, setShowBetPanel] = useState(false);
-
-  // Commentary state
-  const [commentaryData, setCommentaryData] = useState<{
-    agentA: { name: string; elo_rating: number };
-    agentB: { name: string; elo_rating: number };
-    challenge: { name: string; type: string; difficulty_level: string };
-    score_a: number;
-    score_b: number;
-    winner_id: string | null;
-    winnerName: string;
-  } | null>(null);
-  const [showCommentary, setShowCommentary] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Show registration success toast once
   useEffect(() => {
@@ -183,23 +74,6 @@ function ArenaContent() {
       toast.success('Agent Registered', 'Your agent is ready for battle!');
     }
   }, [justRegistered, toast]);
-
-  // Auto-trigger a battle on arena visit to keep things alive
-  useEffect(() => {
-    if (hasTriggeredAutoRef.current) return;
-    hasTriggeredAutoRef.current = true;
-
-    fetch('/api/battles/auto', { method: 'POST' })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          console.log(`[Arena] Auto-battle: ${data.message}`);
-        }
-      })
-      .catch(() => {
-        // Silent fail — auto-trigger is best-effort
-      });
-  }, []);
 
   // Load user's agent
   useEffect(() => {
@@ -218,43 +92,10 @@ function ArenaContent() {
     loadUserAgent();
   }, [wallet.publicKey]);
 
-  // Load duel data
-  const loadDuelData = useCallback(async () => {
-    try {
-      setLoadError(null);
-      const [agentsData, challengesData, liveData, recentData] = await Promise.all([
-        getAgents(),
-        getChallenges(),
-        getLiveMatches(),
-        getRecentMatches(10),
-      ]);
-
-      setAgents(agentsData || []);
-      setChallenges(challengesData || []);
-
-      if (isValidMatchArray(liveData)) {
-        setLiveMatches(liveData);
-      } else {
-        setLiveMatches([]);
-      }
-
-      if (isValidMatchArray(recentData)) {
-        setRecentMatches(recentData);
-      } else {
-        setRecentMatches([]);
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load arena data';
-      setLoadError(errorMessage);
-      toast.error('Load Failed', 'Could not load arena data. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  }, [toast]);
-
   // Load Battle Royale data
   const loadBattleRoyaleData = useCallback(async () => {
     try {
+      setLoading(true);
       const [openData, liveData, completedData] = await Promise.all([
         getOpenBattles(tier),
         getLiveBattles(tier),
@@ -265,179 +106,21 @@ function ArenaContent() {
       setCompletedBattles(completedData);
     } catch {
       toast.error('Load Failed', 'Could not load battle data.');
+    } finally {
+      setLoading(false);
     }
   }, [tier, toast]);
 
-  // Load data based on mode
+  // Load BR data when switching to ragnarok mode
   useEffect(() => {
-    if (mode === 'duel') {
-      loadDuelData();
-    } else {
+    if (mode === 'ragnarok') {
       loadBattleRoyaleData();
-    }
-  }, [mode, loadDuelData, loadBattleRoyaleData]);
-
-  // Subscribe to realtime updates
-  useEffect(() => {
-    if (mode === 'duel') {
-      let isSubscribed = true;
-      const channel = subscribeToMatches(async (payload) => {
-        if (!isSubscribed) return;
-        if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
-          await loadDuelData();
-        }
-      });
-      return () => {
-        isSubscribed = false;
-        channel.unsubscribe();
-      };
-    } else {
-      const channel = subscribeToOpenBattles((payload) => {
+      const channel = subscribeToOpenBattles(() => {
         loadBattleRoyaleData();
       });
-      return () => {
-        unsubscribe(channel);
-      };
+      return () => { unsubscribe(channel); };
     }
-  }, [mode, loadDuelData, loadBattleRoyaleData]);
-
-  const handleStartMatch = async () => {
-    if (!agentA || !agentB) {
-      toast.warning('Select Agents', 'Please select both agents before starting a battle.');
-      return;
-    }
-
-    setIsStartingMatch(true);
-    setMatchResult(null);
-
-    try {
-      const result = await runMatch(
-        agentA.id,
-        agentB.id,
-        selectedChallenge === 'random' ? undefined : selectedChallenge
-      );
-
-      if (result?.match_id) {
-        const fullMatch = await getMatchById(result.match_id);
-
-        if (fullMatch) {
-          const match = fullMatch as MatchWithRelations;
-          setMatchResult(match);
-
-          let winnerName = 'Unknown';
-          if (match.winner?.name) {
-            winnerName = match.winner.name;
-          } else if (match.winner_id === match.agent_a_id && match.agent_a?.name) {
-            winnerName = match.agent_a.name;
-          } else if (match.winner_id === match.agent_b_id && match.agent_b?.name) {
-            winnerName = match.agent_b.name;
-          }
-
-          const challenge = match.challenge;
-          setCommentaryData({
-            agentA: {
-              name: match.agent_a?.name || 'Unknown',
-              elo_rating: match.agent_a?.elo_rating || 1000,
-            },
-            agentB: {
-              name: match.agent_b?.name || 'Unknown',
-              elo_rating: match.agent_b?.elo_rating || 1000,
-            },
-            challenge: {
-              name: challenge?.type?.replace(/_/g, ' ') || 'Unknown Challenge',
-              type: challenge?.type || 'unknown',
-              difficulty_level: challenge?.difficulty || 'medium',
-            },
-            score_a: match.agent_a_score ?? 0,
-            score_b: match.agent_b_score ?? 0,
-            winner_id: match.winner_id,
-            winnerName,
-          });
-          setShowCommentary(true);
-          toast.success('Battle Complete', `${winnerName} is victorious!`);
-        }
-      }
-
-      await loadDuelData();
-      setAgentA(null);
-      setAgentB(null);
-      setSelectedChallenge('random');
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      toast.error('Battle Failed', `Could not start match: ${errorMessage}`);
-    } finally {
-      setIsStartingMatch(false);
-    }
-  };
-
-  const handleBetClick = (match: MatchWithRelations) => {
-    setBetMatch(match);
-    setShowBetPanel(true);
-  };
-
-  const handleHashToSolana = async () => {
-    if (!matchResult || !wallet.connected || !wallet.publicKey) {
-      toast.warning('Wallet Required', 'Please connect your wallet to hash match to Solana.');
-      return;
-    }
-
-    setIsHashing(true);
-    try {
-      const txHash = await hashMatchToSolana(
-        {
-          matchId: matchResult.id,
-          winnerId: matchResult.winner_id,
-          scoreA: matchResult.agent_a_score ?? 0,
-          scoreB: matchResult.agent_b_score ?? 0,
-        },
-        wallet
-      );
-
-      if (txHash) {
-        await updateMatchSolanaTxHash(matchResult.id, txHash);
-        setMatchResult({ ...matchResult, solana_tx_hash: txHash });
-        await loadDuelData();
-        toast.success('On-Chain Success', 'Match result hashed to Solana!');
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Transaction failed';
-      toast.error('Transaction Failed', errorMessage);
-    } finally {
-      setIsHashing(false);
-    }
-  };
-
-  const handleQuickBattle = async () => {
-    setIsQuickBattling(true);
-    setQuickBattleResult(null);
-
-    try {
-      const response = await fetch('/api/battles/quick');
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || data.error || 'Quick battle failed');
-      }
-
-      setQuickBattleResult({
-        agentA: data.agentA,
-        agentB: data.agentB,
-        challenge: data.challenge,
-        reasoning: data.reasoning,
-        judges: data.judges,
-        isSplitDecision: data.isSplitDecision,
-        isUnanimous: data.isUnanimous,
-      });
-
-      toast.success('Battle Complete!', `${data.winner.name} defeats ${data.loser.name}!`);
-      await loadDuelData();
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      toast.error('Battle Failed', errorMessage);
-    } finally {
-      setIsQuickBattling(false);
-    }
-  };
+  }, [mode, loadBattleRoyaleData]);
 
   const [isJoiningBattle, setIsJoiningBattle] = useState(false);
 
@@ -510,35 +193,13 @@ function ArenaContent() {
     setShowBettingModal(true);
   };
 
-  if (loading) {
+  if (loading && mode === 'ragnarok') {
     return (
       <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center relative">
         <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
         <div className="text-center relative z-10">
           <Loader2 size={32} className="text-amber-500 animate-spin mx-auto mb-4" />
           <p className="font-[var(--font-orbitron)] text-sm text-amber-500/70 tracking-wider">THE GATES OF BATTLE OPEN...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (loadError) {
-    return (
-      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center relative">
-        <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
-        <div className="text-center max-w-md p-8 relative z-10">
-          <div className="text-amber-500 mb-4">
-            <Swords size={48} className="mx-auto opacity-50" />
-          </div>
-          <h2 className="font-[var(--font-orbitron)] text-xl text-white mb-2" style={{ textShadow: '0 0 30px rgba(220, 38, 38, 0.3)' }}>THE HALLS ARE SEALED</h2>
-          <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400 mb-6">{loadError}</p>
-          <button
-            onClick={mode === 'duel' ? loadDuelData : loadBattleRoyaleData}
-            className="px-6 py-3 border border-neutral-700 text-neutral-400 font-[var(--font-orbitron)] text-sm tracking-[0.15em] transition-all hover:border-amber-500 hover:text-amber-500"
-          >
-            <RefreshCw size={14} className="inline mr-2" />
-            SEEK ENTRY AGAIN
-          </button>
         </div>
       </div>
     );
@@ -593,207 +254,52 @@ function ArenaContent() {
               exit={{ opacity: 0, x: 20 }}
               className="grid grid-cols-1 lg:grid-cols-3 gap-8"
             >
-              {/* Left/Main: Match Feed */}
+              {/* Main area: Live Match + Recent */}
               <div className="lg:col-span-2 space-y-6">
-                {/* Live Matches */}
-                <section aria-labelledby="live-battles-heading">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 id="live-battles-heading" className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                      BLOOD IS BEING SPILLED
-                    </h2>
-                    <button
-                      onClick={loadDuelData}
-                      className="p-3 hover:bg-amber-500/10 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
-                      aria-label="Refresh battles"
-                    >
-                      <RefreshCw size={16} className="text-neutral-500 hover:text-amber-500" />
-                    </button>
-                  </div>
-
-                  {liveMatches.length === 0 ? (
-                    <div className="bg-black/40 border border-neutral-800 rounded-lg p-8 text-center">
-                      <Swords size={32} className="text-amber-500/50 mx-auto mb-4" />
-                      <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
-                        The arena awaits its warriors. Summon a duel from the sacred panel.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {liveMatches.map((match) => (
-                        <MatchCard
-                          key={match.id}
-                          match={match}
-                          isLive={match.status === 'in_progress'}
-                          showBetButton
-                          onBetClick={handleBetClick}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </section>
-
-                {/* Commentary */}
-                {showCommentary && commentaryData && (
-                  <MatchCommentary
-                    matchData={commentaryData}
-                    isVisible={showCommentary}
-                    onDismiss={() => setShowCommentary(false)}
-                  />
-                )}
+                <MatchLiveView
+                  selectedSide={selectedSide}
+                  onSelectSide={setSelectedSide}
+                />
 
                 {/* Recent Battles Feed */}
-                <section aria-labelledby="recent-battles-heading">
-                  <h2 id="recent-battles-heading" className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
-                    <Swords size={16} className="text-amber-500/70" />
-                    ECHOES OF FALLEN WARRIORS
+                <section>
+                  <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
+                    <Swords size={16} className="text-[#D4A843]/70" />
+                    RECENT BATTLES
                   </h2>
-                  <RecentBattlesFeed
-                    limit={10}
-                    autoRefresh={true}
-                    refreshInterval={30000}
-                  />
+                  <RecentMatchesFeed />
                 </section>
               </div>
 
-              {/* Right Sidebar */}
+              {/* Right Sidebar — BetPanel will go here in F03 */}
               <aside className="space-y-6">
-                {/* Matchmaking Queue */}
-                {userAgent && (
-                  <MatchmakingQueue
-                    agentId={userAgent.id}
-                    onMatched={(matchId) => toast.success('Match Found!', 'Redirecting to battle...')}
-                  />
-                )}
-
-                {/* Betting Duel Panel */}
-                <BettingDuelPanel
-                  agents={agents}
-                  challenges={challenges}
-                  onBattleComplete={(result) => {
-                    // Show commentary if needed
-                    if (result.battle) {
-                      setCommentaryData({
-                        agentA: {
-                          name: result.battle.agentA.name,
-                          elo_rating: 1000, // Will be recalculated
-                        },
-                        agentB: {
-                          name: result.battle.agentB.name,
-                          elo_rating: 1000,
-                        },
-                        challenge: {
-                          name: result.battle.challenge.name,
-                          type: result.battle.challenge.type,
-                          difficulty_level: result.battle.challenge.difficulty,
-                        },
-                        score_a: result.battle.agentA.score,
-                        score_b: result.battle.agentB.score,
-                        winner_id: result.battle.winner.id,
-                        winnerName: result.battle.winner.name,
-                      });
-                      setShowCommentary(true);
-                    }
-                    loadDuelData();
-                    const status = result.bet.won ? 'VICTORY' : 'DEFEAT';
-                    toast.info('Battle Complete', `${status} - ${result.battle.winner.name} wins!`);
-                  }}
-                />
-
-                {/* Quick Battle Card */}
-                {!isQuickBattling && !quickBattleResult && (
-                  <div className="bg-black/40 border border-neutral-800 rounded-lg p-6 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
-                    <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
-                      <Zap size={16} className="text-amber-500" />
-                      QUICK BATTLE
-                    </h2>
-                    <p className="font-[var(--font-rajdhani)] text-xs text-neutral-400 mb-4">
-                      Let the Norns choose two random warriors for instant combat. Witness real AI battle execution.
-                    </p>
-                    <button
-                      onClick={handleQuickBattle}
-                      disabled={agents.length < 2}
-                      className="w-full py-4 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-amber-600 hover:via-amber-500 hover:to-amber-600 shadow-[0_0_30px_rgba(245,158,11,0.3)]"
-                    >
-                      <Zap size={16} />
-                      RANDOM BATTLE
-                    </button>
+                <div className="bg-[#111] border border-[#1a1a1a] p-6">
+                  <div className="font-[var(--font-rajdhani)] text-xs tracking-widest uppercase text-[#D4A843] mb-3">
+                    Upcoming Matches
                   </div>
-                )}
+                  <UpcomingSchedule onBattleSelect={() => {}} />
+                </div>
 
-                {/* Quick Battle Loading State */}
-                <AnimatePresence>
-                  {isQuickBattling && (
-                    <BattleLoadingState />
-                  )}
-                </AnimatePresence>
-
-                {/* Quick Battle Result */}
-                <AnimatePresence>
-                  {quickBattleResult && (
-                    <BattleResultDisplay
-                      agentA={quickBattleResult.agentA}
-                      agentB={quickBattleResult.agentB}
-                      challenge={quickBattleResult.challenge}
-                      reasoning={quickBattleResult.reasoning}
-                      judges={quickBattleResult.judges}
-                      isSplitDecision={quickBattleResult.isSplitDecision}
-                      isUnanimous={quickBattleResult.isUnanimous}
-                      onFightAgain={() => {
-                        setQuickBattleResult(null);
-                        handleQuickBattle();
-                      }}
-                      onDismiss={() => setQuickBattleResult(null)}
-                      isLoading={isQuickBattling}
-                    />
-                  )}
-                </AnimatePresence>
-
-                {/* Match Result */}
-                <AnimatePresence>
-                  {matchResult && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      className="bg-black/60 border border-neutral-800 rounded-lg p-6 relative overflow-hidden"
+                {/* Quick links */}
+                <div className="bg-[#111] border border-[#1a1a1a] p-6">
+                  <div className="font-[var(--font-rajdhani)] text-[10px] tracking-widest uppercase text-neutral-500 mb-4">
+                    PATHS OF GLORY
+                  </div>
+                  <div className="space-y-2">
+                    <a
+                      href="/register"
+                      className="block w-full text-center py-3 bg-[#0d0d0d] hover:bg-[#D4A843]/10 border border-[#1a1a1a] hover:border-[#D4A843]/50 font-[var(--font-rajdhani)] text-xs text-white tracking-widest uppercase transition-colors"
                     >
-                      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
-                      <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.15em] text-amber-500 mb-4 text-center">
-                        A VICTOR HAS RISEN
-                      </h3>
-                      <MatchCard match={matchResult} />
-
-                      {wallet.connected && !matchResult.solana_tx_hash && (
-                        <button
-                          onClick={handleHashToSolana}
-                          disabled={isHashing}
-                          className="w-full mt-4 py-3 border border-neutral-700 text-neutral-400 font-[var(--font-orbitron)] text-xs tracking-[0.15em] rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 transition-all hover:border-amber-500 hover:text-amber-500"
-                        >
-                          {isHashing ? (
-                            <>
-                              <Loader2 size={14} className="animate-spin" />
-                              INSCRIBING TO THE CHAIN...
-                            </>
-                          ) : (
-                            <>
-                              <LinkIcon size={14} />
-                              ETCH INTO SOLANA
-                            </>
-                          )}
-                        </button>
-                      )}
-
-                      <button
-                        onClick={() => setMatchResult(null)}
-                        className="w-full mt-4 py-2 font-[var(--font-rajdhani)] text-xs text-neutral-500 hover:text-white transition-colors"
-                      >
-                        Dismiss
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      Forge New Champion
+                    </a>
+                    <a
+                      href="/leaderboard"
+                      className="block w-full text-center py-3 bg-[#0d0d0d] hover:bg-[#D4A843]/10 border border-[#1a1a1a] hover:border-[#D4A843]/50 font-[var(--font-rajdhani)] text-xs text-white tracking-widest uppercase transition-colors"
+                    >
+                      Hall of Champions
+                    </a>
+                  </div>
+                </div>
               </aside>
             </motion.div>
           ) : (
@@ -949,17 +455,6 @@ function ArenaContent() {
           )}
         </AnimatePresence>
       </div>
-
-      {/* Bet Panel (Duel mode) */}
-      <BetPanel
-        match={betMatch}
-        isOpen={showBetPanel}
-        onClose={() => {
-          setShowBetPanel(false);
-          setBetMatch(null);
-        }}
-        onBetPlaced={loadDuelData}
-      />
 
       {/* Create Battle Modal */}
       <AnimatePresence>

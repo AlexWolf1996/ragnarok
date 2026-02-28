@@ -1,0 +1,209 @@
+'use client';
+
+import { useCurrentMatch } from '@/hooks/useCurrentMatch';
+import { useMatchOdds, calculateOdds } from '@/hooks/useMatchOdds';
+import { useUpcomingMatches } from '@/hooks/useUpcomingMatches';
+import { Swords, Loader2 } from 'lucide-react';
+import AgentCard from './AgentCard';
+import OddsDisplay from './OddsDisplay';
+import CountdownTimer from './CountdownTimer';
+import MatchStatusBanner from './MatchStatusBanner';
+import MatchResult from './MatchResult';
+
+interface MatchLiveViewProps {
+  selectedSide: 'A' | 'B' | null;
+  onSelectSide: (side: 'A' | 'B') => void;
+}
+
+export default function MatchLiveView({ selectedSide, onSelectSide }: MatchLiveViewProps) {
+  const { match, loading, error, refresh } = useCurrentMatch();
+  const { poolA, poolB, oddsA, oddsB, impliedA, impliedB } = useMatchOdds(
+    match?.id ?? null,
+    match?.status ?? null,
+  );
+
+  if (loading) {
+    return (
+      <div className="bg-[#111] border border-[#1a1a1a] p-12 text-center">
+        <Loader2 size={24} className="text-[#D4A843] animate-spin mx-auto mb-3" />
+        <p className="font-mono text-xs text-neutral-500 tracking-widest">SCANNING THE ARENA...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-[#111] border border-[#1a1a1a] p-8 text-center">
+        <p className="font-mono text-xs text-red-400 mb-3">Failed to load match</p>
+        <button
+          onClick={refresh}
+          className="font-mono text-xs text-neutral-400 border border-neutral-700 px-4 py-2 hover:border-[#D4A843] hover:text-[#D4A843] transition-colors"
+        >
+          RETRY
+        </button>
+      </div>
+    );
+  }
+
+  // No active match
+  if (!match) {
+    return <NoMatchView />;
+  }
+
+  // Use live odds if available, otherwise fall back to match.odds
+  const displayOddsA = poolA > 0 || poolB > 0 ? oddsA : (match.odds?.oddsA ?? 2.0);
+  const displayOddsB = poolA > 0 || poolB > 0 ? oddsB : (match.odds?.oddsB ?? 2.0);
+  const displayPoolA = poolA > 0 || poolB > 0 ? poolA : (match.odds?.poolA ?? 0);
+  const displayPoolB = poolA > 0 || poolB > 0 ? poolB : (match.odds?.poolB ?? 0);
+  const displayImpliedA = poolA > 0 || poolB > 0 ? impliedA : 50;
+  const displayImpliedB = poolA > 0 || poolB > 0 ? impliedB : 50;
+
+  const isBettingOpen = match.status === 'betting_open';
+
+  return (
+    <div className="space-y-4">
+      {/* Status banner */}
+      <MatchStatusBanner status={match.status} />
+
+      {/* Category + Challenge */}
+      {match.category && (
+        <div className="text-center">
+          <span className="font-mono text-[10px] text-neutral-500 tracking-widest uppercase">
+            {match.category} challenge
+          </span>
+        </div>
+      )}
+
+      {/* Agent cards face-to-face */}
+      {match.agentA && match.agentB && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <AgentCard
+            agent={match.agentA}
+            side="A"
+            odds={displayOddsA}
+            poolAmount={displayPoolA}
+            isSelected={selectedSide === 'A'}
+            clickable={isBettingOpen}
+            onClick={() => onSelectSide('A')}
+          />
+          <AgentCard
+            agent={match.agentB}
+            side="B"
+            odds={displayOddsB}
+            poolAmount={displayPoolB}
+            isSelected={selectedSide === 'B'}
+            clickable={isBettingOpen}
+            onClick={() => onSelectSide('B')}
+          />
+        </div>
+      )}
+
+      {/* Odds bar */}
+      <OddsDisplay impliedA={displayImpliedA} impliedB={displayImpliedB} />
+
+      {/* Countdown (only during betting_open) */}
+      {isBettingOpen && match.starts_at && (
+        <div className="flex justify-center">
+          <CountdownTimer
+            targetDate={match.starts_at}
+            label="Betting closes in"
+            onExpired={refresh}
+          />
+        </div>
+      )}
+
+      {/* In-progress state (mock for Phase 2a) */}
+      {match.status === 'in_progress' && (
+        <InProgressView agentAName={match.agentA?.name} agentBName={match.agentB?.name} />
+      )}
+
+      {/* Judging state (mock for Phase 2a) */}
+      {match.status === 'judging' && (
+        <JudgingView />
+      )}
+
+      {/* Completed state */}
+      {match.status === 'completed' && (
+        <MatchResult match={match} />
+      )}
+    </div>
+  );
+}
+
+function NoMatchView() {
+  const { matches } = useUpcomingMatches();
+  const next = matches[0];
+
+  return (
+    <div className="bg-[#111] border border-[#1a1a1a] p-8 sm:p-12 text-center">
+      <Swords size={32} className="text-neutral-600 mx-auto mb-4" />
+      <div className="font-[var(--font-rajdhani)] text-lg text-white tracking-widest uppercase mb-2">
+        The Arena Awaits
+      </div>
+      <p className="font-mono text-xs text-neutral-500 mb-4">
+        No active battle. The scheduler will summon the next match.
+      </p>
+      {next?.starts_at && (
+        <div className="flex justify-center">
+          <CountdownTimer targetDate={next.starts_at} label="Next match in" />
+        </div>
+      )}
+      {next?.agentA && next?.agentB && (
+        <div className="mt-4 font-mono text-xs text-neutral-400">
+          <span className="text-[#D4A843]">{next.agentA.name}</span>
+          {' vs '}
+          <span className="text-[#c0392b]">{next.agentB.name}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function InProgressView({ agentAName, agentBName }: { agentAName?: string; agentBName?: string }) {
+  return (
+    <div className="bg-[#111] border border-red-500/20 p-6">
+      <div className="text-center mb-4">
+        <span className="font-mono text-[10px] text-red-400 tracking-widest uppercase">Agents are responding...</span>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="border border-[#D4A843]/20 p-4" style={{ borderTop: '2px solid #D4A843' }}>
+          <div className="font-mono text-[10px] text-[#D4A843] tracking-widest uppercase mb-2">{agentAName ?? 'Agent A'}</div>
+          <div className="space-y-1">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-2 bg-neutral-800 animate-pulse" style={{ width: `${70 + Math.random() * 30}%`, animationDelay: `${i * 200}ms` }} />
+            ))}
+          </div>
+        </div>
+        <div className="border border-[#c0392b]/20 p-4" style={{ borderTop: '2px solid #c0392b' }}>
+          <div className="font-mono text-[10px] text-[#c0392b] tracking-widest uppercase mb-2">{agentBName ?? 'Agent B'}</div>
+          <div className="space-y-1">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-2 bg-neutral-800 animate-pulse" style={{ width: `${60 + Math.random() * 40}%`, animationDelay: `${i * 300}ms` }} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function JudgingView() {
+  return (
+    <div className="bg-[#111] border border-[#D4A843]/20 p-6 text-center">
+      <div className="font-mono text-[10px] text-[#D4A843] tracking-widest uppercase mb-4">
+        Three judges deliberating...
+      </div>
+      <div className="flex justify-center gap-4">
+        {['JUDGE I', 'JUDGE II', 'JUDGE III'].map((name, i) => (
+          <div
+            key={name}
+            className="w-16 h-16 border border-[#D4A843]/30 flex items-center justify-center animate-pulse"
+            style={{ animationDelay: `${i * 800}ms` }}
+          >
+            <span className="font-mono text-[9px] text-[#D4A843]/60 tracking-wider">{name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
