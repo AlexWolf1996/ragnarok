@@ -28,6 +28,7 @@ import { useCurrentMatch } from '@/hooks/useCurrentMatch';
 import MatchLiveView from '@/components/arena/MatchLiveView';
 import RecentMatchesFeed from '@/components/arena/RecentMatchesFeed';
 import BetPanel from '@/components/arena/BetPanel';
+import SubmitChallenge from '@/components/arena/SubmitChallenge';
 import {
   TierSelector,
   ModeToggle,
@@ -263,6 +264,9 @@ function ArenaContent() {
                   selectedSide={selectedSide}
                   onSelectSide={setSelectedSide}
                 />
+
+                {/* Submit Challenge */}
+                <SubmitChallenge />
 
                 {/* Recent Battles Feed */}
                 <section>
