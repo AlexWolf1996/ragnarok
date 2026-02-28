@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Menu, X } from 'lucide-react';
+import NotificationBell from '@/components/ui/NotificationBell';
 
 const navLinks = [
   { href: '/arena', label: 'ARENA' },
@@ -127,8 +128,9 @@ export default function Header() {
           })}
         </div>
 
-        {/* Wallet Connect - Same class as LandingHeader */}
-        <div className="hidden md:block">
+        {/* Notifications + Wallet Connect */}
+        <div className="hidden md:flex items-center gap-2">
+          <NotificationBell />
           <div className="landing-wallet-btn">
             <WalletMultiButton />
           </div>
@@ -195,7 +197,8 @@ export default function Header() {
                     </Link>
                   );
                 })}
-                <div className="pt-6 border-t border-amber-500/10">
+                <div className="pt-6 border-t border-amber-500/10 flex items-center gap-3">
+                  <NotificationBell />
                   <div className="landing-wallet-btn">
                     <WalletMultiButton />
                   </div>
