@@ -45,7 +45,8 @@ export interface CurrentMatch {
   timeRemainingMs: number | null;
 }
 
-const POLL_INTERVAL = 10_000; // 10s
+const POLL_INTERVAL_DEFAULT = 10_000; // 10s
+const POLL_INTERVAL_FAST = 5_000;     // 5s during in_progress/judging for snappy transitions
 
 export function useCurrentMatch() {
   const [match, setMatch] = useState<CurrentMatch | null>(null);
@@ -66,20 +67,22 @@ export function useCurrentMatch() {
     }
   }, []);
 
+  // Poll faster during in_progress/judging so users see transitions quickly
+  const pollInterval = (match?.status === 'in_progress' || match?.status === 'judging')
+    ? POLL_INTERVAL_FAST
+    : POLL_INTERVAL_DEFAULT;
+
   useEffect(() => {
     let cancelled = false;
-    const run = async () => {
-      await fetchMatch();
-    };
-    run();
+    fetchMatch();
     const interval = setInterval(() => {
       if (!cancelled) fetchMatch();
-    }, POLL_INTERVAL);
+    }, pollInterval);
     return () => {
       cancelled = true;
       clearInterval(interval);
     };
-  }, [fetchMatch]);
+  }, [fetchMatch, pollInterval]);
 
   return { match, loading, error, refresh: fetchMatch };
 }

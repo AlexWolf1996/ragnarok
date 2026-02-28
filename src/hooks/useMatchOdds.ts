@@ -42,7 +42,8 @@ export function useMatchOdds(matchId: string | null, status: string | null) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const shouldPoll = !!matchId && status === 'betting_open';
+  // Poll odds during betting, battle, and judging (so users see their position)
+  const shouldPoll = !!matchId && (status === 'betting_open' || status === 'in_progress' || status === 'judging');
 
   const fetchOdds = useCallback(async () => {
     if (!matchId) return;

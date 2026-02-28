@@ -2,6 +2,10 @@
  * Current Match Endpoint
  *
  * GET /api/matches/current — active match with agents, category, status, times, current odds
+ *
+ * Self-healing: if a betting_open match has starts_at in the past,
+ * fire-and-forget a call to the scheduler so the battle starts automatically.
+ * This solves the daily-cron problem (Vercel Hobby only runs cron once/day).
  */
 
 import { NextResponse } from 'next/server';
@@ -9,6 +13,27 @@ import { getSupabaseAdmin } from '@/lib/battles/engine';
 import { calculateParimutuelOdds } from '@/lib/bets/parimutuel';
 
 export const runtime = 'nodejs';
+export const maxDuration = 60;
+
+/**
+ * Fire-and-forget trigger to the scheduler.
+ * If the scheduler is already running (lock held), it will skip gracefully.
+ */
+function triggerScheduler() {
+  const baseUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const cronSecret = process.env.CRON_SECRET;
+
+  fetch(`${baseUrl}/api/cron/scheduler`, {
+    method: 'POST',
+    headers: cronSecret
+      ? { Authorization: `Bearer ${cronSecret}` }
+      : {},
+  }).catch((err) => {
+    console.error('[CurrentMatch] Scheduler trigger failed:', err);
+  });
+}
 
 export async function GET() {
   try {
@@ -31,7 +56,10 @@ export async function GET() {
       .single();
 
     if (error || !match) {
-      // No active match — check for recently completed match (within 5 min)
+      // No active match — trigger scheduler to create one
+      triggerScheduler();
+
+      // Check for recently completed match (within 5 min)
       // so users can see the result before the next match starts
       const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
       const { data: recentMatch } = await supabase
@@ -68,6 +96,15 @@ export async function GET() {
           timeRemainingMs: null,
         },
       });
+    }
+
+    // Self-healing: if betting_open match has starts_at in the past → trigger scheduler
+    if (match.status === 'betting_open' && match.starts_at) {
+      const startsAtMs = new Date(match.starts_at).getTime();
+      if (startsAtMs <= Date.now()) {
+        console.log(`[CurrentMatch] Stale betting_open match ${match.id} (starts_at passed), triggering scheduler`);
+        triggerScheduler();
+      }
     }
 
     // Fetch agent details

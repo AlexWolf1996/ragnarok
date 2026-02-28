@@ -48,16 +48,24 @@ async function handler(request: NextRequest) {
     return NextResponse.json({ success: true, action: 'skipped', reason: 'locked' });
   }
 
+  const releaseLock = async () => {
+    // Release lock by setting locked_at far in the past
+    await supabase
+      .from('scheduler_lock')
+      .update({ locked_at: new Date(0).toISOString(), locked_by: null })
+      .eq('id', 1);
+  };
+
   try {
     const now = new Date();
     const actions: string[] = [];
 
     // 1. Check for stuck matches
-    // Stuck in_progress > 5 min → force complete (mark as failed)
+    // Stuck in_progress or judging > 5 min → force complete (mark as failed)
     const { data: stuckInProgress } = await supabase
       .from('matches')
       .select('id')
-      .eq('status', 'in_progress')
+      .in('status', ['in_progress', 'judging'])
       .lt('started_at', new Date(now.getTime() - STUCK_IN_PROGRESS_MS).toISOString());
 
     for (const match of (stuckInProgress || [])) {
@@ -92,10 +100,15 @@ async function handler(request: NextRequest) {
       actions.push(`started battle for match ${match.id}`);
     }
 
-    // 3. Process pending payouts
-    const payoutResult = await processPayoutQueue();
-    if (payoutResult.processed > 0) {
-      actions.push(`processed ${payoutResult.processed} payouts`);
+    // 3. Process pending payouts (batch — up to 10 per invocation)
+    let totalPayoutsProcessed = 0;
+    for (let i = 0; i < 10; i++) {
+      const payoutResult = await processPayoutQueue();
+      if (payoutResult.processed === 0) break;
+      totalPayoutsProcessed += payoutResult.processed;
+    }
+    if (totalPayoutsProcessed > 0) {
+      actions.push(`processed ${totalPayoutsProcessed} payouts`);
     }
 
     // 4. Need a new match? Check if there's any active match
@@ -215,6 +228,7 @@ async function handler(request: NextRequest) {
 
     console.log(`[Scheduler] Completed: ${actions.join('; ')}`);
 
+    await releaseLock();
     return NextResponse.json({
       success: true,
       actions,
@@ -222,6 +236,7 @@ async function handler(request: NextRequest) {
     });
   } catch (error) {
     console.error('[Scheduler] Error:', error);
+    await releaseLock();
     return NextResponse.json(
       { success: false, error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 },

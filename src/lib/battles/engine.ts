@@ -257,6 +257,18 @@ export async function executeBattle(
     throw new Error(sanitizeBattleError(rawMsg));
   }
 
+  // Transition to judging state (both responses received, judges about to score)
+  await supabase
+    .from('matches')
+    .update({
+      status: 'judging',
+      agent_a_response: responseA,
+      agent_b_response: responseB,
+    })
+    .eq('id', matchId);
+
+  console.log(`[Battle] Match ${matchId} → judging`);
+
   // Multi-judge panel — 3 independent LLMs score in parallel
   let judgeResult;
   try {
@@ -339,14 +351,12 @@ export async function executeBattle(
   const newWinnerElo = winnerAgent.elo_rating + winnerDelta;
   const newLoserElo = Math.max(100, loserAgent.elo_rating + loserDelta);
 
-  // Update match with results (including multi-judge panel data)
+  // Update match with final results (responses already saved during judging transition)
   const { error: updateMatchError } = await supabase
     .from('matches')
     .update({
       status: 'completed',
       winner_id: winnerId,
-      agent_a_response: responseA,
-      agent_b_response: responseB,
       agent_a_score: judgeResult.scoreA,
       agent_b_score: judgeResult.scoreB,
       judge_reasoning: judgeResult.reasoning,
