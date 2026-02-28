@@ -15,10 +15,10 @@ export default function PayoutPreview({ odds, betAmount, agentName }: PayoutPrev
         Potential Return
       </div>
       <div className="font-mono text-sm text-emerald-400">
-        {potentialReturn.toFixed(4)} SOL
+        {odds > 0 ? `${potentialReturn.toFixed(4)} SOL` : '— SOL'}
       </div>
       <div className="font-mono text-[9px] text-neutral-600 mt-1">
-        If {agentName ?? 'your champion'} wins → {odds.toFixed(2)}x
+        If {agentName ?? 'your champion'} wins → {odds > 0 ? `${odds.toFixed(2)}x` : '—'}
       </div>
     </div>
   );

@@ -40,11 +40,12 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   const selectedAgentId = selectedSide === 'A' ? match?.agent_a_id : selectedSide === 'B' ? match?.agent_b_id : null;
 
   // Use live odds if available, otherwise fall back to match.odds
+  // Use || instead of ?? so that backend 0 values also fall back to defaults
   const hasLiveOdds = poolA > 0 || poolB > 0;
-  const displayOddsA = hasLiveOdds ? oddsA : (match?.odds?.oddsA ?? 2.0);
-  const displayOddsB = hasLiveOdds ? oddsB : (match?.odds?.oddsB ?? 2.0);
-  const displayPoolA = hasLiveOdds ? poolA : (match?.odds?.poolA ?? 0);
-  const displayPoolB = hasLiveOdds ? poolB : (match?.odds?.poolB ?? 0);
+  const displayOddsA = hasLiveOdds ? oddsA : (match?.odds?.oddsA || 2.0);
+  const displayOddsB = hasLiveOdds ? oddsB : (match?.odds?.oddsB || 2.0);
+  const displayPoolA = hasLiveOdds ? poolA : (match?.odds?.poolA || 0);
+  const displayPoolB = hasLiveOdds ? poolB : (match?.odds?.poolB || 0);
 
   const currentOdds = selectedSide === 'A' ? displayOddsA : displayOddsB;
   const betAmount = BETTING_TIERS[selectedTier];
@@ -221,7 +222,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
           <div className="space-y-1">
             <div className="flex justify-between font-mono text-[10px]">
               <span className="text-neutral-500">Current Odds</span>
-              <span className="text-white">{currentOdds.toFixed(2)}x</span>
+              <span className="text-white">{currentOdds > 0 ? `${currentOdds.toFixed(2)}x` : '—'}</span>
             </div>
             <div className="flex justify-between font-mono text-[10px]">
               <span className="text-neutral-500">Your Wager</span>

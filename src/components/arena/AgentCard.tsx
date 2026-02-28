@@ -82,11 +82,15 @@ export default function AgentCard({ agent, side, odds, poolAmount, isSelected, c
       <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid #1a1a1a' }}>
         <div>
           <div className="font-mono text-[10px] text-neutral-500 tracking-widest uppercase">ODDS</div>
-          <div className="font-mono text-lg text-white">{odds.toFixed(2)}x</div>
+          <div className="font-mono text-lg text-white">
+            {odds > 0 ? `${odds.toFixed(2)}x` : '—'}
+          </div>
         </div>
         <div className="text-right">
           <div className="font-mono text-[10px] text-neutral-500 tracking-widest uppercase">POOL</div>
-          <div className="font-mono text-sm text-neutral-300">{poolAmount.toFixed(2)} SOL</div>
+          <div className="font-mono text-sm text-neutral-300">
+            {poolAmount > 0 ? `${poolAmount.toFixed(2)} SOL` : 'No bets yet'}
+          </div>
         </div>
       </div>
     </button>
