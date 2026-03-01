@@ -141,5 +141,57 @@ NEXT_PUBLIC_TREASURY_WALLET_ADDRESS=
 
 ---
 
-## DONE CRITERIA
+## DONE CRITERIA (MVP Sprint)
 All tasks B01-B02, F01-F05, V01-V02 complete. `npm run build` passes. No `rounded-lg` outside of `rounded-full`. No `amber-500` brand colors. `times_used` bug fixed. Match interval at 60min.
+
+---
+---
+
+# SPECS — Betting Pipeline Sprint (March 1, 2026)
+
+> Fixes the end-to-end betting flow so real users can place bets, get refunds on failures, and receive proper notifications.
+
+---
+
+## PHASE 4: BETTING PIPELINE
+
+### P0 — Fix Solana RPC in browser (CRITICAL) [DONE]
+**Problem:** Betting flow broken — Solana RPC calls fail from the browser due to CORS blocking on Helius free tier. `transferToTreasury()` uses the WalletProvider connection (Helius endpoint), which rejects cross-origin `simulateTransaction()` and `sendRawTransaction()` calls. The fallback chain (`getClientConnection()`) is never invoked because `existingConnection` is truthy.
+**Fix:**
+- `src/lib/solana/config.ts` — `getSolanaEndpoint()` now returns public mainnet (`api.mainnet-beta.solana.com`) which has permissive CORS. Helius kept server-side only in `getConnection()`.
+- `src/lib/solana/transfer.ts` — `CLIENT_RPC_ENDPOINTS` hardcoded to public mainnet (no Helius in browser). `transferToTreasury()` health-checks the passed connection with 8s timeout; on failure, falls back to `getClientConnection()`.
+**Commit:** `fix(betting): P0 — browser-safe Solana RPC with CORS fallback`
+
+---
+
+### P1 — Auto-refund on failed matches [DONE — already implemented]
+**Problem:** If a battle fails after bets are placed, users lose their SOL with no recourse.
+**Status:** Already fully implemented across 3 files:
+- `src/lib/bets/parimutuel.ts` — `refundMatch()` (lines 176-236): queries `pending` bets, marks as `refunded`, sets `payout_sol` = original amount, inserts into `payout_queue`, notifies bettors.
+- `src/lib/battles/engine.ts` — `markMatchFailed()` (lines 115-121): calls `refundMatch()` via dynamic import after marking match as failed.
+- `src/app/api/cron/scheduler/route.ts` — wired at 3 failure points: stuck in_progress matches (line 77), settlement retry failure (line 292-298), battle execution error (line 311-312).
+**Double-refund protection:** `refundMatch()` only queries `status: 'pending'` bets — already-refunded bets are skipped.
+**No changes needed.**
+
+---
+
+### P2 — Disable competing battle routes [DONE — already implemented]
+**Problem:** Direct battle endpoints (`/api/battles/auto`, `/api/battles/quick`, `/api/battles/execute`) bypass the scheduler, create orphan matches, and waste Groq tokens.
+**Status:** All 3 endpoints already return 403:
+- `src/app/api/battles/auto/route.ts` — GET/POST → 403
+- `src/app/api/battles/quick/route.ts` — GET/POST → 403
+- `src/app/api/battles/execute/route.ts` — POST → 403
+**No changes needed.**
+
+---
+
+### P3 — Loss notifications for bettors [DONE — already implemented]
+**Problem:** Losing bettors receive no notification after a match completes.
+**Status:** Already implemented in `src/lib/bets/parimutuel.ts` `settleMatch()` (lines 136-162):
+- After marking losing bets as `status: 'lost'`, inserts a `match_result` notification for each loser: *"Your prediction was defeated. Better luck next battle."*
+**No changes needed.**
+
+---
+
+## DONE CRITERIA (Betting Pipeline Sprint)
+All tasks P0-P3 complete. Browser betting uses CORS-friendly public mainnet RPC. Failed matches auto-refund pending bets. Direct battle routes return 403. Losers receive notifications. `npm run build` passes.
