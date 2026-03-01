@@ -5,28 +5,32 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Swords, Scroll, Loader2, Trophy, ExternalLink } from 'lucide-react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { getMatchBetsByWallet } from '@/lib/supabase/client';
-import { lamportsToSol } from '@/lib/solana/transfer';
 import MyChallenges from './MyChallenges';
 import SubmitChallenge from './SubmitChallenge';
 
 type Tab = 'bets' | 'challenges';
 
-interface BetMatch {
+interface BetEntry {
   id: string;
-  created_at: string;
-  completed_at: string | null;
+  match_id: string;
+  agent_id: string;
+  amount_sol: number;
   status: string;
-  agent_a_id: string;
-  agent_b_id: string;
-  winner_id: string | null;
-  bet_amount_lamports: number | null;
-  bettor_pick_id: string | null;
-  bet_tx_signature: string | null;
-  bet_status: string | null;
-  tier: string | null;
+  tx_signature: string | null;
   payout_tx_signature: string | null;
-  agent_a: { id: string; name: string } | null;
-  agent_b: { id: string; name: string } | null;
+  payout_sol: number | null;
+  created_at: string;
+  match: {
+    id: string;
+    status: string;
+    winner_id: string | null;
+    completed_at: string | null;
+    agent_a_id: string;
+    agent_b_id: string;
+    agent_a: { id: string; name: string } | null;
+    agent_b: { id: string; name: string } | null;
+  } | null;
+  picked_agent: { id: string; name: string } | null;
 }
 
 interface ActivityDrawerProps {
@@ -145,7 +149,7 @@ function TabButton({
 
 function MyBetsTab() {
   const { publicKey, connected } = useWallet();
-  const [bets, setBets] = useState<BetMatch[]>([]);
+  const [bets, setBets] = useState<BetEntry[]>([]);
   const [loading, setLoading] = useState(false);
 
   const wallet = publicKey?.toString() ?? null;
@@ -157,7 +161,7 @@ function MyBetsTab() {
     }
     try {
       const data = await getMatchBetsByWallet(wallet);
-      setBets((data as BetMatch[]) || []);
+      setBets((data as BetEntry[]) || []);
     } catch {
       // Silent fail
     } finally {
@@ -208,8 +212,8 @@ function MyBetsTab() {
   }
 
   // Quick stats
-  const wins = bets.filter((b) => b.bet_status === 'won' || b.bet_status === 'paid').length;
-  const losses = bets.filter((b) => b.bet_status === 'lost').length;
+  const wins = bets.filter((b) => b.status === 'won').length;
+  const losses = bets.filter((b) => b.status === 'lost').length;
 
   return (
     <div className="space-y-3">
@@ -250,36 +254,39 @@ function MyBetsTab() {
 const BET_STATUS_STYLES: Record<string, { label: string; color: string }> = {
   pending: { label: 'ACTIVE', color: 'text-[#D4A843]' },
   won: { label: 'WON', color: 'text-emerald-400' },
-  paid: { label: 'WON', color: 'text-emerald-400' },
   lost: { label: 'LOST', color: 'text-red-400' },
   refunded: { label: 'REFUNDED', color: 'text-neutral-400' },
 };
 
-const TIER_COLORS: Record<string, string> = {
-  bifrost: 'text-emerald-400',
-  midgard: 'text-[#D4A843]',
-  asgard: 'text-red-400',
-};
+/** Derive tier label from SOL amount */
+function getTierFromAmount(sol: number): { label: string; color: string } | null {
+  if (sol >= 0.1) return { label: 'asgard', color: 'text-red-400' };
+  if (sol >= 0.05) return { label: 'midgard', color: 'text-[#D4A843]' };
+  if (sol >= 0.01) return { label: 'bifrost', color: 'text-emerald-400' };
+  return null;
+}
 
-function BetHistoryCard({ bet }: { bet: BetMatch }) {
-  const status = BET_STATUS_STYLES[bet.bet_status ?? 'pending'] ?? BET_STATUS_STYLES.pending;
-  const isWin = bet.bet_status === 'won' || bet.bet_status === 'paid';
-  const amountSol = bet.bet_amount_lamports ? lamportsToSol(bet.bet_amount_lamports) : 0;
-  const pickedAgent = bet.bettor_pick_id === bet.agent_a_id
-    ? bet.agent_a?.name
-    : bet.agent_b?.name;
+function BetHistoryCard({ bet }: { bet: BetEntry }) {
+  const status = BET_STATUS_STYLES[bet.status] ?? BET_STATUS_STYLES.pending;
+  const isWin = bet.status === 'won';
+  const amountSol = bet.amount_sol;
+  const tier = getTierFromAmount(amountSol);
 
   const date = new Date(bet.created_at);
   const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+  const agentAName = bet.match?.agent_a?.name ?? '?';
+  const agentBName = bet.match?.agent_b?.name ?? '?';
+  const pickedAgentName = bet.picked_agent?.name;
 
   return (
     <div className="border border-[#1a1a1a] bg-[#0d0d0d] p-3 space-y-2">
       {/* Match + status */}
       <div className="flex items-center justify-between">
         <div className="font-[var(--font-rajdhani)] text-xs text-white truncate mr-2">
-          {bet.agent_a?.name ?? '?'}
+          {agentAName}
           <span className="text-neutral-600 mx-1">vs</span>
-          {bet.agent_b?.name ?? '?'}
+          {agentBName}
         </div>
         <span className={`flex items-center gap-1 font-mono text-[10px] tracking-widest uppercase flex-shrink-0 ${status.color}`}>
           {isWin && <Trophy size={10} />}
@@ -291,9 +298,9 @@ function BetHistoryCard({ bet }: { bet: BetMatch }) {
       <div className="flex items-center justify-between font-mono text-[9px]">
         <div className="flex items-center gap-2">
           <span className="text-neutral-500">{dateStr}</span>
-          {bet.tier && (
-            <span className={`tracking-wider uppercase ${TIER_COLORS[bet.tier] ?? 'text-neutral-400'}`}>
-              {bet.tier}
+          {tier && (
+            <span className={`tracking-wider uppercase ${tier.color}`}>
+              {tier.label}
             </span>
           )}
         </div>
@@ -304,11 +311,11 @@ function BetHistoryCard({ bet }: { bet: BetMatch }) {
 
       {/* Picked agent + tx links */}
       <div className="flex items-center justify-between font-mono text-[9px] text-neutral-600">
-        {pickedAgent && <span>Picked: {pickedAgent}</span>}
+        {pickedAgentName && <span>Picked: {pickedAgentName}</span>}
         <div className="flex items-center gap-2 ml-auto">
-          {bet.bet_tx_signature && (
+          {bet.tx_signature && (
             <a
-              href={`https://solscan.io/tx/${bet.bet_tx_signature}`}
+              href={`https://solscan.io/tx/${bet.tx_signature}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-0.5 text-neutral-500 hover:text-[#D4A843] transition-colors"

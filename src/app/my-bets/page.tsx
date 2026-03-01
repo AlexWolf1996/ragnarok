@@ -5,63 +5,57 @@ import { motion } from 'framer-motion';
 import { Loader2, Coins, ExternalLink, Trophy, X, RefreshCw, Wallet } from 'lucide-react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { getMatchBetsByWallet } from '@/lib/supabase/client';
-import { lamportsToSol } from '@/lib/solana/transfer';
 import { useToast } from '@/hooks/useToast';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import CosmicBackground from '@/components/ui/CosmicBackground';
 
-interface BetMatch {
+interface BetEntry {
   id: string;
-  created_at: string;
-  completed_at: string | null;
+  match_id: string;
+  agent_id: string;
+  amount_sol: number;
   status: string;
-  agent_a_id: string;
-  agent_b_id: string;
-  agent_a_score: number | null;
-  agent_b_score: number | null;
-  winner_id: string | null;
-  bet_amount_lamports: number | null;
-  bettor_wallet: string | null;
-  bettor_pick_id: string | null;
-  bet_tx_signature: string | null;
-  bet_status: string | null;
-  tier: string | null;
+  tx_signature: string | null;
   payout_tx_signature: string | null;
-  agent_a: { id: string; name: string } | null;
-  agent_b: { id: string; name: string } | null;
+  payout_sol: number | null;
+  created_at: string;
+  match: {
+    id: string;
+    status: string;
+    winner_id: string | null;
+    completed_at: string | null;
+    agent_a_id: string;
+    agent_b_id: string;
+    agent_a: { id: string; name: string } | null;
+    agent_b: { id: string; name: string } | null;
+  } | null;
+  picked_agent: { id: string; name: string } | null;
 }
 
-const TIER_COLORS: Record<string, string> = {
-  bifrost: 'text-emerald-400',
-  midgard: 'text-[#D4A843]',
-  asgard: 'text-red-400',
-};
+/** Derive tier from SOL amount */
+function getTier(sol: number): { label: string; color: string } {
+  if (sol >= 0.1) return { label: 'ASGARD', color: 'text-red-400' };
+  if (sol >= 0.05) return { label: 'MIDGARD', color: 'text-[#D4A843]' };
+  return { label: 'BIFROST', color: 'text-emerald-400' };
+}
 
-const TIER_LABELS: Record<string, string> = {
-  bifrost: 'BIFROST',
-  midgard: 'MIDGARD',
-  asgard: 'ASGARD',
-};
-
-function getStatusBadge(status: string | null) {
+function getStatusBadge(status: string) {
   switch (status) {
-    case 'paid':
-      return { label: 'PAID', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' };
     case 'won':
       return { label: 'WON', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' };
     case 'lost':
       return { label: 'LOST', color: 'bg-red-500/20 text-red-400 border-red-500/30' };
-    case 'payout_failed':
-      return { label: 'PAYOUT PENDING', color: 'bg-[#c9a84c]/20 text-[#D4A843] border-[#c9a84c]/30' };
+    case 'refunded':
+      return { label: 'REFUNDED', color: 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30' };
     default:
-      return { label: 'PENDING', color: 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30' };
+      return { label: 'ACTIVE', color: 'bg-[#c9a84c]/20 text-[#D4A843] border-[#c9a84c]/30' };
   }
 }
 
 function MyBetsContent() {
   const wallet = useWallet();
   const toast = useToast();
-  const [bets, setBets] = useState<BetMatch[]>([]);
+  const [bets, setBets] = useState<BetEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'pending' | 'won' | 'lost'>('all');
@@ -73,7 +67,7 @@ function MyBetsContent() {
     setError(null);
     try {
       const data = await getMatchBetsByWallet(wallet.publicKey.toString());
-      setBets((data as BetMatch[]) || []);
+      setBets((data as BetEntry[]) || []);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to load bets';
       setError(msg);
@@ -93,34 +87,24 @@ function MyBetsContent() {
 
   // Stats
   const totalBets = bets.length;
-  const wins = bets.filter((b) => b.bet_status === 'won' || b.bet_status === 'paid').length;
-  const losses = bets.filter((b) => b.bet_status === 'lost').length;
+  const wins = bets.filter((b) => b.status === 'won').length;
+  const losses = bets.filter((b) => b.status === 'lost').length;
   const winRate = totalBets > 0 ? Math.round((wins / totalBets) * 100) : 0;
-  const totalWagered = bets.reduce(
-    (sum, b) => sum + (b.bet_amount_lamports ? lamportsToSol(b.bet_amount_lamports) : 0),
-    0,
-  );
+  const totalWagered = bets.reduce((sum, b) => sum + (b.amount_sol || 0), 0);
   const totalWon = bets
-    .filter((b) => b.bet_status === 'paid' || b.bet_status === 'won')
-    .reduce((sum, b) => {
-      // Use actual payout if available, otherwise estimate from bet amount
-      if (b.payout_tx_signature && b.bet_amount_lamports) {
-        return sum + lamportsToSol(b.bet_amount_lamports);
-      }
-      return sum;
-    }, 0);
+    .filter((b) => b.status === 'won')
+    .reduce((sum, b) => sum + (b.payout_sol ?? b.amount_sol ?? 0), 0);
   const netPnl = totalWon - totalWagered;
 
   // Filter bets
   const filteredBets = bets.filter((b) => {
     if (filter === 'all') return true;
-    if (filter === 'won') return b.bet_status === 'won' || b.bet_status === 'paid';
-    if (filter === 'lost') return b.bet_status === 'lost';
-    // pending = everything else (not won, not lost, not paid)
-    return b.bet_status !== 'won' && b.bet_status !== 'paid' && b.bet_status !== 'lost';
+    if (filter === 'won') return b.status === 'won';
+    if (filter === 'lost') return b.status === 'lost';
+    return b.status === 'pending';
   });
 
-  const pendingCount = bets.filter((b) => b.bet_status !== 'won' && b.bet_status !== 'paid' && b.bet_status !== 'lost').length;
+  const pendingCount = bets.filter((b) => b.status === 'pending').length;
 
   // Not connected
   if (!wallet.connected || !wallet.publicKey) {
@@ -294,15 +278,11 @@ function MyBetsContent() {
           ) : (
             <div className="divide-y divide-neutral-800/50">
               {filteredBets.map((bet, index) => {
-                const badge = getStatusBadge(bet.bet_status);
-                const amountSol = bet.bet_amount_lamports
-                  ? lamportsToSol(bet.bet_amount_lamports)
-                  : 0;
-                const isWin = bet.bet_status === 'won' || bet.bet_status === 'paid';
-                const pickedAgent =
-                  bet.bettor_pick_id === bet.agent_a_id
-                    ? bet.agent_a?.name
-                    : bet.agent_b?.name;
+                const badge = getStatusBadge(bet.status);
+                const amountSol = bet.amount_sol;
+                const isWin = bet.status === 'won';
+                const tier = getTier(amountSol);
+                const pickedAgentName = bet.picked_agent?.name;
                 const date = new Date(bet.created_at);
                 const dateStr = date.toLocaleDateString('en-US', {
                   month: 'short',
@@ -324,17 +304,17 @@ function MyBetsContent() {
                     {/* Match info */}
                     <div className="col-span-12 md:col-span-3">
                       <div className="font-[var(--font-rajdhani)] text-sm text-white">
-                        {bet.agent_a?.name ?? '?'}{' '}
+                        {bet.match?.agent_a?.name ?? '?'}{' '}
                         <span className="text-[#c9a84c] font-[var(--font-orbitron)] text-[10px]">vs</span>{' '}
-                        {bet.agent_b?.name ?? '?'}
+                        {bet.match?.agent_b?.name ?? '?'}
                       </div>
                       <div className="flex items-center gap-2 mt-1">
                         <span className="font-mono text-[10px] text-neutral-500">
                           {dateStr} {timeStr}
                         </span>
-                        {pickedAgent && (
+                        {pickedAgentName && (
                           <span className="font-mono text-[10px] text-neutral-600">
-                            Picked: {pickedAgent}
+                            Picked: {pickedAgentName}
                           </span>
                         )}
                       </div>
@@ -343,11 +323,9 @@ function MyBetsContent() {
                     {/* Tier */}
                     <div className="col-span-4 md:col-span-2 text-center">
                       <span
-                        className={`font-[var(--font-orbitron)] text-xs tracking-wider ${
-                          TIER_COLORS[bet.tier || ''] || 'text-neutral-400'
-                        }`}
+                        className={`font-[var(--font-orbitron)] text-xs tracking-wider ${tier.color}`}
                       >
-                        {TIER_LABELS[bet.tier || ''] || bet.tier || '-'}
+                        {tier.label}
                       </span>
                     </div>
 
@@ -364,7 +342,7 @@ function MyBetsContent() {
                       <div className="flex items-center gap-2">
                         {isWin ? (
                           <Trophy size={12} className="text-emerald-400" />
-                        ) : bet.bet_status === 'lost' ? (
+                        ) : bet.status === 'lost' ? (
                           <X size={12} className="text-red-400" />
                         ) : null}
                         <span
@@ -372,19 +350,14 @@ function MyBetsContent() {
                         >
                           {badge.label}
                         </span>
-                        {isWin && (
-                          <span className="font-mono text-[10px] text-emerald-400">
-                            WON
-                          </span>
-                        )}
                       </div>
                     </div>
 
                     {/* Tx links */}
                     <div className="col-span-12 md:col-span-3 flex items-center justify-center gap-3">
-                      {bet.bet_tx_signature && (
+                      {bet.tx_signature && (
                         <a
-                          href={`https://solscan.io/tx/${bet.bet_tx_signature}`}
+                          href={`https://solscan.io/tx/${bet.tx_signature}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 font-mono text-[10px] text-neutral-500 hover:text-[#D4A843] transition-colors"
@@ -402,7 +375,7 @@ function MyBetsContent() {
                           payout <ExternalLink size={10} />
                         </a>
                       )}
-                      {!bet.bet_tx_signature && !bet.payout_tx_signature && (
+                      {!bet.tx_signature && !bet.payout_tx_signature && (
                         <span className="font-mono text-[10px] text-neutral-600">-</span>
                       )}
                     </div>
