@@ -16,17 +16,18 @@ interface MatchChallenge {
   id: string;
   name: string;
   type: string;
-  difficulty_level: string;
-  prompt: unknown; // Json field — could be string or object
+  difficulty: string;
+  prompt: unknown; // Json field — { question: "..." } or string
 }
 
+// Matches the JudgeVote camelCase shape stored in DB by engine.ts
 interface JudgeScore {
-  judge_id?: string;
-  judge_name?: string;
+  judgeId?: string;
+  judgeName?: string;
   model?: string;
-  score_a?: number;
-  score_b?: number;
-  winner?: string;
+  scoreA?: number;
+  scoreB?: number;
+  winnerId?: string;
   reasoning?: string;
   failed?: boolean;
 }
@@ -61,13 +62,14 @@ function extractResponse(raw: unknown): string {
 
 function extractPrompt(raw: unknown): string {
   if (typeof raw === 'string') return raw;
-  if (raw && typeof raw === 'object' && 'prompt' in raw) {
-    return String((raw as { prompt: unknown }).prompt);
+  if (raw && typeof raw === 'object') {
+    const obj = raw as Record<string, unknown>;
+    // Engine stores prompts as { question: "..." }
+    if ('question' in obj) return String(obj.question);
+    if ('prompt' in obj) return String(obj.prompt);
+    if ('text' in obj) return String(obj.text);
+    return JSON.stringify(raw);
   }
-  if (raw && typeof raw === 'object' && 'text' in raw) {
-    return String((raw as { text: unknown }).text);
-  }
-  if (raw) return JSON.stringify(raw);
   return 'Unknown challenge';
 }
 
@@ -84,12 +86,12 @@ function parseJudgeScores(raw: unknown): {
   if (!Array.isArray(raw)) return [];
 
   return (raw as JudgeScore[]).map((j) => ({
-    judgeId: j.judge_id ?? 'unknown',
-    judgeName: j.judge_name ?? j.judge_id ?? 'Unknown',
+    judgeId: j.judgeId ?? 'unknown',
+    judgeName: j.judgeName ?? j.judgeId ?? 'Unknown',
     model: j.model ?? '',
-    scoreA: j.score_a ?? 0,
-    scoreB: j.score_b ?? 0,
-    winnerId: j.winner === 'A' ? 'A' : j.winner === 'B' ? 'B' : 'TIE',
+    scoreA: j.scoreA ?? 0,
+    scoreB: j.scoreB ?? 0,
+    winnerId: (j.winnerId === 'A' ? 'A' : j.winnerId === 'B' ? 'B' : 'TIE') as 'A' | 'B' | 'TIE',
     reasoning: j.reasoning ?? '',
     failed: j.failed ?? false,
   }));
@@ -221,7 +223,7 @@ export default function MatchDetailModal({ matchId, onClose }: MatchDetailModalP
                   id: match.challenge?.id ?? '',
                   name: match.challenge?.name ?? 'Unknown Challenge',
                   type: match.challenge?.type ?? 'unknown',
-                  difficulty: match.challenge?.difficulty_level ?? 'unknown',
+                  difficulty: match.challenge?.difficulty ?? 'unknown',
                   prompt: match.challenge ? extractPrompt(match.challenge.prompt) : 'Challenge details unavailable',
                 }}
                 reasoning={match.judge_reasoning ?? ''}
@@ -230,6 +232,7 @@ export default function MatchDetailModal({ matchId, onClose }: MatchDetailModalP
                 isUnanimous={match.is_unanimous ?? false}
                 onFightAgain={onClose}
                 onDismiss={onClose}
+                isHistorical
               />
             )}
           </motion.div>

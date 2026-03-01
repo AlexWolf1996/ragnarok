@@ -61,7 +61,7 @@ export async function GET(
     if (match.challenge_id) {
       const { data: ch } = await supabase
         .from('challenges')
-        .select('id, name, type, difficulty_level, prompt')
+        .select('id, name, type, difficulty, prompt')
         .eq('id', match.challenge_id)
         .single();
       challenge = ch;

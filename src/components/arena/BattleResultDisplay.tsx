@@ -55,6 +55,8 @@ interface BattleResultDisplayProps {
   onFightAgain: () => void;
   onDismiss: () => void;
   isLoading?: boolean;
+  /** Historical match view — hides ELO deltas and FIGHT AGAIN button */
+  isHistorical?: boolean;
 }
 
 function AnimatedScore({
@@ -188,6 +190,7 @@ export default function BattleResultDisplay({
   onFightAgain,
   onDismiss,
   isLoading = false,
+  isHistorical = false,
 }: BattleResultDisplayProps) {
   const [showResponses, setShowResponses] = useState(false);
 
@@ -337,40 +340,42 @@ export default function BattleResultDisplay({
           </motion.div>
         </div>
 
-        {/* ELO Changes */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2.2 }}
-          className="flex justify-center gap-8 mb-6"
-        >
-          <div className="flex items-center gap-2">
-            {agentA.eloDelta >= 0 ? (
-              <TrendingUp size={16} className="text-emerald-400" />
-            ) : (
-              <TrendingDown size={16} className="text-red-400" />
-            )}
-            <span className={`font-mono text-sm font-bold ${
-              agentA.eloDelta >= 0 ? 'text-emerald-400' : 'text-red-400'
-            }`}>
-              {agentA.eloDelta >= 0 ? '+' : ''}{agentA.eloDelta}
-            </span>
-            <span className="text-[10px] text-neutral-500">ELO</span>
-          </div>
-          <div className="flex items-center gap-2">
-            {agentB.eloDelta >= 0 ? (
-              <TrendingUp size={16} className="text-emerald-400" />
-            ) : (
-              <TrendingDown size={16} className="text-red-400" />
-            )}
-            <span className={`font-mono text-sm font-bold ${
-              agentB.eloDelta >= 0 ? 'text-emerald-400' : 'text-red-400'
-            }`}>
-              {agentB.eloDelta >= 0 ? '+' : ''}{agentB.eloDelta}
-            </span>
-            <span className="text-[10px] text-neutral-500">ELO</span>
-          </div>
-        </motion.div>
+        {/* ELO Changes — hidden for historical matches where delta is unknown */}
+        {!isHistorical && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 2.2 }}
+            className="flex justify-center gap-8 mb-6"
+          >
+            <div className="flex items-center gap-2">
+              {agentA.eloDelta >= 0 ? (
+                <TrendingUp size={16} className="text-emerald-400" />
+              ) : (
+                <TrendingDown size={16} className="text-red-400" />
+              )}
+              <span className={`font-mono text-sm font-bold ${
+                agentA.eloDelta >= 0 ? 'text-emerald-400' : 'text-red-400'
+              }`}>
+                {agentA.eloDelta >= 0 ? '+' : ''}{agentA.eloDelta}
+              </span>
+              <span className="text-[10px] text-neutral-500">ELO</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {agentB.eloDelta >= 0 ? (
+                <TrendingUp size={16} className="text-emerald-400" />
+              ) : (
+                <TrendingDown size={16} className="text-red-400" />
+              )}
+              <span className={`font-mono text-sm font-bold ${
+                agentB.eloDelta >= 0 ? 'text-emerald-400' : 'text-red-400'
+              }`}>
+                {agentB.eloDelta >= 0 ? '+' : ''}{agentB.eloDelta}
+              </span>
+              <span className="text-[10px] text-neutral-500">ELO</span>
+            </div>
+          </motion.div>
+        )}
 
         {/* Multi-Judge Panel */}
         {judges && judges.length > 0 ? (
@@ -579,20 +584,31 @@ export default function BattleResultDisplay({
           transition={{ delay: 2.8 }}
           className="flex flex-col sm:flex-row gap-3 mt-6"
         >
-          <button
-            onClick={onFightAgain}
-            disabled={isLoading}
-            className="flex-1 py-4 bg-gradient-to-r from-[#8a6d2b] via-[#a88a3d] to-[#8a6d2b] text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-[#a88a3d] hover:via-[#c9a84c] hover:to-[#a88a3d] shadow-[0_0_30px_rgba(245,158,11,0.3)]"
-          >
-            <Zap size={16} />
-            FIGHT AGAIN
-          </button>
-          <button
-            onClick={onDismiss}
-            className="px-6 py-4 border border-neutral-700 text-neutral-400 font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-sm hover:border-neutral-600 hover:text-neutral-300 transition-colors"
-          >
-            DISMISS
-          </button>
+          {isHistorical ? (
+            <button
+              onClick={onDismiss}
+              className="flex-1 py-4 border border-neutral-700 text-neutral-400 font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-sm hover:border-[#c9a84c]/40 hover:text-neutral-300 transition-colors"
+            >
+              CLOSE
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={onFightAgain}
+                disabled={isLoading}
+                className="flex-1 py-4 bg-gradient-to-r from-[#8a6d2b] via-[#a88a3d] to-[#8a6d2b] text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-[#a88a3d] hover:via-[#c9a84c] hover:to-[#a88a3d] shadow-[0_0_30px_rgba(245,158,11,0.3)]"
+              >
+                <Zap size={16} />
+                FIGHT AGAIN
+              </button>
+              <button
+                onClick={onDismiss}
+                className="px-6 py-4 border border-neutral-700 text-neutral-400 font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-sm hover:border-neutral-600 hover:text-neutral-300 transition-colors"
+              >
+                DISMISS
+              </button>
+            </>
+          )}
         </motion.div>
       </div>
     </motion.div>
