@@ -38,7 +38,6 @@ import {
   MatchmakingQueue,
   CreateBattleRoyale,
   BettingModal,
-  UpcomingSchedule,
 } from '@/components/arena';
 
 type Agent = Tables<'agents'>;
@@ -274,19 +273,14 @@ function ArenaContent() {
                 {/* Bet Panel — below match */}
                 <BetPanel match={currentMatch} selectedSide={selectedSide} />
 
-                {/* Upcoming + Recent row */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <section>
-                    <UpcomingSchedule onBattleSelect={() => {}} />
-                  </section>
-                  <section>
-                    <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
-                      <Swords size={16} className="text-[#D4A843]/70" />
-                      RECENT BATTLES
-                    </h2>
-                    <RecentMatchesFeed onMatchSelect={setSelectedMatchId} />
-                  </section>
-                </div>
+                {/* Recent battles */}
+                <section>
+                  <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
+                    <Swords size={16} className="text-[#D4A843]/70" />
+                    RECENT BATTLES
+                  </h2>
+                  <RecentMatchesFeed onMatchSelect={setSelectedMatchId} />
+                </section>
               </div>
             </motion.div>
           ) : (
@@ -429,9 +423,6 @@ function ArenaContent() {
                     onMatched={() => toast.success('Match Found!', 'Joining battle...')}
                   />
                 )}
-
-                {/* Upcoming Schedule */}
-                <UpcomingSchedule onBattleSelect={handleViewBattle} />
 
                 {/* Quick Actions */}
                 <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 relative overflow-hidden">
