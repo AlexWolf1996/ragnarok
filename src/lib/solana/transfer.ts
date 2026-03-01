@@ -16,9 +16,10 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
   ]);
 }
 
-// Browser-safe RPC endpoints (CORS-friendly only).
-// Public mainnet is listed first — premium RPCs like Helius often block browser CORS.
+// Browser RPC endpoints — tried in order with health-check.
+// NEXT_PUBLIC_SOLANA_RPC_URL (Helius) first for speed, public mainnet as fallback.
 const CLIENT_RPC_ENDPOINTS = [
+  process.env.NEXT_PUBLIC_SOLANA_RPC_URL,
   'https://api.mainnet-beta.solana.com',
 ].filter((url): url is string => Boolean(url && url.startsWith('http')));
 
