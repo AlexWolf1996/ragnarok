@@ -7,7 +7,6 @@
 
 import {
   getSupabaseClient,
-  getCorsHeaders,
   jsonResponse,
   errorResponse,
   optionsResponse,
@@ -213,7 +212,7 @@ Deno.serve(async (req) => {
       message: `Bet of ${body.amount_sol} SOL placed and verified`,
     }, 200, req);
 
-  } catch (err) {
+  } catch {
     return errorResponse('Internal server error', 500, req);
   }
 });

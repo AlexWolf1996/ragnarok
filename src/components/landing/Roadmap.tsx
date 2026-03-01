@@ -137,7 +137,7 @@ export default function Roadmap() {
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ duration: 0.6 }}
             >
-              // THE PATH TO VALHALLA
+              {'// THE PATH TO VALHALLA'}
             </motion.div>
             <motion.h2
               className="mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white"

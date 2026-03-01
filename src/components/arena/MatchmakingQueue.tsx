@@ -12,7 +12,7 @@ interface MatchmakingQueueProps {
   onMatched?: (matchId: string) => void;
 }
 
-export default function MatchmakingQueue({ agentId, onMatched }: MatchmakingQueueProps) {
+export default function MatchmakingQueue({ agentId }: MatchmakingQueueProps) {
   const [selectedTier, setSelectedTier] = useState<ArenaTier>('midgard');
   const [queueStats, setQueueStats] = useState<QueueStats[]>([]);
   const [isInQueue, setIsInQueue] = useState(false);
@@ -71,7 +71,7 @@ export default function MatchmakingQueue({ agentId, onMatched }: MatchmakingQueu
       } else {
         setError(result.error || 'Failed to join queue');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to join queue');
     } finally {
       setLoading(false);

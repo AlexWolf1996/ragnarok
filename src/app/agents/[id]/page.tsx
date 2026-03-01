@@ -24,6 +24,7 @@ import {
   Award,
   Star,
 } from 'lucide-react';
+import Image from 'next/image';
 import CosmicBackground from '@/components/ui/CosmicBackground';
 import EloChart from '@/components/ui/EloChart';
 
@@ -256,10 +257,12 @@ export default function AgentProfilePage() {
                     // Emoji avatar
                     <span>{agent.avatarUrl}</span>
                   ) : (
-                    <img
+                    <Image
                       src={agent.avatarUrl}
                       alt={agent.name}
-                      className="w-full h-full rounded-full object-cover"
+                      fill
+                      className="rounded-full object-cover"
+                      unoptimized
                     />
                   )
                 ) : (

@@ -55,7 +55,6 @@ export default function LandingStatsBar() {
     battles: 0,
     prizePool: 0,
   });
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const loadStats = async () => {
@@ -81,7 +80,7 @@ export default function LandingStatsBar() {
       } catch {
         // Keep zeros on error
       } finally {
-        setLoaded(true);
+        // Stats loaded
       }
     };
 

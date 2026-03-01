@@ -8,7 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/battles/engine';
-import { generateAgentResponse, scoreBatchResponses, calculateEloChange } from '@/lib/groq/client';
+import { generateAgentResponse, scoreBatchResponses } from '@/lib/groq/client';
 import { sendPayout } from '@/lib/solana/payout';
 import { solToLamports } from '@/lib/solana/transfer';
 

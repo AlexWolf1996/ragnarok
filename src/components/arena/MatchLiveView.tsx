@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useCurrentMatch } from '@/hooks/useCurrentMatch';
-import { useMatchOdds, calculateOdds } from '@/hooks/useMatchOdds';
+import { useMatchOdds } from '@/hooks/useMatchOdds';
 import { useUpcomingMatches } from '@/hooks/useUpcomingMatches';
-import { Swords, Loader2 } from 'lucide-react';
+import { Swords } from 'lucide-react';
 import AgentCard from './AgentCard';
 import OddsDisplay from './OddsDisplay';
 import CountdownTimer from './CountdownTimer';

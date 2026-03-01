@@ -165,7 +165,7 @@ export default function BattleRoyaleLive({ battleId, onBet }: BattleRoyaleLivePr
 
         {/* Round Progress */}
         <div className="flex gap-1 mt-4">
-          {rounds.map((round, i) => (
+          {rounds.map((round) => (
             <div
               key={round.id}
               className={`flex-1 h-2 rounded-full transition-colors ${

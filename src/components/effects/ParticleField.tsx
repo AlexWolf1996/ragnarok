@@ -78,9 +78,16 @@ export default function ParticleField({
     particlesRef.current = particles;
   }, [isMobile, mobileParticleCount, particleCount]);
 
+  const isVisibleRef = useRef(isVisible);
+  const animateFnRef = useRef<(() => void) | undefined>(undefined);
+
+  useEffect(() => {
+    isVisibleRef.current = isVisible;
+  }, [isVisible]);
+
   const animate = useCallback(() => {
-    if (!isVisible) {
-      animationRef.current = requestAnimationFrame(animate);
+    if (!isVisibleRef.current) {
+      animationRef.current = requestAnimationFrame(() => animateFnRef.current?.());
       return;
     }
 
@@ -146,8 +153,12 @@ export default function ParticleField({
       ctx.fill();
     }
 
-    animationRef.current = requestAnimationFrame(animate);
-  }, [isVisible]);
+    animationRef.current = requestAnimationFrame(() => animateFnRef.current?.());
+  }, []);
+
+  useEffect(() => {
+    animateFnRef.current = animate;
+  }, [animate]);
 
   // Intersection Observer to pause animation when off-screen
   useEffect(() => {

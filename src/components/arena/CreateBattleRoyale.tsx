@@ -65,7 +65,7 @@ export default function CreateBattleRoyale({
       } else {
         setError(result.error || 'Failed to create battle');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to create battle');
     } finally {
       setLoading(false);

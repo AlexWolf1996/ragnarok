@@ -56,7 +56,6 @@ export default function EloChart({ data, currentElo, height = 160 }: EloChartPro
     );
   }
 
-  const width = 100; // percentage
   const { points, minElo, range } = chartData;
 
   // Generate path

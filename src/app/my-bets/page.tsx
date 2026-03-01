@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Loader2, Coins, ExternalLink, Trophy, X, RefreshCw, Wallet } from 'lucide-react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { getMatchBetsByWallet } from '@/lib/supabase/client';
-import { lamportsToSol, BETTING_TIERS, BettingTier } from '@/lib/solana/transfer';
+import { lamportsToSol } from '@/lib/solana/transfer';
 import { useToast } from '@/hooks/useToast';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import CosmicBackground from '@/components/ui/CosmicBackground';
@@ -303,12 +303,6 @@ function MyBetsContent() {
                   bet.bettor_pick_id === bet.agent_a_id
                     ? bet.agent_a?.name
                     : bet.agent_b?.name;
-                const winnerAgent =
-                  bet.winner_id === bet.agent_a_id
-                    ? bet.agent_a?.name
-                    : bet.winner_id === bet.agent_b_id
-                      ? bet.agent_b?.name
-                      : null;
                 const date = new Date(bet.created_at);
                 const dateStr = date.toLocaleDateString('en-US', {
                   month: 'short',

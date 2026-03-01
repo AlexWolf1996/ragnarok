@@ -1,26 +1,23 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 export default function LightningForks() {
-  const [isMounted, setIsMounted] = useState(false);
+  const [delays, setDelays] = useState<{ d1: number; d2: number; d3: number } | null>(null);
 
   useEffect(() => {
-    setIsMounted(true);
+    const t = setTimeout(() => {
+      setDelays({
+        d1: Math.random() * 2,
+        d2: Math.random() * 2 + 0.5,
+        d3: Math.random() * 3 + 1,
+      });
+    }, 0);
+    return () => clearTimeout(t);
   }, []);
 
-  // Generate stable random delays on mount
-  const delays = useMemo(() => {
-    if (!isMounted) return { d1: 0, d2: 0.5, d3: 1 };
-    return {
-      d1: Math.random() * 2,
-      d2: Math.random() * 2 + 0.5,
-      d3: Math.random() * 3 + 1,
-    };
-  }, [isMounted]);
-
-  if (!isMounted) return null;
+  if (!delays) return null;
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden mix-blend-screen opacity-60">

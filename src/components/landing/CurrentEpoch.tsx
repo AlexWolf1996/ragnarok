@@ -29,37 +29,37 @@ interface LeaderboardRowProps {
   isInView: boolean;
 }
 
+function RankChangeIcon({ rankChange, index }: { rankChange: 'up' | 'down' | 'same'; index: number }) {
+  if (rankChange === 'up') {
+    return (
+      <motion.span
+        className="text-[#4ade80]"
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 + index * 0.1 }}
+      >
+        <ChevronUp size={14} />
+      </motion.span>
+    );
+  }
+  if (rankChange === 'down') {
+    return (
+      <motion.span
+        className="text-[#f87171]"
+        initial={{ opacity: 0, y: -5 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 + index * 0.1 }}
+      >
+        <ChevronDown size={14} />
+      </motion.span>
+    );
+  }
+  return <span className="w-[14px]" />;
+}
+
 function LeaderboardRow({ entry, index, isInView }: LeaderboardRowProps) {
   const [isHovered, setIsHovered] = useState(false);
   const reducedMotion = useReducedMotion();
-
-  const RankChangeIcon = () => {
-    if (entry.rankChange === 'up') {
-      return (
-        <motion.span
-          className="text-[#4ade80]"
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 + index * 0.1 }}
-        >
-          <ChevronUp size={14} />
-        </motion.span>
-      );
-    }
-    if (entry.rankChange === 'down') {
-      return (
-        <motion.span
-          className="text-[#f87171]"
-          initial={{ opacity: 0, y: -5 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 + index * 0.1 }}
-        >
-          <ChevronDown size={14} />
-        </motion.span>
-      );
-    }
-    return <span className="w-[14px]" />;
-  };
 
   return (
     <motion.div
@@ -75,7 +75,7 @@ function LeaderboardRow({ entry, index, isInView }: LeaderboardRowProps) {
       {/* Rank with change indicator */}
       <div className="flex items-center gap-1 font-mono text-sm text-[#8a8a95] w-16">
         <span>{String(entry.rank).padStart(2, '0')}</span>
-        <RankChangeIcon />
+        <RankChangeIcon rankChange={entry.rankChange} index={index} />
       </div>
 
       {/* Name */}

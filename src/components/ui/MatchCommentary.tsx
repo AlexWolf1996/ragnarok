@@ -97,15 +97,21 @@ function TypingText({
     }
 
     indexRef.current = 0;
-    setDisplayedText('');
-    setIsComplete(false);
 
     if (skipAnimation) {
-      setDisplayedText(text);
-      setIsComplete(true);
-      onComplete?.();
-      return;
+      const skipTimeout = setTimeout(() => {
+        setDisplayedText(text);
+        setIsComplete(true);
+        onComplete?.();
+      }, 0);
+      return () => clearTimeout(skipTimeout);
     }
+
+    // Reset for new text — defer to avoid sync setState in effect
+    const resetTimeout = setTimeout(() => {
+      setDisplayedText('');
+      setIsComplete(false);
+    }, 0);
 
     intervalRef.current = setInterval(() => {
       if (!isMountedRef.current) {
@@ -129,6 +135,7 @@ function TypingText({
     }, speed);
 
     return () => {
+      clearTimeout(resetTimeout);
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;

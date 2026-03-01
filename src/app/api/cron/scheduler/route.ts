@@ -300,7 +300,6 @@ async function startBattle(
 
     // Schedule next match
     const nextStartsAt = new Date(Date.now() + MATCH_INTERVAL_MS);
-    const nextBettingOpensAt = new Date(Date.now() + MATCH_INTERVAL_MS - BETTING_WINDOW_MS);
 
     console.log(`[Scheduler] Match ${match.id} completed. Next match starts at ${nextStartsAt.toISOString()}`);
   } catch (battleErr) {

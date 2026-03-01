@@ -31,37 +31,37 @@ export default function AnimatedCounter({
 
   useEffect(() => {
     if (!isInView || hasAnimated.current) return;
+    hasAnimated.current = true;
 
     if (reducedMotion) {
-      setCount(target);
-      hasAnimated.current = true;
-      return;
+      const t = setTimeout(() => setCount(target), 0);
+      return () => clearTimeout(t);
     }
 
-    hasAnimated.current = true;
     const startTime = Date.now();
-    const startValue = 0;
 
     const easeOutExpo = (t: number): number => {
       return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
     };
 
+    let rafId: number;
     const animate = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       const easedProgress = easeOutExpo(progress);
-      const currentValue = startValue + (target - startValue) * easedProgress;
+      const currentValue = target * easedProgress;
 
       setCount(currentValue);
 
       if (progress < 1) {
-        requestAnimationFrame(animate);
+        rafId = requestAnimationFrame(animate);
       } else {
         setCount(target);
       }
     };
 
-    requestAnimationFrame(animate);
+    rafId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId);
   }, [isInView, target, duration, reducedMotion]);
 
   const formatValue = (value: number): string => {

@@ -302,7 +302,7 @@ export async function verifyWalletSignature(
       walletAddress,
     };
 
-  } catch (error) {
+  } catch {
     return {
       success: false,
       error: 'Signature verification error',

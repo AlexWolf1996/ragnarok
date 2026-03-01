@@ -60,22 +60,6 @@ function getRelativeTime(dateString: string): string {
   return date.toLocaleDateString();
 }
 
-function getDifficultyColor(difficulty: string): string {
-  switch (difficulty) {
-    case 'easy':
-    case 'bifrost':
-      return 'text-[#D4A843]';
-    case 'medium':
-    case 'midgard':
-      return 'text-[#D4A843]';
-    case 'hard':
-    case 'asgard':
-      return 'text-red-400';
-    default:
-      return 'text-neutral-400';
-  }
-}
-
 function getChallengeTypeIcon(type: string): string {
   switch (type) {
     case 'reasoning':

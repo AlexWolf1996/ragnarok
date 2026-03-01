@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Coins, TrendingUp, AlertCircle, Loader2 } from 'lucide-react';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -40,13 +40,7 @@ export default function BetPanel({ match, isOpen, onClose, onBetPlaced }: BetPan
   const agentA = match?.agent_a;
   const agentB = match?.agent_b;
 
-  useEffect(() => {
-    if (match) {
-      loadBetPools();
-    }
-  }, [match]);
-
-  async function loadBetPools() {
+  const loadBetPools = useCallback(async () => {
     if (!match) return;
     try {
       const bets = await getMatchBets(match.id);
@@ -60,7 +54,13 @@ export default function BetPanel({ match, isOpen, onClose, onBetPlaced }: BetPan
     } catch {
       // Failed to load bet pools - continue with defaults
     }
-  }
+  }, [match]);
+
+  useEffect(() => {
+    if (match) {
+      loadBetPools();
+    }
+  }, [match, loadBetPools]);
 
   const odds = agentA && agentB
     ? calculateOdds(agentA.elo_rating, agentB.elo_rating)

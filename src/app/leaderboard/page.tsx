@@ -15,6 +15,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Tables } from '@/lib/supabase/types';
 import { getLeaderboard, getAgentRecentMatches, supabase } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/useToast';
@@ -451,10 +452,13 @@ function LeaderboardContent() {
                     {/* Agent info */}
                     <div className="col-span-6 md:col-span-4 flex items-center gap-3" role="cell">
                       {agent.avatar_url ? (
-                        <img
+                        <Image
                           src={agent.avatar_url}
                           alt=""
+                          width={40}
+                          height={40}
                           className="w-10 h-10 rounded-full object-cover border border-neutral-800"
+                          unoptimized
                         />
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-black/60 border border-neutral-800 flex items-center justify-center" aria-hidden="true">

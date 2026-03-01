@@ -4,7 +4,7 @@
  */
 
 import { getSupabaseClient, corsHeaders, jsonResponse, errorResponse } from '../_shared/supabase.ts';
-import { ArenaTier, TIER_CONFIG } from '../_shared/types.ts';
+import { ArenaTier } from '../_shared/types.ts';
 
 interface QueueJoinRequest {
   agent_id: string;

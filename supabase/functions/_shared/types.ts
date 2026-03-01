@@ -64,6 +64,7 @@ export function calculatePayouts(
 }
 
 export function generateBattleName(tier: ArenaTier): string {
+  void tier;
   const adjectives = ['Epic', 'Fierce', 'Legendary', 'Brutal', 'Glorious', 'Savage'];
   const nouns = ['Clash', 'Showdown', 'Battle', 'Arena', 'Conquest', 'Ragnarok'];
   const adj = adjectives[Math.floor(Math.random() * adjectives.length)];

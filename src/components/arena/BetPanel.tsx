@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Swords, Check, Loader2, AlertTriangle, TrendingUp } from 'lucide-react';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { usePlaceBet } from '@/hooks/usePlaceBet';
-import { useMatchOdds, calculateOdds } from '@/hooks/useMatchOdds';
+import { useMatchOdds } from '@/hooks/useMatchOdds';
 import { useMyBet } from '@/hooks/useMyBet';
 import { transferToTreasury, BETTING_TIERS, BettingTier } from '@/lib/solana/transfer';
 import { useToast } from '@/hooks/useToast';

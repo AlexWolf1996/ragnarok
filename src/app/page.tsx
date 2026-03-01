@@ -6,7 +6,6 @@
 
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion, useInView } from 'framer-motion';
 import {
   Cpu,
@@ -57,111 +56,6 @@ function Section({
     <section id={id} className={cn('relative', className)}>
       {children}
     </section>
-  );
-}
-
-// ============================================
-// HERO MATCHMAKING WIDGET - Real Supabase Data
-// ============================================
-function MatchmakingWidget({ agents, stats }: { agents: Agent[]; stats: { totalMatches: number; activeAgents: number } }) {
-  const [agentA, agentB] = agents.length >= 2
-    ? [agents[0], agents[1]]
-    : [null, null];
-
-  if (!agentA || !agentB) {
-    return (
-      <div className="relative border border-neutral-800 bg-black/60 backdrop-blur-sm p-6 shadow-[0_0_60px_rgba(245,158,11,0.1)]">
-        <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-[#8a6d2b] via-[#c9a84c] to-[#8a6d2b]" />
-
-        <div className="flex items-start justify-between">
-          <div>
-            <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
-              LIVE_FEED
-            </div>
-            <div className="font-[var(--font-orbitron)] font-black text-2xl tracking-tight text-white">
-              MATCHMAKING
-            </div>
-          </div>
-          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-[#c9a84c]/70">
-            AWAITING
-          </div>
-        </div>
-
-        <div className="mt-8 text-center py-8">
-          <div className="font-mono text-sm text-[#c9a84c] mb-2">
-            AWAITING_COMBATANTS
-          </div>
-          <div className="font-[var(--font-rajdhani)] text-neutral-400">
-            No agents have entered the arena yet.
-          </div>
-          <Link
-            href="/register"
-            className="inline-block mt-4 px-6 py-2 border border-[#c9a84c]/30 text-[#c9a84c] font-mono text-xs tracking-[0.2em] hover:bg-[#c9a84c]/10 transition-colors"
-          >
-            DEPLOY_FIRST_AGENT
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  const winRateA = agentA.wins + agentA.losses > 0
-    ? ((agentA.wins / (agentA.wins + agentA.losses)) * 100).toFixed(1)
-    : '0.0';
-  const winRateB = agentB.wins + agentB.losses > 0
-    ? ((agentB.wins / (agentB.wins + agentB.losses)) * 100).toFixed(1)
-    : '0.0';
-
-  return (
-    <div className="relative border border-neutral-800 bg-black/60 backdrop-blur-sm p-6 shadow-[0_0_60px_rgba(245,158,11,0.1)]">
-      <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-[#8a6d2b] via-[#c9a84c] to-[#8a6d2b]" />
-
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
-            LIVE_FEED
-          </div>
-          <div className="font-[var(--font-orbitron)] font-black text-2xl tracking-tight text-white">
-            MATCHMAKING
-          </div>
-        </div>
-        <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-[#c9a84c]">
-          ACTIVE
-        </div>
-      </div>
-
-      <div className="mt-6 grid grid-cols-2 gap-4">
-        <div className="border border-[#c9a84c]/25 bg-[#c9a84c]/5 p-4">
-          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-[#c9a84c]/80 truncate">
-            {agentA.name}
-          </div>
-          <div className="mt-2 font-[var(--font-orbitron)] font-black text-3xl text-white">
-            {winRateA}%
-          </div>
-          <div className="mt-1 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
-            win_rate
-          </div>
-        </div>
-        <div className="border border-cyan-600/25 bg-cyan-600/5 p-4">
-          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-cyan-500/80 truncate">
-            {agentB.name}
-          </div>
-          <div className="mt-2 font-[var(--font-orbitron)] font-black text-3xl text-white">
-            {winRateB}%
-          </div>
-          <div className="mt-1 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
-            win_rate
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-5 flex items-center justify-between">
-        <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
-          AGENTS: {stats.activeAgents} // BATTLES: {stats.totalMatches}
-        </div>
-        <ChevronDown className="w-5 h-5 text-neutral-600" />
-      </div>
-    </div>
   );
 }
 
@@ -290,7 +184,7 @@ function Arena() {
         <div className="flex items-start sm:items-end justify-between gap-4 sm:gap-8 flex-col md:flex-row">
           <div>
             <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-[#c9a84c]/70">
-              // LIVE SIMULATION
+              {'// LIVE SIMULATION'}
             </div>
             <h2 className="mt-2 sm:mt-3 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
               WATCH THE
@@ -412,7 +306,7 @@ function Features() {
         <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-4 sm:gap-8">
           <div>
             <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
-              // CORE DIRECTIVES
+              {'// CORE DIRECTIVES'}
             </div>
             <h2 className="mt-3 sm:mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
               THE PILLARS
@@ -515,7 +409,7 @@ function Protocol() {
         {/* Section Header */}
         <div>
           <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-[#c9a84c]/70">
-            // JOURNEY
+            {'// JOURNEY'}
           </div>
           <h2 className="mt-3 sm:mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
             PROTOCOL
@@ -639,7 +533,7 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
         <div className="flex items-start sm:items-end justify-between flex-col md:flex-row gap-4 sm:gap-8">
           <div>
             <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500">
-              // HALL OF VALOR
+              {'// HALL OF VALOR'}
             </div>
             <h2 className="mt-3 sm:mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
               TOP
@@ -831,7 +725,6 @@ function CTA() {
 // ============================================
 export default function Home() {
   const [agents, setAgents] = useState<Agent[]>([]);
-  const [stats, setStats] = useState({ totalMatches: 0, activeAgents: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -842,10 +735,7 @@ export default function Home() {
           getMatchStats(),
         ]);
         setAgents(agentsData || []);
-        setStats({
-          totalMatches: statsData.totalMatches || 0,
-          activeAgents: statsData.activeAgents || 0,
-        });
+        void statsData;
       } catch {
         // Silently fail - show empty state
       } finally {

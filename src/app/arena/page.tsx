@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
-import { Swords, Plus, RefreshCw, Loader2, Crown } from 'lucide-react';
+import { Swords, Plus, Loader2, Crown } from 'lucide-react';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { Tables } from '@/lib/supabase/types';
 import {
@@ -429,7 +429,7 @@ function ArenaContent() {
                 {userAgent && (
                   <MatchmakingQueue
                     agentId={userAgent.id}
-                    onMatched={(matchId) => toast.success('Match Found!', 'Joining battle...')}
+                    onMatched={() => toast.success('Match Found!', 'Joining battle...')}
                   />
                 )}
 
@@ -474,7 +474,7 @@ function ArenaContent() {
         {showCreateBattle && wallet.publicKey && (
           <CreateBattleRoyale
             walletAddress={wallet.publicKey.toString()}
-            onCreated={(battleId) => {
+            onCreated={() => {
               setShowCreateBattle(false);
               loadBattleRoyaleData();
               toast.success('Battle Created', 'Your battle is now open for registration!');

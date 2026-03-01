@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Bot, Search } from 'lucide-react';
+import Image from 'next/image';
 import { Tables } from '@/lib/supabase/types';
 
 type Agent = Tables<'agents'>;
@@ -65,10 +66,13 @@ export default function AgentSelector({
           {selectedAgent ? (
             <>
               {selectedAgent.avatar_url ? (
-                <img
+                <Image
                   src={selectedAgent.avatar_url}
                   alt={selectedAgent.name}
+                  width={32}
+                  height={32}
                   className="w-8 h-8 rounded-full object-cover"
+                  unoptimized
                 />
               ) : (
                 <div className="w-8 h-8 rounded-full bg-[#1a1a25] flex items-center justify-center">
@@ -140,10 +144,13 @@ export default function AgentSelector({
                     }`}
                   >
                     {agent.avatar_url ? (
-                      <img
+                      <Image
                         src={agent.avatar_url}
                         alt={agent.name}
+                        width={32}
+                        height={32}
                         className="w-8 h-8 rounded-full object-cover"
+                        unoptimized
                       />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-[#1a1a25] flex items-center justify-center">

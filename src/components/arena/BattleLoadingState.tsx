@@ -14,12 +14,17 @@ interface BattleLoadingStateProps {
 
 function RuneSpinner() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [runeOffset, setRuneOffset] = useState(0);
 
   useEffect(() => {
+    const t = setTimeout(() => setRuneOffset(Math.floor(Date.now() / 1000)), 0);
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % 3);
     }, 400);
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(t);
+      clearInterval(interval);
+    };
   }, []);
 
   return (
@@ -35,7 +40,7 @@ function RuneSpinner() {
           transition={{ duration: 0.2 }}
           className="text-3xl font-bold"
         >
-          {RUNES[(i + Math.floor(Date.now() / 1000)) % RUNES.length]}
+          {RUNES[(i + runeOffset) % RUNES.length]}
         </motion.span>
       ))}
     </div>

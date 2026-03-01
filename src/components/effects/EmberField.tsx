@@ -16,29 +16,29 @@ interface Particle {
 
 export default function EmberField({ count = 120 }: { count?: number }) {
   const [particles, setParticles] = useState<Particle[]>([]);
-  const [isMounted, setIsMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    setIsMounted(true);
-    // Reduce count on mobile and cap total particles
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const isMobile = window.innerWidth < 768;
     const adjustedCount = isMobile ? Math.min(Math.floor(count * 0.3), 15) : Math.min(count, 40);
 
-    setParticles(
-      Array.from({ length: adjustedCount }).map((_, i) => ({
-        id: i,
-        left: Math.random() * 100,
-        delay: Math.random() * 6,
-        duration: 5 + Math.random() * 8,
-        size: 2 + Math.random() * 8,
-        opacity: 0.3 + Math.random() * 0.6,
-        blur: Math.random() * 2,
-        hue: 20 + Math.random() * 40,
-        drift: Math.random() * 120 - 60,
-      }))
-    );
+    const t = setTimeout(() => {
+      setParticles(
+        Array.from({ length: adjustedCount }).map((_, i) => ({
+          id: i,
+          left: Math.random() * 100,
+          delay: Math.random() * 6,
+          duration: 5 + Math.random() * 8,
+          size: 2 + Math.random() * 8,
+          opacity: 0.3 + Math.random() * 0.6,
+          blur: Math.random() * 2,
+          hue: 20 + Math.random() * 40,
+          drift: Math.random() * 120 - 60,
+        }))
+      );
+    }, 0);
+    return () => clearTimeout(t);
   }, [count]);
 
   // Pause animations when off-screen
@@ -50,9 +50,9 @@ export default function EmberField({ count = 120 }: { count?: number }) {
     );
     observer.observe(containerRef.current);
     return () => observer.disconnect();
-  }, [isMounted]);
+  }, []);
 
-  if (!isMounted) return null;
+  if (particles.length === 0) return null;
 
   return (
     <div

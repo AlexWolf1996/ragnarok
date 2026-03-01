@@ -27,7 +27,7 @@ export async function GET(request: Request) {
     const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
     // Clean up expired queue entries
-    const { error: queueError } = await supabase
+    await supabase
       .from('matchmaking_queue')
       .delete()
       .eq('status', 'expired')
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
     // Queue cleanup silently continues on error
 
     // Clean up matched queue entries older than 1 day
-    const { error: matchedError } = await supabase
+    await supabase
       .from('matchmaking_queue')
       .delete()
       .eq('status', 'matched')
@@ -59,7 +59,7 @@ export async function GET(request: Request) {
     }
 
     // Clean up old completed battles data (keep summary, remove detailed scores)
-    const { error: roundsError } = await supabase
+    await supabase
       .from('battle_royale_rounds')
       .delete()
       .lt('completed_at', oneWeekAgo.toISOString());

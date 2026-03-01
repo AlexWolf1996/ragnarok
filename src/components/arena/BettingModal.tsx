@@ -31,7 +31,7 @@ export default function BettingModal({
   onClose,
   onBetPlaced,
 }: BettingModalProps) {
-  const [battle, setBattle] = useState<BattleRoyaleWithRelations | null>(null);
+  const [, setBattle] = useState<BattleRoyaleWithRelations | null>(null);
   const [participants, setParticipants] = useState<BattleRoyaleParticipant[]>([]);
   const [bets, setBets] = useState<BattleRoyaleBet[]>([]);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(preselectedAgentId || null);
@@ -69,7 +69,7 @@ export default function BettingModal({
           getBattleBets(battleId),
         ]);
 
-        setBattle(battleData);
+        setBattle(battleData as BattleRoyaleWithRelations);
         setParticipants(participantsData);
         setBets(betsData);
       } catch {
@@ -113,7 +113,7 @@ export default function BettingModal({
       } else {
         setError(result.error || 'Failed to place bet');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to place bet');
     } finally {
       setSubmitting(false);

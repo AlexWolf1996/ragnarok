@@ -13,7 +13,6 @@ import {
   BattleRoyaleRound,
   BattleRoyaleBet,
   BattleRoyaleStatus,
-  BattleOrigin,
   PayoutType,
   QueueEntry,
   QueueStats,

@@ -151,7 +151,7 @@ export default function AgentRegistrationForm() {
     }
   };
 
-  const useExamplePrompt = (index: number) => {
+  const applyExamplePrompt = (index: number) => {
     handleChange('systemPrompt', SYSTEM_PROMPT_EXAMPLES[index]);
   };
 
@@ -288,7 +288,7 @@ export default function AgentRegistrationForm() {
                 <button
                   key={type}
                   type="button"
-                  onClick={() => useExamplePrompt(i)}
+                  onClick={() => applyExamplePrompt(i)}
                   className="px-3 py-1 bg-black/40 border border-neutral-800 rounded-full font-[var(--font-rajdhani)] text-xs text-neutral-400 hover:text-[#D4A843] hover:border-[#c9a84c]/50 transition-colors"
                 >
                   {type}

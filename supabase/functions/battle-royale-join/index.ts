@@ -7,7 +7,6 @@
 
 import {
   getSupabaseClient,
-  getCorsHeaders,
   jsonResponse,
   errorResponse,
   optionsResponse,
@@ -221,7 +220,7 @@ Deno.serve(async (req) => {
       message: `${agent.name} joined the battle`,
     }, 200, req);
 
-  } catch (err) {
+  } catch {
     return errorResponse('Internal server error', 500, req);
   }
 });

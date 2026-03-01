@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
@@ -19,19 +19,24 @@ interface CountdownBlockProps {
 }
 
 function CountdownBlock({ value, label, isSeconds }: CountdownBlockProps) {
-  const [prevValue, setPrevValue] = useState(value);
+  const prevValueRef = useRef(value);
   const [isFlipping, setIsFlipping] = useState(false);
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    if (value !== prevValue) {
+    if (value !== prevValueRef.current) {
       if (!reducedMotion) {
-        setIsFlipping(true);
-        setTimeout(() => setIsFlipping(false), 300);
+        const flipTimeout = setTimeout(() => setIsFlipping(true), 0);
+        const resetTimeout = setTimeout(() => setIsFlipping(false), 300);
+        prevValueRef.current = value;
+        return () => {
+          clearTimeout(flipTimeout);
+          clearTimeout(resetTimeout);
+        };
       }
-      setPrevValue(value);
+      prevValueRef.current = value;
     }
-  }, [value, prevValue, reducedMotion]);
+  }, [value, reducedMotion]);
 
   return (
     <div className="text-center">
@@ -50,29 +55,37 @@ function CountdownBlock({ value, label, isSeconds }: CountdownBlockProps) {
 }
 
 function Countdown() {
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
-  const [mounted, setMounted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; mins: number; secs: number } | null>(null);
+
+  const computeTimeLeft = useCallback(() => {
+    const now = new Date();
+    const diff = TARGET_DATE.getTime() - now.getTime();
+    if (diff <= 0) return null;
+    return {
+      days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+      mins: Math.floor((diff / (1000 * 60)) % 60),
+      secs: Math.floor((diff / 1000) % 60),
+    };
+  }, []);
 
   useEffect(() => {
-    setMounted(true);
+    const initTimeout = setTimeout(() => setTimeLeft(computeTimeLeft()), 0);
     const timer = setInterval(() => {
-      const now = new Date();
-      const diff = TARGET_DATE.getTime() - now.getTime();
-      if (diff <= 0) {
+      const tl = computeTimeLeft();
+      if (!tl) {
         clearInterval(timer);
         return;
       }
-      setTimeLeft({
-        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-        mins: Math.floor((diff / (1000 * 60)) % 60),
-        secs: Math.floor((diff / 1000) % 60),
-      });
+      setTimeLeft(tl);
     }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+    return () => {
+      clearTimeout(initTimeout);
+      clearInterval(timer);
+    };
+  }, [computeTimeLeft]);
 
-  if (!mounted) {
+  if (!timeLeft) {
     return null;
   }
 

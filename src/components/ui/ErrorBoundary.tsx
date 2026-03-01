@@ -23,9 +23,11 @@ export default class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(_error: Error, _errorInfo: React.ErrorInfo): void {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     // In production, send to error tracking service like Sentry
     // Sentry.captureException(error, { extra: errorInfo });
+    void error;
+    void errorInfo;
   }
 
   handleRetry = (): void => {

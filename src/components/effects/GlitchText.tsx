@@ -128,9 +128,9 @@ function LightningEffect() {
           key={`arc-${bolt.id}`}
           className="absolute electric-arc"
           style={{
-            left: `${10 + Math.random() * 80}%`,
+            left: `${10 + (bolt.x * 0.8)}%`,
             top: '50%',
-            width: `${20 + Math.random() * 30}%`,
+            width: `${20 + (bolt.scale * 30)}%`,
           }}
         />
       ))}
