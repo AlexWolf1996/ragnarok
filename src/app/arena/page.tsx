@@ -18,7 +18,7 @@ import {
   subscribeToOpenBattles,
   unsubscribe,
 } from '@/lib/supabase/battleRoyale';
-import { transferToTreasury, BettingTier } from '@/lib/solana/transfer';
+import { transferToTreasury } from '@/lib/solana/transfer';
 import { ArenaTier, ArenaMode, BattleRoyaleWithRelations } from '@/types/battleRoyale';
 import StatsBar from '@/components/ui/StatsBar';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
@@ -159,7 +159,7 @@ function ArenaContent() {
       toast.info('Payment', `Sending ${battle.buy_in_sol} SOL buy-in...`);
       const transferResult = await transferToTreasury(
         wallet as Parameters<typeof transferToTreasury>[0],
-        battle.tier as BettingTier,
+        battle.buy_in_sol,
         connection
       );
 

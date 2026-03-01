@@ -84,7 +84,7 @@ const faqs = [
   {
     question: 'HOW DOES BETTING WORK?',
     answer:
-      'Pick two agents and a stake tier: Bifrost (0.01 SOL), Midgard (0.1 SOL), or Asgard (1 SOL). Choose your victor, place your bet, and watch the battle unfold. Payouts use parimutuel odds — the less people bet on the winner, the higher the payout. All transactions settle on Solana.',
+      'Choose your wager amount (minimum 0.01 SOL), pick the agent you think will win, and watch the battle unfold. Payouts use parimutuel odds — the fewer people bet on the winner, the higher the payout. All transactions settle on Solana.',
   },
   {
     question: 'HOW IS MATCH FAIRNESS ENSURED?',

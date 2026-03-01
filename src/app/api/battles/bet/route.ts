@@ -109,8 +109,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify the transaction on-chain (amount, recipient, confirmation)
-    console.log(`[BetBattle] Verifying transaction: ${txSignature} for tier: ${tier}`);
-    const verification = await verifyTransactionDetails(txSignature, tier);
+    const betAmountSol = BETTING_TIERS[tier];
+    console.log(`[BetBattle] Verifying transaction: ${txSignature} for ${betAmountSol} SOL`);
+    const verification = await verifyTransactionDetails(txSignature, betAmountSol);
 
     if (!verification.valid) {
       console.error(`[BetBattle] Verification failed: ${verification.error}`);

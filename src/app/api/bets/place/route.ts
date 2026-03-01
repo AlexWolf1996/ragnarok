@@ -7,28 +7,20 @@
  * POST body:
  * - match_id: UUID
  * - agent_id: UUID (which agent to bet on)
- * - amount_sol: number (must match a valid tier)
+ * - amount_sol: number (minimum 0.01 SOL)
  * - tx_signature: string (Solana transaction signature)
  * - wallet_address: string
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/battles/engine';
-import { verifyTransactionDetails, BETTING_TIERS, BettingTier } from '@/lib/solana/transfer';
+import { verifyTransactionDetails } from '@/lib/solana/transfer';
 import { calculateParimutuelOdds } from '@/lib/bets/parimutuel';
 import { logTreasuryMovement, getTreasuryBalance } from '@/lib/treasury/logger';
 import { isValidUUID, isValidWalletAddress, isValidTransactionSignature } from '@/lib/validation';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
-
-// Map amount to tier for verification
-function amountToTier(amount: number): BettingTier | null {
-  for (const [tier, value] of Object.entries(BETTING_TIERS)) {
-    if (Math.abs(value - amount) < 0.0001) return tier as BettingTier;
-  }
-  return null;
-}
 
 interface PlaceBetRequest {
   match_id: string;
@@ -73,11 +65,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate amount matches a tier
-    const tier = amountToTier(amount_sol);
-    if (!tier) {
+    // Validate amount (minimum 0.01 SOL)
+    if (typeof amount_sol !== 'number' || amount_sol < 0.01) {
       return NextResponse.json(
-        { success: false, error: `Invalid bet amount. Valid tiers: ${Object.entries(BETTING_TIERS).map(([k, v]) => `${k} (${v} SOL)`).join(', ')}` },
+        { success: false, error: 'Invalid bet amount. Minimum wager is 0.01 SOL.' },
         { status: 400 },
       );
     }
@@ -148,7 +139,7 @@ export async function POST(request: NextRequest) {
 
     // Verify Solana transaction on-chain
     console.log(`[PlaceBet] Verifying transaction: ${tx_signature} for ${amount_sol} SOL`);
-    const verification = await verifyTransactionDetails(tx_signature, tier);
+    const verification = await verifyTransactionDetails(tx_signature, amount_sol);
 
     if (!verification.valid) {
       console.error(`[PlaceBet] Verification failed: ${verification.error}`);

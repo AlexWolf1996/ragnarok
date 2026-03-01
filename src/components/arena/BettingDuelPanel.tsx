@@ -191,7 +191,7 @@ export default function BettingDuelPanel({
 
     try {
       // Transfer SOL to treasury using the connection from WalletProvider
-      const transferResult = await transferToTreasury(wallet, selectedTier, connection);
+      const transferResult = await transferToTreasury(wallet, BETTING_TIERS[selectedTier], connection);
 
       if (!transferResult.success || !transferResult.signature) {
         throw new Error(transferResult.error || 'Payment failed');

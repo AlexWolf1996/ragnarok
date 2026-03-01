@@ -88,14 +88,13 @@ export function getTreasuryWallet(): PublicKey {
  */
 export async function transferToTreasury(
   walletAdapter: WalletAdapter,
-  tier: BettingTier,
+  amountSol: number,
   existingConnection?: Connection
 ): Promise<TransferResult> {
   if (!walletAdapter.publicKey) {
     return { success: false, error: 'Wallet not connected' };
   }
 
-  const amountSol = BETTING_TIERS[tier];
   const amountLamports = solToLamports(amountSol);
 
   try {
@@ -212,9 +211,9 @@ function sleep(ms: number): Promise<void> {
  */
 export async function verifyTransaction(
   signature: string,
-  expectedTier?: BettingTier
+  expectedAmountSol?: number
 ): Promise<boolean> {
-  const result = await verifyTransactionDetails(signature, expectedTier);
+  const result = await verifyTransactionDetails(signature, expectedAmountSol);
   return result.valid;
 }
 
@@ -224,7 +223,7 @@ export async function verifyTransaction(
  */
 export async function verifyTransactionDetails(
   signature: string,
-  expectedTier?: BettingTier,
+  expectedAmountSol?: number,
   maxRetries: number = 5,
   retryDelayMs: number = 3000
 ): Promise<VerificationResult> {
@@ -330,15 +329,15 @@ export async function verifyTransactionDetails(
 
     console.log(`[Solana Verify] Recipient verified: ${transferRecipient}`);
 
-    // Verify amount matches tier (if tier provided)
-    if (expectedTier) {
-      const expectedAmount = solToLamports(BETTING_TIERS[expectedTier]);
+    // Verify amount matches expected (if provided)
+    if (expectedAmountSol) {
+      const expectedAmount = solToLamports(expectedAmountSol);
       // Allow 1% tolerance for rounding
       const tolerance = Math.floor(expectedAmount * 0.01);
 
       if (Math.abs(transferAmount - expectedAmount) > tolerance) {
         console.log(`[Solana Verify] Wrong amount. Expected: ${expectedAmount}, Got: ${transferAmount}`);
-        return { valid: false, error: `Incorrect payment amount. Expected ${BETTING_TIERS[expectedTier]} SOL` };
+        return { valid: false, error: `Incorrect payment amount. Expected ${expectedAmountSol} SOL` };
       }
 
       console.log(`[Solana Verify] Amount verified: ${transferAmount} lamports (${lamportsToSol(transferAmount)} SOL)`);

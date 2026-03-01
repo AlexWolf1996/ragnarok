@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/battles/engine';
-import { verifyTransactionDetails, BettingTier } from '@/lib/solana/transfer';
+import { verifyTransactionDetails, BETTING_TIERS, BettingTier } from '@/lib/solana/transfer';
 import { isValidUUID, isValidWalletAddress, isValidTransactionSignature } from '@/lib/validation';
 
 export const runtime = 'nodejs';
@@ -123,9 +123,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify the Solana transaction (buy-in payment)
-    // Use tier-based verification since BR tiers match betting tiers
-    console.log(`[BR Join] Verifying transaction: ${tx_signature} for tier: ${battle.tier}`);
-    const verification = await verifyTransactionDetails(tx_signature, battle.tier as BettingTier);
+    const buyInSol = BETTING_TIERS[battle.tier as BettingTier];
+    console.log(`[BR Join] Verifying transaction: ${tx_signature} for ${buyInSol} SOL`);
+    const verification = await verifyTransactionDetails(tx_signature, buyInSol);
 
     if (!verification.valid) {
       console.error(`[BR Join] Verification failed: ${verification.error}`);

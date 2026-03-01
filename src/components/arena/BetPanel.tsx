@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import { Swords, Check, Loader2, AlertTriangle, TrendingUp } from 'lucide-react';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { usePlaceBet } from '@/hooks/usePlaceBet';
 import { useMatchOdds } from '@/hooks/useMatchOdds';
 import { useMyBet } from '@/hooks/useMyBet';
-import { transferToTreasury, BETTING_TIERS, BettingTier } from '@/lib/solana/transfer';
+import { transferToTreasury } from '@/lib/solana/transfer';
 import { useToast } from '@/hooks/useToast';
 import type { CurrentMatch } from '@/hooks/useCurrentMatch';
 import PayoutPreview from './PayoutPreview';
@@ -17,15 +18,13 @@ interface BetPanelProps {
   selectedSide: 'A' | 'B' | null;
 }
 
-const TIERS: { key: BettingTier; label: string; amount: number }[] = [
-  { key: 'bifrost', label: 'BIFROST', amount: BETTING_TIERS.bifrost },
-  { key: 'midgard', label: 'MIDGARD', amount: BETTING_TIERS.midgard },
-  { key: 'asgard', label: 'ASGARD', amount: BETTING_TIERS.asgard },
-];
+const QUICK_PICKS = [0.05, 0.1, 0.5, 1] as const;
+const MIN_BET = 0.01;
 
 export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   const wallet = useWallet();
   const { connection } = useConnection();
+  const { setVisible: openWalletModal } = useWalletModal();
   const toast = useToast();
   const { placeBet, loading: placingBet, error: betError, success: betPlaced, reset } = usePlaceBet();
   const { poolA, poolB, oddsA, oddsB } = useMatchOdds(
@@ -34,7 +33,8 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   );
   const { hasBet, totalBet, betAgentId, betStatus, payout, refresh: refreshBets } = useMyBet(match?.id ?? null);
 
-  const [selectedTier, setSelectedTier] = useState<BettingTier>('midgard');
+  const [betAmount, setBetAmount] = useState(0.1);
+  const [customInput, setCustomInput] = useState('0.1');
   const [transferring, setTransferring] = useState(false);
   const [showBetForm, setShowBetForm] = useState(false);
 
@@ -50,7 +50,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   const displayPoolB = hasLiveOdds ? poolB : (match?.odds?.poolB || 0);
 
   const currentOdds = selectedSide === 'A' ? displayOddsA : displayOddsB;
-  const betAmount = BETTING_TIERS[selectedTier];
+  const isValidBet = betAmount >= MIN_BET;
 
   const isLoading = transferring || placingBet;
 
@@ -67,7 +67,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
       toast.info('Payment', `Sending ${betAmount} SOL to treasury...`);
       const transferResult = await transferToTreasury(
         wallet as Parameters<typeof transferToTreasury>[0],
-        selectedTier,
+        betAmount,
         connection,
       );
 
@@ -232,9 +232,12 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
         <p className="font-mono text-[10px] text-neutral-500 mb-3">
           Connect your wallet to place predictions on this match.
         </p>
-        <div className="py-3 border border-neutral-700 text-center font-mono text-[10px] text-neutral-500 tracking-widest uppercase">
+        <button
+          onClick={() => openWalletModal(true)}
+          className="w-full py-3 border border-[#D4A843]/40 hover:border-[#D4A843] bg-[#D4A843]/5 hover:bg-[#D4A843]/10 text-center font-mono text-[10px] text-[#D4A843] tracking-widest uppercase transition-colors cursor-pointer"
+        >
           Connect Wallet to Bet
-        </div>
+        </button>
       </div>
     );
   }
@@ -309,25 +312,55 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
             </div>
           </div>
 
-          {/* Tier selector */}
+          {/* Wager amount input */}
           <div>
             <div className="font-mono text-[10px] text-neutral-500 tracking-widest uppercase mb-2">
               Wager Amount
             </div>
-            <div className="grid grid-cols-3 gap-1">
-              {TIERS.map((t) => (
+            <div className="relative">
+              <input
+                type="number"
+                min={MIN_BET}
+                step="0.01"
+                value={customInput}
+                onChange={(e) => {
+                  setCustomInput(e.target.value);
+                  const val = parseFloat(e.target.value);
+                  if (!isNaN(val) && val > 0) setBetAmount(val);
+                }}
+                onBlur={() => {
+                  if (betAmount < MIN_BET) {
+                    setBetAmount(MIN_BET);
+                    setCustomInput(String(MIN_BET));
+                  }
+                }}
+                disabled={isLoading}
+                className={`w-full bg-black border py-2.5 px-3 pr-12 font-mono text-sm text-white outline-none transition-colors ${
+                  !isValidBet ? 'border-red-500/50' : 'border-[#1a1a1a] focus:border-[#D4A843]'
+                } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] text-neutral-500">
+                SOL
+              </span>
+            </div>
+            {!isValidBet && (
+              <div className="font-mono text-[9px] text-red-400 mt-1">
+                Minimum wager is {MIN_BET} SOL
+              </div>
+            )}
+            <div className="grid grid-cols-4 gap-1 mt-2">
+              {QUICK_PICKS.map((amt) => (
                 <button
-                  key={t.key}
-                  onClick={() => setSelectedTier(t.key)}
+                  key={amt}
+                  onClick={() => { setBetAmount(amt); setCustomInput(String(amt)); }}
                   disabled={isLoading}
-                  className={`min-h-[44px] py-2 border font-mono text-[10px] tracking-wider uppercase transition-colors ${
-                    selectedTier === t.key
+                  className={`min-h-[32px] py-1.5 border font-mono text-[10px] tracking-wider transition-colors ${
+                    betAmount === amt
                       ? 'border-[#D4A843] bg-[#D4A843]/10 text-[#D4A843]'
                       : 'border-[#1a1a1a] text-neutral-500 hover:border-neutral-600'
                   } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  <div>{t.label}</div>
-                  <div className="text-[9px] mt-0.5">{t.amount} SOL</div>
+                  {amt}
                 </button>
               ))}
             </div>
@@ -355,9 +388,9 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
           {/* Place bet button */}
           <button
             onClick={handlePlaceBet}
-            disabled={isLoading}
+            disabled={isLoading || !isValidBet}
             className={`w-full min-h-[44px] py-3 border font-[var(--font-rajdhani)] text-xs tracking-widest uppercase transition-all ${
-              isLoading
+              isLoading || !isValidBet
                 ? 'border-neutral-700 bg-neutral-800 text-neutral-500 cursor-not-allowed'
                 : 'border-[#D4A843] bg-gradient-to-r from-[#D4A843]/20 via-[#D4A843]/10 to-[#D4A843]/20 text-[#D4A843] hover:bg-[#D4A843]/30'
             }`}
