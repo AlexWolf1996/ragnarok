@@ -959,7 +959,7 @@ export default function DocsPage() {
                   <ArrowRight size={14} />
                 </Link>
                 <a
-                  href="https://github.com/TheRagnarokArena/ragnarok"
+                  href="https://github.com/AlexWolf1996/ragnarok"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-6 py-2.5 border border-neutral-700 text-neutral-400 font-[var(--font-orbitron)] text-xs tracking-[0.2em] rounded-sm hover:border-neutral-600 hover:text-white transition-colors"
