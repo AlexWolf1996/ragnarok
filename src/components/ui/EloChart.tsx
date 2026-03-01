@@ -46,7 +46,7 @@ export default function EloChart({ data, currentElo, height = 160 }: EloChartPro
   if (!chartData || chartData.points.length < 2) {
     return (
       <div
-        className="flex items-center justify-center bg-black/20 rounded-lg border border-neutral-800"
+        className="flex items-center justify-center bg-black/20 rounded-sm border border-neutral-800"
         style={{ height }}
       >
         <p className="font-[var(--font-rajdhani)] text-xs text-neutral-500">

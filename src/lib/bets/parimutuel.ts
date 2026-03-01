@@ -133,17 +133,104 @@ export async function settleMatch(matchId: string, winnerId: string): Promise<{
     bettorsSettled++;
   }
 
-  // Mark losing bets
+  // Mark losing bets and notify losers
   const losingAgentId = winnerId === odds.agentAId ? odds.agentBId : odds.agentAId;
+
+  const { data: losingBets } = await supabase
+    .from('bets')
+    .select('id, wallet_address')
+    .eq('match_id', matchId)
+    .eq('agent_id', losingAgentId);
+
   await supabase
     .from('bets')
     .update({ status: 'lost' })
     .eq('match_id', matchId)
     .eq('agent_id', losingAgentId);
 
+  // Send loss notifications
+  for (const bet of (losingBets || [])) {
+    await supabase
+      .from('notifications')
+      .insert({
+        wallet_address: bet.wallet_address,
+        type: 'match_result',
+        title: 'Battle Result',
+        message: 'Your prediction was defeated. Better luck next battle.',
+        match_id: matchId,
+      });
+  }
+
   return {
     totalPayouts,
     bettorsSettled,
     rakeCollected: odds.rake,
   };
+}
+
+/**
+ * Refund all pending bets for a failed/cancelled match.
+ * Marks bets as 'refunded', sets payout_sol = original amount,
+ * inserts into payout_queue, and notifies bettors.
+ */
+export async function refundMatch(matchId: string): Promise<{
+  refunded: number;
+}> {
+  const supabase = getSupabaseAdmin();
+
+  // Get all pending bets for this match
+  const { data: bets, error: betsError } = await supabase
+    .from('bets')
+    .select('*')
+    .eq('match_id', matchId)
+    .eq('status', 'pending');
+
+  if (betsError) {
+    throw new Error(`Failed to fetch bets for refund: ${betsError.message}`);
+  }
+
+  if (!bets || bets.length === 0) {
+    console.log(`[Refund] No pending bets to refund for match ${matchId}`);
+    return { refunded: 0 };
+  }
+
+  let refunded = 0;
+
+  for (const bet of bets) {
+    const amount = Number(bet.amount_sol);
+
+    // Mark bet as refunded with original amount as payout
+    await supabase
+      .from('bets')
+      .update({
+        status: 'refunded',
+        payout_sol: amount,
+      })
+      .eq('id', bet.id);
+
+    // Insert refund into payout queue (reuses existing payout processor)
+    await supabase
+      .from('payout_queue')
+      .insert({
+        match_id: matchId,
+        wallet_address: bet.wallet_address,
+        amount_sol: amount,
+      });
+
+    // Notify bettor
+    await supabase
+      .from('notifications')
+      .insert({
+        wallet_address: bet.wallet_address,
+        type: 'match_result',
+        title: 'Match Cancelled',
+        message: `Match cancelled — your ${amount} SOL bet has been refunded.`,
+        match_id: matchId,
+      });
+
+    refunded++;
+  }
+
+  console.log(`[Refund] Refunded ${refunded} bets for match ${matchId}`);
+  return { refunded };
 }

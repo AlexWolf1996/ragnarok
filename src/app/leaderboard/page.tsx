@@ -302,7 +302,7 @@ function LeaderboardContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
         >
-          <div className="inline-flex bg-black/60 border border-neutral-800 rounded-lg p-1 gap-1">
+          <div className="inline-flex bg-black/60 border border-neutral-800 rounded-sm p-1 gap-1">
             <button
               onClick={() => setActiveTab('warriors')}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-md font-[var(--font-orbitron)] text-xs tracking-[0.15em] transition-all ${
@@ -351,7 +351,7 @@ function LeaderboardContent() {
               placeholder="Search the fallen..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-black/60 border border-neutral-800 rounded-lg focus:outline-none focus:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-500 font-[var(--font-rajdhani)] text-sm text-white placeholder-neutral-500"
+              className="w-full pl-10 pr-4 py-3 bg-black/60 border border-neutral-800 rounded-sm focus:outline-none focus:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-500 font-[var(--font-rajdhani)] text-sm text-white placeholder-neutral-500"
               aria-label="Search agents"
             />
           </div>
@@ -359,7 +359,7 @@ function LeaderboardContent() {
           {/* Refresh */}
           <button
             onClick={loadLeaderboard}
-            className="px-4 py-3 bg-black/60 border border-neutral-800 rounded-lg hover:border-amber-500/50 transition-colors flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+            className="px-4 py-3 bg-black/60 border border-neutral-800 rounded-sm hover:border-amber-500/50 transition-colors flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
             aria-label="Refresh leaderboard"
           >
             <RefreshCw size={16} className="text-neutral-500" aria-hidden="true" />
@@ -369,7 +369,7 @@ function LeaderboardContent() {
 
         {/* Leaderboard Table */}
         <motion.div
-          className="bg-black/40 border border-neutral-800 rounded-lg overflow-hidden relative"
+          className="bg-black/40 border border-neutral-800 rounded-sm overflow-hidden relative"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
@@ -547,7 +547,7 @@ function LeaderboardContent() {
                               {recentMatches.map((match) => (
                                 <div
                                   key={match.id}
-                                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-black/40 border border-neutral-800 rounded-lg font-[var(--font-rajdhani)] text-sm gap-1 sm:gap-2"
+                                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-black/40 border border-neutral-800 rounded-sm font-[var(--font-rajdhani)] text-sm gap-1 sm:gap-2"
                                 >
                                   <div className="flex items-center gap-2 min-w-0">
                                     <span className="text-white truncate">

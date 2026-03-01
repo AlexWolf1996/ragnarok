@@ -196,7 +196,7 @@ export default function BattleResultDisplay({
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className="bg-black/80 backdrop-blur-sm border border-amber-500/30 rounded-xl overflow-hidden relative"
+      className="bg-black/80 backdrop-blur-sm border border-amber-500/30 rounded-sm overflow-hidden relative"
     >
       {/* Top glow line */}
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
@@ -405,7 +405,7 @@ export default function BattleResultDisplay({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 2.5 + i * 0.15 }}
-                  className={`border rounded-lg p-3 text-center relative ${
+                  className={`border rounded-sm p-3 text-center relative ${
                     judge.failed
                       ? 'border-neutral-700 bg-neutral-900/50 opacity-50'
                       : getJudgeColor(judge.judgeId)
@@ -456,7 +456,7 @@ export default function BattleResultDisplay({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 3.0 }}
-              className="mt-3 bg-black/40 border border-amber-500/20 rounded-lg p-3 relative"
+              className="mt-3 bg-black/40 border border-amber-500/20 rounded-sm p-3 relative"
             >
               <Quote size={12} className="absolute top-2 left-2 text-amber-500/30" />
               <p className="font-[var(--font-rajdhani)] text-xs text-neutral-400 leading-relaxed text-center italic px-4">
@@ -470,7 +470,7 @@ export default function BattleResultDisplay({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 2.4 }}
-            className="bg-black/40 border border-amber-500/20 rounded-lg p-4 mb-6 relative"
+            className="bg-black/40 border border-amber-500/20 rounded-sm p-4 mb-6 relative"
           >
             <Quote size={16} className="absolute top-3 left-3 text-amber-500/30" />
             <h4 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-amber-500/70 mb-2 text-center">
@@ -490,7 +490,7 @@ export default function BattleResultDisplay({
         >
           <button
             onClick={() => setShowResponses(!showResponses)}
-            className="w-full flex items-center justify-center gap-2 py-3 bg-black/40 hover:bg-black/60 border border-neutral-800 hover:border-amber-500/30 rounded-lg transition-colors mb-4"
+            className="w-full flex items-center justify-center gap-2 py-3 bg-black/40 hover:bg-black/60 border border-neutral-800 hover:border-amber-500/30 rounded-sm transition-colors mb-4"
           >
             <span className="font-[var(--font-orbitron)] text-xs tracking-wider text-neutral-400">
               READ WARRIOR RESPONSES
@@ -512,7 +512,7 @@ export default function BattleResultDisplay({
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Agent A Response */}
-                  <div className={`bg-black/40 border rounded-lg p-4 ${
+                  <div className={`bg-black/40 border rounded-sm p-4 ${
                     agentA.isWinner ? 'border-amber-500/30' : 'border-neutral-800'
                   }`}>
                     <div className="flex items-center gap-2 mb-3">
@@ -540,7 +540,7 @@ export default function BattleResultDisplay({
                   </div>
 
                   {/* Agent B Response */}
-                  <div className={`bg-black/40 border rounded-lg p-4 ${
+                  <div className={`bg-black/40 border rounded-sm p-4 ${
                     agentB.isWinner ? 'border-amber-500/30' : 'border-neutral-800'
                   }`}>
                     <div className="flex items-center gap-2 mb-3">
@@ -582,14 +582,14 @@ export default function BattleResultDisplay({
           <button
             onClick={onFightAgain}
             disabled={isLoading}
-            className="flex-1 py-4 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-amber-600 hover:via-amber-500 hover:to-amber-600 shadow-[0_0_30px_rgba(245,158,11,0.3)]"
+            className="flex-1 py-4 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-amber-600 hover:via-amber-500 hover:to-amber-600 shadow-[0_0_30px_rgba(245,158,11,0.3)]"
           >
             <Zap size={16} />
             FIGHT AGAIN
           </button>
           <button
             onClick={onDismiss}
-            className="px-6 py-4 border border-neutral-700 text-neutral-400 font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-lg hover:border-neutral-600 hover:text-neutral-300 transition-colors"
+            className="px-6 py-4 border border-neutral-700 text-neutral-400 font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-sm hover:border-neutral-600 hover:text-neutral-300 transition-colors"
           >
             DISMISS
           </button>

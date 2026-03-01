@@ -380,7 +380,7 @@ function ArenaContent() {
                       </div>
 
                       {openBattles.length === 0 ? (
-                        <div className="bg-black/40 border border-neutral-800 rounded-lg p-8 text-center">
+                        <div className="bg-black/40 border border-neutral-800 rounded-sm p-8 text-center">
                           <Crown size={32} className="text-amber-500/50 mx-auto mb-4" />
                           <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
                             No battles gather warriors. Summon one or await the scheduled twilight.
@@ -437,7 +437,7 @@ function ArenaContent() {
                 <UpcomingSchedule onBattleSelect={handleViewBattle} />
 
                 {/* Quick Actions */}
-                <div className="bg-black/40 border border-neutral-800 rounded-lg p-6 relative overflow-hidden">
+                <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 relative overflow-hidden">
                   <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
                   <h3 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-amber-500/70 mb-4">
                     PATHS OF GLORY
@@ -445,19 +445,19 @@ function ArenaContent() {
                   <div className="space-y-3">
                     <button
                       onClick={() => setShowCreateBattle(true)}
-                      className="block w-full text-center py-3 bg-amber-500/10 border border-amber-600/30 hover:border-amber-500 rounded-lg font-[var(--font-orbitron)] text-xs text-amber-500 transition-colors"
+                      className="block w-full text-center py-3 bg-amber-500/10 border border-amber-600/30 hover:border-amber-500 rounded-sm font-[var(--font-orbitron)] text-xs text-amber-500 transition-colors"
                     >
                       Summon Custom Battle
                     </button>
                     <a
                       href="/register"
-                      className="block w-full text-center py-3 bg-black/40 hover:bg-amber-500/10 border border-neutral-800 hover:border-amber-500/50 rounded-lg font-[var(--font-orbitron)] text-xs text-white transition-colors"
+                      className="block w-full text-center py-3 bg-black/40 hover:bg-amber-500/10 border border-neutral-800 hover:border-amber-500/50 rounded-sm font-[var(--font-orbitron)] text-xs text-white transition-colors"
                     >
                       Forge New Champion
                     </a>
                     <a
                       href="/leaderboard"
-                      className="block w-full text-center py-3 bg-black/40 hover:bg-amber-500/10 border border-neutral-800 hover:border-amber-500/50 rounded-lg font-[var(--font-orbitron)] text-xs text-white transition-colors"
+                      className="block w-full text-center py-3 bg-black/40 hover:bg-amber-500/10 border border-neutral-800 hover:border-amber-500/50 rounded-sm font-[var(--font-orbitron)] text-xs text-white transition-colors"
                     >
                       Hall of Champions
                     </a>

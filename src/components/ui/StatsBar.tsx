@@ -23,7 +23,7 @@ interface StatCardProps {
 function StatCard({ icon, label, value, subValue, delay }: StatCardProps) {
   return (
     <motion.div
-      className="flex items-center gap-3 px-4 py-3 bg-[#111118] rounded-lg border border-[#c9a84c]/10"
+      className="flex items-center gap-3 px-4 py-3 bg-[#111118] rounded-sm border border-[#c9a84c]/10"
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay }}
@@ -66,7 +66,7 @@ export default function StatsBar() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="flex-shrink-0 w-40 h-16 bg-[#111118] rounded-lg animate-pulse"
+            className="flex-shrink-0 w-40 h-16 bg-[#111118] rounded-sm animate-pulse"
           />
         ))}
       </div>

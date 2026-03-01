@@ -183,7 +183,7 @@ export default function RecentBattlesFeed({
 
   if (loading) {
     return (
-      <div className="bg-black/40 border border-neutral-800 rounded-lg p-8">
+      <div className="bg-black/40 border border-neutral-800 rounded-sm p-8">
         <div className="flex items-center justify-center gap-3">
           <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
           <span className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
@@ -196,7 +196,7 @@ export default function RecentBattlesFeed({
 
   if (error) {
     return (
-      <div className="bg-black/40 border border-red-500/20 rounded-lg p-6 text-center">
+      <div className="bg-black/40 border border-red-500/20 rounded-sm p-6 text-center">
         <Skull size={24} className="text-red-500/50 mx-auto mb-2" />
         <p className="font-[var(--font-rajdhani)] text-sm text-red-400">{error}</p>
         <button
@@ -211,7 +211,7 @@ export default function RecentBattlesFeed({
 
   if (battles.length === 0) {
     return (
-      <div className="bg-black/40 border border-neutral-800 rounded-lg p-8 text-center">
+      <div className="bg-black/40 border border-neutral-800 rounded-sm p-8 text-center">
         <Swords size={32} className="text-amber-500/30 mx-auto mb-4" />
         <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
           No battles have been fought yet. Be the first to write history.
@@ -270,12 +270,12 @@ export default function RecentBattlesFeed({
               >
                 <button
                   onClick={() => handleBattleClick(battle.id)}
-                  className="w-full text-left bg-black/40 border border-neutral-800 hover:border-amber-500/30 rounded-lg p-3 transition-all group"
+                  className="w-full text-left bg-black/40 border border-neutral-800 hover:border-amber-500/30 rounded-sm p-3 transition-all group"
                 >
                   {/* Main row */}
                   <div className="flex items-center gap-3">
                     {/* Challenge type icon */}
-                    <div className="w-8 h-8 bg-black/60 rounded-lg flex items-center justify-center text-lg flex-shrink-0">
+                    <div className="w-8 h-8 bg-black/60 rounded-sm flex items-center justify-center text-lg flex-shrink-0">
                       {getChallengeTypeIcon(battle.challenge.type)}
                     </div>
 

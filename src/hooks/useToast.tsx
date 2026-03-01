@@ -50,7 +50,7 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: () => void }) 
       className={`
         relative flex items-start gap-3 p-4
         bg-[#111118] border ${toastColors[toast.type]}
-        rounded-lg shadow-lg max-w-sm w-full
+        rounded-sm shadow-lg max-w-sm w-full
       `}
       role="alert"
       aria-live="polite"

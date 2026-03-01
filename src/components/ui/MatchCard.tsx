@@ -86,7 +86,7 @@ export default function MatchCard({
 
   return (
     <motion.div
-      className={`bg-[#111118] border border-[#1a1a25] rounded-lg p-4 ${
+      className={`bg-[#111118] border border-[#1a1a25] rounded-sm p-4 ${
         isLive ? 'border-[#c41e3a]/50' : ''
       }`}
       initial={{ opacity: 0, y: 20 }}
@@ -116,7 +116,7 @@ export default function MatchCard({
       <div className="flex items-center justify-between gap-4">
         {/* Agent A */}
         <div
-          className={`flex-1 text-center p-3 rounded-lg border ${
+          className={`flex-1 text-center p-3 rounded-sm border ${
             isAgentAWinner
               ? 'bg-[#d4a843]/10 border-[#d4a843]/30'
               : 'bg-[#0a0a0f] border-[#1a1a25]'
@@ -162,7 +162,7 @@ export default function MatchCard({
 
         {/* Agent B */}
         <div
-          className={`flex-1 text-center p-3 rounded-lg border ${
+          className={`flex-1 text-center p-3 rounded-sm border ${
             isAgentBWinner
               ? 'bg-[#d4a843]/10 border-[#d4a843]/30'
               : 'bg-[#0a0a0f] border-[#1a1a25]'

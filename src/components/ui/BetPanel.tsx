@@ -123,7 +123,7 @@ export default function BetPanel({ match, isOpen, onClose, onBetPlaced }: BetPan
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed inset-x-4 top-1/2 -translate-y-1/2 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[480px] bg-[#0a0a0f] border border-[#1a1a25] rounded-lg z-50 overflow-hidden"
+            className="fixed inset-x-4 top-1/2 -translate-y-1/2 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[480px] bg-[#0a0a0f] border border-[#1a1a25] rounded-sm z-50 overflow-hidden"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-[#1a1a25]">
@@ -147,7 +147,7 @@ export default function BetPanel({ match, isOpen, onClose, onBetPlaced }: BetPan
                 <button
                   type="button"
                   onClick={() => setSelectedAgent('a')}
-                  className={`p-4 rounded-lg border transition-all ${
+                  className={`p-4 rounded-sm border transition-all ${
                     selectedAgent === 'a'
                       ? 'border-[#e8e8e8] bg-[#111118]'
                       : 'border-[#1a1a25] hover:border-[#333340]'
@@ -170,7 +170,7 @@ export default function BetPanel({ match, isOpen, onClose, onBetPlaced }: BetPan
                 <button
                   type="button"
                   onClick={() => setSelectedAgent('b')}
-                  className={`p-4 rounded-lg border transition-all ${
+                  className={`p-4 rounded-sm border transition-all ${
                     selectedAgent === 'b'
                       ? 'border-[#e8e8e8] bg-[#111118]'
                       : 'border-[#1a1a25] hover:border-[#333340]'
@@ -204,7 +204,7 @@ export default function BetPanel({ match, isOpen, onClose, onBetPlaced }: BetPan
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="0.00"
-                    className="w-full px-4 py-3 bg-[#111118] border border-[#1a1a25] rounded-lg focus:outline-none focus:border-[#333340] font-mono text-lg text-[#e8e8e8] placeholder-[#666670]"
+                    className="w-full px-4 py-3 bg-[#111118] border border-[#1a1a25] rounded-sm focus:outline-none focus:border-[#333340] font-mono text-lg text-[#e8e8e8] placeholder-[#666670]"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
                     {[0.1, 0.5, 1].map((preset) => (
@@ -226,7 +226,7 @@ export default function BetPanel({ match, isOpen, onClose, onBetPlaced }: BetPan
 
               {/* Error message */}
               {error && (
-                <div className="flex items-center gap-2 p-3 bg-[#c41e3a]/10 border border-[#c41e3a]/30 rounded-lg">
+                <div className="flex items-center gap-2 p-3 bg-[#c41e3a]/10 border border-[#c41e3a]/30 rounded-sm">
                   <AlertCircle size={14} className="text-[#c41e3a]" />
                   <p className="text-sm font-mono text-[#c41e3a]">{error}</p>
                 </div>
@@ -236,7 +236,7 @@ export default function BetPanel({ match, isOpen, onClose, onBetPlaced }: BetPan
               <button
                 onClick={handleSubmit}
                 disabled={!connected || isSubmitting || !selectedAgent || !amount}
-                className="w-full py-3 border border-[#e8e8e8] text-[#e8e8e8] font-mono text-sm tracking-[0.15em] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:bg-[#e8e8e8] hover:text-[#0a0a0f]"
+                className="w-full py-3 border border-[#e8e8e8] text-[#e8e8e8] font-mono text-sm tracking-[0.15em] rounded-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:bg-[#e8e8e8] hover:text-[#0a0a0f]"
               >
                 {isSubmitting ? (
                   <>

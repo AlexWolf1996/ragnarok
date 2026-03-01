@@ -258,7 +258,7 @@ function MyBetsContent() {
 
         {/* Bets List */}
         <motion.div
-          className="bg-black/40 border border-neutral-800 rounded-lg overflow-hidden relative"
+          className="bg-black/40 border border-neutral-800 rounded-sm overflow-hidden relative"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
@@ -444,7 +444,7 @@ function StatCard({
   color?: string;
 }) {
   return (
-    <div className="bg-black/40 border border-neutral-800 rounded-lg p-3 sm:p-4 text-center">
+    <div className="bg-black/40 border border-neutral-800 rounded-sm p-3 sm:p-4 text-center">
       <div className="text-[9px] sm:text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.15em] sm:tracking-[0.2em] mb-1 sm:mb-2">
         {label}
       </div>

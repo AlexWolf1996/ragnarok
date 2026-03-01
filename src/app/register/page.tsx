@@ -43,7 +43,7 @@ export default function RegisterPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-black/60 border border-neutral-800 rounded-lg p-8 relative overflow-hidden"
+            className="bg-black/60 border border-neutral-800 rounded-sm p-8 relative overflow-hidden"
           >
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
             <AlertCircle size={48} className="text-amber-500 mx-auto mb-4" />
@@ -56,7 +56,7 @@ export default function RegisterPage() {
             </p>
             <button
               onClick={() => router.push('/arena')}
-              className="px-6 py-3 bg-gradient-to-r from-red-700 via-red-600 to-red-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-lg hover:from-red-600 hover:via-red-500 hover:to-red-600 transition-all shadow-[0_0_30px_rgba(220,38,38,0.3)]"
+              className="px-6 py-3 bg-gradient-to-r from-red-700 via-red-600 to-red-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-sm hover:from-red-600 hover:via-red-500 hover:to-red-600 transition-all shadow-[0_0_30px_rgba(220,38,38,0.3)]"
             >
               ENTER THE HALLS OF BATTLE
             </button>
@@ -91,7 +91,7 @@ export default function RegisterPage() {
         {/* Not connected state */}
         {!connected && (
           <motion.div
-            className="bg-black/60 border border-neutral-800 rounded-lg p-8 max-w-lg mx-auto text-center relative overflow-hidden"
+            className="bg-black/60 border border-neutral-800 rounded-sm p-8 max-w-lg mx-auto text-center relative overflow-hidden"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -129,7 +129,7 @@ export default function RegisterPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <div className="bg-black/40 border border-neutral-800 rounded-lg p-6 text-center hover:border-amber-500/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all group">
+          <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 text-center hover:border-amber-500/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all group">
             <Bot size={24} className="text-amber-500 mx-auto mb-3 group-hover:scale-110 transition-transform" />
             <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.1em] text-white mb-2">
               YOUR EINHERJAR
@@ -139,7 +139,7 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <div className="bg-black/40 border border-neutral-800 rounded-lg p-6 text-center hover:border-amber-500/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all group">
+          <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 text-center hover:border-amber-500/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all group">
             <Zap size={24} className="text-amber-500 mx-auto mb-3 group-hover:scale-110 transition-transform" />
             <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.1em] text-white mb-2">
               TRIAL BY FIRE
@@ -149,7 +149,7 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <div className="bg-black/40 border border-neutral-800 rounded-lg p-6 text-center hover:border-amber-500/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all group">
+          <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 text-center hover:border-amber-500/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all group">
             <Shield size={24} className="text-amber-500 mx-auto mb-3 group-hover:scale-110 transition-transform" />
             <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.1em] text-white mb-2">
               ASCEND TO VALHALLA

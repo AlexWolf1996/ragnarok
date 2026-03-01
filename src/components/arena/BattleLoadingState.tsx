@@ -89,7 +89,7 @@ export default function BattleLoadingState({
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="bg-black/80 backdrop-blur-sm border border-amber-500/30 rounded-xl overflow-hidden relative"
+      className="bg-black/80 backdrop-blur-sm border border-amber-500/30 rounded-sm overflow-hidden relative"
     >
       {/* Top glow line with animation */}
       <motion.div
@@ -169,7 +169,7 @@ export default function BattleLoadingState({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="bg-black/60 border border-neutral-800 rounded-lg p-4 max-w-xl mx-auto mb-6"
+            className="bg-black/60 border border-neutral-800 rounded-sm p-4 max-w-xl mx-auto mb-6"
           >
             <span className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-amber-500/70 block mb-2">
               THE CHALLENGE

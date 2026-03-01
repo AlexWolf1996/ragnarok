@@ -6,6 +6,39 @@ import {
   LAMPORTS_PER_SOL,
 } from '@solana/web3.js';
 
+// Timeout helper — races a promise against a timer
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)
+    ),
+  ]);
+}
+
+const CLIENT_RPC_ENDPOINTS = [
+  process.env.NEXT_PUBLIC_SOLANA_RPC_URL,
+  'https://api.mainnet-beta.solana.com',
+].filter((url): url is string => Boolean(url && url.startsWith('http')));
+
+/**
+ * Get a working Connection on the client side.
+ * Tries NEXT_PUBLIC_SOLANA_RPC_URL first, then public mainnet, health-checking each.
+ */
+async function getClientConnection(): Promise<Connection> {
+  const unique = [...new Set(CLIENT_RPC_ENDPOINTS)];
+  for (const endpoint of unique) {
+    try {
+      const conn = new Connection(endpoint, 'confirmed');
+      await withTimeout(conn.getLatestBlockhash(), 8_000, `RPC health-check ${endpoint}`);
+      return conn;
+    } catch {
+      console.warn(`[Solana RPC Client] ${endpoint} failed, trying next...`);
+    }
+  }
+  throw new Error('Could not reach Solana network. Please check your connection and try again.');
+}
+
 // Betting tier amounts in SOL
 export const BETTING_TIERS = {
   bifrost: 0.01,
@@ -66,12 +99,8 @@ export async function transferToTreasury(
   try {
     const treasuryWallet = getTreasuryWallet();
 
-    // Prefer the connection passed from WalletProvider (already configured with correct endpoint)
-    // Fall back to creating our own if none provided
-    const connection = existingConnection || new Connection(
-      process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com',
-      'confirmed'
-    );
+    // Prefer the connection passed from WalletProvider, fall back to failover chain
+    const connection = existingConnection || await getClientConnection();
 
     console.log(`[Solana Transfer] Initiating ${amountSol} SOL transfer to treasury: ${treasuryWallet.toBase58()}`);
 
@@ -89,7 +118,11 @@ export async function transferToTreasury(
     // Build transaction — set feePayer and blockhash BEFORE signing
     // so Phantom can simulate it properly
     const transaction = new Transaction().add(transferInstruction);
-    const { blockhash } = await connection.getLatestBlockhash('confirmed');
+    const { blockhash } = await withTimeout(
+      connection.getLatestBlockhash('confirmed'),
+      10_000,
+      'getLatestBlockhash'
+    );
     transaction.recentBlockhash = blockhash;
     transaction.feePayer = walletAdapter.publicKey;
 
@@ -134,6 +167,12 @@ export async function transferToTreasury(
     }
     if (errorMessage.includes('User rejected')) {
       return { success: false, error: 'Transaction was rejected in wallet.' };
+    }
+    if (errorMessage.includes('timed out') || errorMessage.includes('Could not reach')) {
+      return { success: false, error: 'Network connection to Solana failed. Please try again.' };
+    }
+    if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+      return { success: false, error: 'Could not reach Solana network. Check your connection.' };
     }
 
     return { success: false, error: errorMessage };

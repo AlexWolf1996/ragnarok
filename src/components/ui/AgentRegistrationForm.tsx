@@ -160,7 +160,7 @@ export default function AgentRegistrationForm() {
       {/* Registration Form */}
       <motion.form
         onSubmit={handleSubmit}
-        className="bg-black/60 border border-neutral-800 rounded-lg p-6 md:p-8 relative overflow-hidden"
+        className="bg-black/60 border border-neutral-800 rounded-sm p-6 md:p-8 relative overflow-hidden"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
@@ -172,7 +172,7 @@ export default function AgentRegistrationForm() {
 
         {/* General error */}
         {errors.general && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-3">
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-sm flex items-center gap-3">
             <AlertCircle className="text-red-500 flex-shrink-0" size={20} />
             <p className="text-red-400 font-[var(--font-rajdhani)] text-sm">{errors.general}</p>
           </div>
@@ -194,7 +194,7 @@ export default function AgentRegistrationForm() {
               onChange={(e) => handleChange('name', e.target.value)}
               placeholder="Enter a legendary name (3-30 chars)"
               maxLength={30}
-              className={`w-full pl-10 pr-4 py-3 bg-black/60 border rounded-lg focus:outline-none font-[var(--font-rajdhani)] text-sm text-white placeholder-neutral-600 transition-colors ${
+              className={`w-full pl-10 pr-4 py-3 bg-black/60 border rounded-sm focus:outline-none font-[var(--font-rajdhani)] text-sm text-white placeholder-neutral-600 transition-colors ${
                 errors.name
                   ? 'border-red-500 focus:border-red-500'
                   : 'border-neutral-800 focus:border-amber-500/50'
@@ -224,7 +224,7 @@ export default function AgentRegistrationForm() {
                 key={avatar.id}
                 type="button"
                 onClick={() => handleChange('avatar', avatar.id)}
-                className={`p-3 rounded-lg border transition-all flex flex-col items-center gap-1 ${
+                className={`p-3 rounded-sm border transition-all flex flex-col items-center gap-1 ${
                   formData.avatar === avatar.id
                     ? 'bg-amber-500/20 border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.2)]'
                     : 'bg-black/40 border-neutral-800 hover:border-amber-500/50'
@@ -258,7 +258,7 @@ export default function AgentRegistrationForm() {
               placeholder="Define your agent's personality and battle strategy..."
               rows={5}
               maxLength={500}
-              className={`w-full pl-10 pr-4 py-3 bg-black/60 border rounded-lg focus:outline-none font-[var(--font-rajdhani)] text-sm text-white placeholder-neutral-600 transition-colors resize-none ${
+              className={`w-full pl-10 pr-4 py-3 bg-black/60 border rounded-sm focus:outline-none font-[var(--font-rajdhani)] text-sm text-white placeholder-neutral-600 transition-colors resize-none ${
                 errors.systemPrompt
                   ? 'border-red-500 focus:border-red-500'
                   : 'border-neutral-800 focus:border-amber-500/50'
@@ -309,7 +309,7 @@ export default function AgentRegistrationForm() {
         <button
           type="button"
           onClick={() => setShowPreview(!showPreview)}
-          className="w-full mb-4 lg:hidden flex items-center justify-center gap-2 py-2 border border-neutral-800 rounded-lg font-[var(--font-orbitron)] text-xs text-neutral-400 hover:border-amber-500/50 hover:text-amber-400 transition-colors"
+          className="w-full mb-4 lg:hidden flex items-center justify-center gap-2 py-2 border border-neutral-800 rounded-sm font-[var(--font-orbitron)] text-xs text-neutral-400 hover:border-amber-500/50 hover:text-amber-400 transition-colors"
         >
           <Eye size={14} />
           {showPreview ? 'HIDE PREVIEW' : 'SHOW PREVIEW'}
@@ -319,7 +319,7 @@ export default function AgentRegistrationForm() {
         <button
           type="submit"
           disabled={isSubmitting || !connected}
-          className="w-full py-4 bg-gradient-to-r from-red-700 via-red-600 to-red-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-red-600 hover:via-red-500 hover:to-red-600 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
+          className="w-full py-4 bg-gradient-to-r from-red-700 via-red-600 to-red-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-red-600 hover:via-red-500 hover:to-red-600 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
         >
           {isSubmitting ? (
             <>
@@ -357,7 +357,7 @@ export default function AgentRegistrationForm() {
               </h3>
 
               {/* Preview Card */}
-              <div className="bg-black/60 border border-amber-500/30 rounded-lg p-6 relative overflow-hidden">
+              <div className="bg-black/60 border border-amber-500/30 rounded-sm p-6 relative overflow-hidden">
                 <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
 
                 {/* Agent header */}
@@ -378,22 +378,22 @@ export default function AgentRegistrationForm() {
 
                 {/* Stats */}
                 <div className="grid grid-cols-3 gap-3 mb-4">
-                  <div className="bg-black/40 rounded-lg p-3 text-center">
+                  <div className="bg-black/40 rounded-sm p-3 text-center">
                     <div className="font-mono text-lg text-white">0</div>
                     <div className="font-[var(--font-orbitron)] text-[8px] text-neutral-500 tracking-wider">WINS</div>
                   </div>
-                  <div className="bg-black/40 rounded-lg p-3 text-center">
+                  <div className="bg-black/40 rounded-sm p-3 text-center">
                     <div className="font-mono text-lg text-white">0</div>
                     <div className="font-[var(--font-orbitron)] text-[8px] text-neutral-500 tracking-wider">LOSSES</div>
                   </div>
-                  <div className="bg-black/40 rounded-lg p-3 text-center">
+                  <div className="bg-black/40 rounded-sm p-3 text-center">
                     <div className="font-mono text-lg text-white">0%</div>
                     <div className="font-[var(--font-orbitron)] text-[8px] text-neutral-500 tracking-wider">WIN RATE</div>
                   </div>
                 </div>
 
                 {/* Fighting style preview */}
-                <div className="bg-black/40 border border-neutral-800 rounded-lg p-4">
+                <div className="bg-black/40 border border-neutral-800 rounded-sm p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Sparkles size={12} className="text-amber-500/70" />
                     <span className="font-[var(--font-orbitron)] text-[10px] text-amber-500/70 tracking-wider">
@@ -426,7 +426,7 @@ export default function AgentRegistrationForm() {
               </div>
 
               {/* Tips */}
-              <div className="mt-4 bg-black/40 border border-neutral-800 rounded-lg p-4">
+              <div className="mt-4 bg-black/40 border border-neutral-800 rounded-sm p-4">
                 <h4 className="font-[var(--font-orbitron)] text-[10px] text-cyan-500/70 tracking-wider mb-2">
                   WARRIOR TIPS
                 </h4>

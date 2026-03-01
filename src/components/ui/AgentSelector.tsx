@@ -53,7 +53,7 @@ export default function AgentSelector({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`w-full flex items-center justify-between gap-2 px-4 py-3 rounded-lg border transition-all ${
+        className={`w-full flex items-center justify-between gap-2 px-4 py-3 rounded-sm border transition-all ${
           disabled
             ? 'bg-[#111118] border-[#1a1a25] cursor-not-allowed opacity-50'
             : isOpen
@@ -102,7 +102,7 @@ export default function AgentSelector({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute z-[100] w-full mt-2 bg-[#111118] border border-[#1a1a25] rounded-lg shadow-2xl"
+            className="absolute z-[100] w-full mt-2 bg-[#111118] border border-[#1a1a25] rounded-sm shadow-2xl"
             style={{ maxHeight: 'calc(100vh - 200px)' }}
           >
             {/* Search input */}

@@ -336,7 +336,7 @@ export default function MatchCommentary({
         animate={{ opacity: 1, maxHeight: 500, marginBottom: 16 }}
         exit={{ opacity: 0, maxHeight: 0, marginBottom: 0 }}
         transition={{ duration: reducedMotion ? 0 : 0.4, ease: 'easeOut' }}
-        className="bg-gray-900/60 border border-gray-800 rounded-xl p-4 overflow-hidden"
+        className="bg-gray-900/60 border border-gray-800 rounded-sm p-4 overflow-hidden"
         role="region"
         aria-label="Match commentary"
       >

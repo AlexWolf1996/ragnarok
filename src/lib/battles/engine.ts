@@ -111,6 +111,14 @@ export async function markMatchFailed(
       })
       .eq('id', matchId);
     console.log(`[Battle] Match ${matchId} marked as failed: ${reason}`);
+
+    // Refund pending bets (dynamic import avoids circular dependency)
+    try {
+      const { refundMatch } = await import('@/lib/bets/parimutuel');
+      await refundMatch(matchId);
+    } catch (refundError) {
+      console.error(`[Battle] Refund failed for match ${matchId} (match already marked failed):`, refundError);
+    }
   } catch (updateError) {
     console.error(`[Battle] Failed to mark match as failed:`, updateError);
   }
@@ -351,14 +359,28 @@ export async function executeBattle(
   const newWinnerElo = winnerAgent.elo_rating + winnerDelta;
   const newLoserElo = Math.max(100, loserAgent.elo_rating + loserDelta);
 
+  // Compute scores from judge votes (defensive — ensures non-null even if
+  // multiJudge weighted average produces NaN in edge cases)
+  const validVotes = judgeResult.judges.filter(j => !j.failed);
+  const finalScoreA = validVotes.length > 0
+    ? Math.round(validVotes.reduce((sum, j) => sum + j.scoreA, 0) / validVotes.length)
+    : judgeResult.scoreA;
+  const finalScoreB = validVotes.length > 0
+    ? Math.round(validVotes.reduce((sum, j) => sum + j.scoreB, 0) / validVotes.length)
+    : judgeResult.scoreB;
+
+  // Guard against NaN — Supabase stores NaN as null
+  const safeScoreA = Number.isFinite(finalScoreA) ? finalScoreA : 50;
+  const safeScoreB = Number.isFinite(finalScoreB) ? finalScoreB : 50;
+
   // Update match with final results (responses already saved during judging transition)
   const { error: updateMatchError } = await supabase
     .from('matches')
     .update({
       status: 'completed',
       winner_id: winnerId,
-      agent_a_score: judgeResult.scoreA,
-      agent_b_score: judgeResult.scoreB,
+      agent_a_score: safeScoreA,
+      agent_b_score: safeScoreB,
       judge_reasoning: judgeResult.reasoning,
       judge_scores: JSON.parse(JSON.stringify(judgeResult.judges)) as Json,
       is_split_decision: judgeResult.isSplitDecision,

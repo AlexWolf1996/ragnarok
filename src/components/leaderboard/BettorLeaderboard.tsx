@@ -215,17 +215,17 @@ export default function BettorLeaderboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
       >
-        <div className="bg-black/40 border border-neutral-800 rounded-lg p-4 text-center">
+        <div className="bg-black/40 border border-neutral-800 rounded-sm p-4 text-center">
           <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">TOTAL WAGERED</div>
           <div className="font-[var(--font-orbitron)] text-xl font-bold text-white">{globalWagered.toFixed(2)}</div>
           <div className="font-mono text-[10px] text-neutral-500 mt-1">SOL</div>
         </div>
-        <div className="bg-black/40 border border-neutral-800 rounded-lg p-4 text-center">
+        <div className="bg-black/40 border border-neutral-800 rounded-sm p-4 text-center">
           <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">TOTAL BETS</div>
           <div className="font-[var(--font-orbitron)] text-xl font-bold text-white">{globalBets}</div>
           <div className="font-mono text-[10px] text-neutral-500 mt-1">{bettors.length} wallets</div>
         </div>
-        <div className="bg-black/40 border border-neutral-800 rounded-lg p-4 text-center">
+        <div className="bg-black/40 border border-neutral-800 rounded-sm p-4 text-center">
           <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">BETS WON</div>
           <div className="font-[var(--font-orbitron)] text-xl font-bold text-emerald-400">{globalWins}</div>
           <div className="font-mono text-[10px] text-neutral-500 mt-1">{globalBets > 0 ? Math.round((globalWins / globalBets) * 100) : 0}% win rate</div>
@@ -241,7 +241,7 @@ export default function BettorLeaderboard() {
       >
         <button
           onClick={loadData}
-          className="px-4 py-2 bg-black/60 border border-neutral-800 rounded-lg hover:border-amber-500/50 transition-colors flex items-center gap-2"
+          className="px-4 py-2 bg-black/60 border border-neutral-800 rounded-sm hover:border-amber-500/50 transition-colors flex items-center gap-2"
         >
           <RefreshCw size={14} className="text-neutral-500" />
           <span className="font-[var(--font-orbitron)] text-xs text-neutral-400">Refresh</span>
@@ -250,7 +250,7 @@ export default function BettorLeaderboard() {
 
       {/* Table */}
       <motion.div
-        className="bg-black/40 border border-neutral-800 rounded-lg overflow-hidden relative"
+        className="bg-black/40 border border-neutral-800 rounded-sm overflow-hidden relative"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.25 }}

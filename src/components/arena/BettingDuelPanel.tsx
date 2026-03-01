@@ -257,7 +257,7 @@ export default function BettingDuelPanel({
 
   if (agents.length < 2) {
     return (
-      <div className="bg-black/40 border border-neutral-800 rounded-lg p-6 relative">
+      <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 relative">
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
         <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-6 flex items-center gap-2">
           <Plus size={16} className="text-amber-500" />
@@ -276,7 +276,7 @@ export default function BettingDuelPanel({
   }
 
   return (
-    <div className="bg-black/40 border border-neutral-800 rounded-lg p-6 relative">
+    <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 relative">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
 
       {/* Header */}
@@ -313,7 +313,7 @@ export default function BettingDuelPanel({
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-1">
                 <button
                   onClick={() => setSelectedChallenge('random')}
-                  className={`py-2.5 px-2 rounded-lg border text-center transition-all ${
+                  className={`py-2.5 px-2 rounded-sm border text-center transition-all ${
                     selectedChallenge === 'random'
                       ? 'border-amber-500 bg-amber-500/10 text-amber-400'
                       : 'border-neutral-700 text-neutral-400 hover:border-neutral-500'
@@ -333,7 +333,7 @@ export default function BettingDuelPanel({
                         setSelectedChallenge(pick.id);
                       }
                     }}
-                    className={`py-2.5 px-2 rounded-lg border text-center transition-all ${
+                    className={`py-2.5 px-2 rounded-sm border text-center transition-all ${
                       selectedChallenge !== 'random' && challenges.find(c => c.id === selectedChallenge)?.type === type
                         ? `${meta.border} ${meta.color}`
                         : 'border-neutral-700 text-neutral-400 hover:border-neutral-500'
@@ -387,7 +387,7 @@ export default function BettingDuelPanel({
             <button
               onClick={handleProceedToBet}
               disabled={!canProceedToBet}
-              className="w-full py-4 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-amber-600 hover:via-amber-500 hover:to-amber-600 shadow-[0_0_30px_rgba(245,158,11,0.3)]"
+              className="w-full py-4 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-amber-600 hover:via-amber-500 hover:to-amber-600 shadow-[0_0_30px_rgba(245,158,11,0.3)]"
             >
               <Swords size={16} />
               PLACE YOUR WAGER
@@ -405,7 +405,7 @@ export default function BettingDuelPanel({
             className="space-y-5"
           >
             {/* Matchup Display */}
-            <div className="flex items-center justify-between gap-4 p-4 bg-black/40 rounded-lg border border-neutral-800">
+            <div className="flex items-center justify-between gap-4 p-4 bg-black/40 rounded-sm border border-neutral-800">
               <div className="text-center flex-1">
                 <div className="text-2xl mb-1">{agentA.avatar_url || '⚔️'}</div>
                 <div className="font-[var(--font-orbitron)] text-xs text-white truncate">{agentA.name}</div>
@@ -442,7 +442,7 @@ export default function BettingDuelPanel({
                   <button
                     key={tier}
                     onClick={() => setSelectedTier(tier)}
-                    className={`py-3 px-2 rounded-lg border font-[var(--font-orbitron)] text-xs transition-all ${
+                    className={`py-3 px-2 rounded-sm border font-[var(--font-orbitron)] text-xs transition-all ${
                       selectedTier === tier
                         ? `bg-gradient-to-r ${TIER_COLORS[tier]} border-transparent text-white`
                         : 'border-neutral-700 text-neutral-400 hover:border-neutral-500'
@@ -463,7 +463,7 @@ export default function BettingDuelPanel({
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => setBettorPick('A')}
-                  className={`py-4 px-3 rounded-lg border transition-all ${
+                  className={`py-4 px-3 rounded-sm border transition-all ${
                     bettorPick === 'A'
                       ? 'bg-amber-500/20 border-amber-500 text-amber-500'
                       : 'border-neutral-700 text-neutral-400 hover:border-amber-500/50'
@@ -474,7 +474,7 @@ export default function BettingDuelPanel({
                 </button>
                 <button
                   onClick={() => setBettorPick('B')}
-                  className={`py-4 px-3 rounded-lg border transition-all ${
+                  className={`py-4 px-3 rounded-sm border transition-all ${
                     bettorPick === 'B'
                       ? 'bg-red-500/20 border-red-500 text-red-500'
                       : 'border-neutral-700 text-neutral-400 hover:border-red-500/50'
@@ -488,7 +488,7 @@ export default function BettingDuelPanel({
 
             {/* Error Display */}
             {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-2">
+              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-sm flex items-center gap-2">
                 <AlertTriangle size={14} className="text-red-500 flex-shrink-0" />
                 <span className="font-[var(--font-rajdhani)] text-xs text-red-400">{error}</span>
               </div>
@@ -496,7 +496,7 @@ export default function BettingDuelPanel({
 
             {/* Wallet Warning */}
             {!wallet.connected && (
-              <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg flex items-center gap-2">
+              <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-sm flex items-center gap-2">
                 <AlertTriangle size={14} className="text-amber-500 flex-shrink-0" />
                 <span className="font-[var(--font-rajdhani)] text-xs text-amber-400">
                   Connect your wallet to place bets
@@ -508,7 +508,7 @@ export default function BettingDuelPanel({
             <button
               onClick={handlePlaceBet}
               disabled={!canPlaceBet}
-              className="w-full py-4 bg-gradient-to-r from-red-700 via-red-600 to-red-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-red-600 hover:via-red-500 hover:to-red-600 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
+              className="w-full py-4 bg-gradient-to-r from-red-700 via-red-600 to-red-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-red-600 hover:via-red-500 hover:to-red-600 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
             >
               <Zap size={16} />
               WAGE {BETTING_TIERS[selectedTier]} SOL
@@ -605,7 +605,7 @@ export default function BettingDuelPanel({
             className="space-y-4"
           >
             {/* Win/Lose Banner */}
-            <div className={`p-4 rounded-lg border ${
+            <div className={`p-4 rounded-sm border ${
               battleResult.bet.won
                 ? 'bg-emerald-500/20 border-emerald-500'
                 : 'bg-red-500/20 border-red-500'
@@ -651,7 +651,7 @@ export default function BettingDuelPanel({
             </div>
 
             {/* Battle Summary */}
-            <div className="p-4 bg-black/40 rounded-lg border border-neutral-800">
+            <div className="p-4 bg-black/40 rounded-sm border border-neutral-800">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-center flex-1">
                   <div className="text-xl mb-1">{agentA.avatar_url || '⚔️'}</div>
@@ -740,13 +740,13 @@ export default function BettingDuelPanel({
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={handleFightAgain}
-                className="py-3 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-white font-[var(--font-orbitron)] text-xs tracking-[0.1em] rounded-lg hover:from-amber-600 hover:via-amber-500 hover:to-amber-600 transition-all"
+                className="py-3 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-white font-[var(--font-orbitron)] text-xs tracking-[0.1em] rounded-sm hover:from-amber-600 hover:via-amber-500 hover:to-amber-600 transition-all"
               >
                 REMATCH
               </button>
               <button
                 onClick={handleReset}
-                className="py-3 border border-neutral-700 text-neutral-400 font-[var(--font-orbitron)] text-xs tracking-[0.1em] rounded-lg hover:border-neutral-500 hover:text-white transition-all"
+                className="py-3 border border-neutral-700 text-neutral-400 font-[var(--font-orbitron)] text-xs tracking-[0.1em] rounded-sm hover:border-neutral-500 hover:text-white transition-all"
               >
                 NEW DUEL
               </button>

@@ -243,7 +243,7 @@ export default function AgentProfilePage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-black/40 border border-neutral-800 rounded-xl p-6 md:p-8 mb-6 relative"
+          className="bg-black/40 border border-neutral-800 rounded-sm p-6 md:p-8 mb-6 relative"
         >
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
 
@@ -331,7 +331,7 @@ export default function AgentProfilePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
-            className="bg-black/40 border border-neutral-800 rounded-xl p-6 mb-6 relative"
+            className="bg-black/40 border border-neutral-800 rounded-sm p-6 mb-6 relative"
           >
             <div className="flex items-start gap-3">
               <Quote size={24} className="text-amber-500/50 flex-shrink-0 mt-1" />
@@ -354,37 +354,37 @@ export default function AgentProfilePage() {
           transition={{ delay: 0.1 }}
           className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6"
         >
-          <div className="bg-black/40 border border-neutral-800 rounded-lg p-4 text-center">
+          <div className="bg-black/40 border border-neutral-800 rounded-sm p-4 text-center">
             <Swords size={18} className="text-amber-400 mx-auto mb-2" />
             <div className="font-mono text-xl font-bold text-white">{agent.matchesPlayed}</div>
             <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-wider">BATTLES</div>
           </div>
 
-          <div className="bg-black/40 border border-neutral-800 rounded-lg p-4 text-center">
+          <div className="bg-black/40 border border-neutral-800 rounded-sm p-4 text-center">
             <Trophy size={18} className="text-emerald-400 mx-auto mb-2" />
             <div className="font-mono text-xl font-bold text-white">{agent.wins}</div>
             <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-wider">VICTORIES</div>
           </div>
 
-          <div className="bg-black/40 border border-neutral-800 rounded-lg p-4 text-center">
+          <div className="bg-black/40 border border-neutral-800 rounded-sm p-4 text-center">
             <Skull size={18} className="text-red-400 mx-auto mb-2" />
             <div className="font-mono text-xl font-bold text-white">{agent.losses}</div>
             <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-wider">DEFEATS</div>
           </div>
 
-          <div className="bg-black/40 border border-neutral-800 rounded-lg p-4 text-center">
+          <div className="bg-black/40 border border-neutral-800 rounded-sm p-4 text-center">
             <Target size={18} className="text-cyan-400 mx-auto mb-2" />
             <div className="font-mono text-xl font-bold text-white">{agent.winRate}%</div>
             <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-wider">WIN RATE</div>
           </div>
 
-          <div className="bg-black/40 border border-neutral-800 rounded-lg p-4 text-center">
+          <div className="bg-black/40 border border-neutral-800 rounded-sm p-4 text-center">
             <Award size={18} className="text-amber-400 mx-auto mb-2" />
             <div className="font-mono text-xl font-bold text-white">{agent.highestElo}</div>
             <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-wider">PEAK ELO</div>
           </div>
 
-          <div className="bg-black/40 border border-neutral-800 rounded-lg p-4 text-center">
+          <div className="bg-black/40 border border-neutral-800 rounded-sm p-4 text-center">
             <Star size={18} className="text-purple-400 mx-auto mb-2" />
             <div className="font-mono text-sm font-bold text-white truncate">
               {agent.favoriteChallenge ? formatChallengeType(agent.favoriteChallenge.type) : '—'}
@@ -398,7 +398,7 @@ export default function AgentProfilePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="bg-black/40 border border-neutral-800 rounded-xl p-6 mb-6"
+          className="bg-black/40 border border-neutral-800 rounded-sm p-6 mb-6"
         >
           <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
             <TrendingUp size={16} className="text-amber-500/70" />
@@ -413,7 +413,7 @@ export default function AgentProfilePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18 }}
-            className="bg-black/40 border border-neutral-800 rounded-xl p-6 mb-6"
+            className="bg-black/40 border border-neutral-800 rounded-sm p-6 mb-6"
           >
             <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
               <Target size={16} className="text-cyan-500/70" />
@@ -461,7 +461,7 @@ export default function AgentProfilePage() {
           </h2>
 
           {matches.length === 0 ? (
-            <div className="bg-black/40 border border-neutral-800 rounded-lg p-8 text-center">
+            <div className="bg-black/40 border border-neutral-800 rounded-sm p-8 text-center">
               <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
                 This warrior has not yet tasted battle.
               </p>
@@ -471,7 +471,7 @@ export default function AgentProfilePage() {
               {matches.map((match) => (
                 <div
                   key={match.id}
-                  className="bg-black/40 border border-neutral-800 hover:border-amber-500/30 rounded-lg transition-all overflow-hidden"
+                  className="bg-black/40 border border-neutral-800 hover:border-amber-500/30 rounded-sm transition-all overflow-hidden"
                 >
                   <button
                     onClick={() => setExpandedMatchId(expandedMatchId === match.id ? null : match.id)}
@@ -569,7 +569,7 @@ export default function AgentProfilePage() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* My response */}
                             {match.myResponse && (
-                              <div className="bg-black/30 rounded-lg p-3">
+                              <div className="bg-black/30 rounded-sm p-3">
                                 <span className="text-[10px] font-[var(--font-orbitron)] text-emerald-500/70 tracking-wider block mb-2">
                                   {agent.name.toUpperCase()}&apos;S RESPONSE
                                 </span>
@@ -581,7 +581,7 @@ export default function AgentProfilePage() {
 
                             {/* Opponent response */}
                             {match.opponentResponse && (
-                              <div className="bg-black/30 rounded-lg p-3">
+                              <div className="bg-black/30 rounded-sm p-3">
                                 <span className="text-[10px] font-[var(--font-orbitron)] text-red-500/70 tracking-wider block mb-2">
                                   {match.opponent.name.toUpperCase()}&apos;S RESPONSE
                                 </span>
