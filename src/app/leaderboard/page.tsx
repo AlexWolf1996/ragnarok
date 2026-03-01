@@ -305,7 +305,7 @@ function LeaderboardContent() {
           <div className="inline-flex bg-black/60 border border-neutral-800 rounded-sm p-1 gap-1">
             <button
               onClick={() => setActiveTab('warriors')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-md font-[var(--font-orbitron)] text-xs tracking-[0.15em] transition-all ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-sm font-[var(--font-orbitron)] text-xs tracking-[0.15em] transition-all ${
                 activeTab === 'warriors'
                   ? 'bg-[#c9a84c]/20 text-[#c9a84c] border border-[#c9a84c]/30'
                   : 'text-neutral-500 hover:text-white'
@@ -316,7 +316,7 @@ function LeaderboardContent() {
             </button>
             <button
               onClick={() => setActiveTab('bettors')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-md font-[var(--font-orbitron)] text-xs tracking-[0.15em] transition-all ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-sm font-[var(--font-orbitron)] text-xs tracking-[0.15em] transition-all ${
                 activeTab === 'bettors'
                   ? 'bg-[#c9a84c]/20 text-[#c9a84c] border border-[#c9a84c]/30'
                   : 'text-neutral-500 hover:text-white'
@@ -580,7 +580,7 @@ function LeaderboardContent() {
                           {/* View Profile Link */}
                           <Link
                             href={`/agents/${agent.agent_id}`}
-                            className="mt-4 inline-flex items-center gap-2 px-4 py-2 border border-[#c9a84c]/30 text-[#c9a84c] font-[var(--font-orbitron)] text-xs tracking-wider hover:bg-[#c9a84c]/10 transition-colors rounded"
+                            className="mt-4 inline-flex items-center gap-2 px-4 py-2 border border-[#c9a84c]/30 text-[#c9a84c] font-[var(--font-orbitron)] text-xs tracking-wider hover:bg-[#c9a84c]/10 transition-colors rounded-sm"
                             onClick={(e) => e.stopPropagation()}
                           >
                             VIEW FULL CHRONICLE
