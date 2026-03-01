@@ -14,7 +14,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/battles/engine';
 import { executeBattle } from '@/lib/battles/engine';
 import { selectMatchup } from '@/lib/matchmaking';
-import { settleMatch } from '@/lib/bets/parimutuel';
+import { settleMatch, refundMatch } from '@/lib/bets/parimutuel';
 import { processPayoutQueue } from '@/lib/payouts/processor';
 import { verifyCronAuth } from '@/lib/qstash/verify';
 
@@ -73,7 +73,13 @@ async function handler(request: NextRequest) {
         .from('matches')
         .update({ status: 'failed', completed_at: now.toISOString() })
         .eq('id', match.id);
-      actions.push(`force-failed stuck match ${match.id}`);
+      try {
+        await refundMatch(match.id);
+        actions.push(`force-failed stuck match ${match.id} (bets refunded)`);
+      } catch (refundErr) {
+        console.error(`[Scheduler] Refund failed for stuck match ${match.id}:`, refundErr);
+        actions.push(`force-failed stuck match ${match.id} (refund error)`);
+      }
     }
 
     // Stuck betting_open > 15 min → force start
@@ -167,7 +173,7 @@ async function handler(request: NextRequest) {
             // Increment times_used
             await supabase
               .from('submitted_challenges')
-              .update({ times_used: (picked as { times_used?: number }).times_used || 0 + 1 })
+              .update({ times_used: ((picked as { times_used?: number }).times_used ?? 0) + 1 })
               .eq('id', picked.id);
           }
         }
@@ -268,12 +274,27 @@ async function startBattle(
     // Execute the battle (pass existing match ID to avoid duplicate records)
     const result = await executeBattle(match.agent_a_id, match.agent_b_id, match.challenge_id, match.id);
 
-    // Settle bets (if any)
+    // Settle bets with retry (3 attempts, 2s between)
     if (result.winner?.id) {
-      try {
-        await settleMatch(match.id, result.winner.id);
-      } catch (settleErr) {
-        console.error(`[Scheduler] Settlement error for match ${match.id}:`, settleErr);
+      let settled = false;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          await settleMatch(match.id, result.winner.id);
+          settled = true;
+          break;
+        } catch (settleErr) {
+          console.error(`[Scheduler] Settlement attempt ${attempt}/3 failed for match ${match.id}:`, settleErr);
+          if (attempt < 3) {
+            await new Promise(r => setTimeout(r, 2000));
+          }
+        }
+      }
+      if (!settled) {
+        console.error(`[Scheduler] All settlement attempts failed for match ${match.id} — marking bet_status`);
+        await supabase
+          .from('matches')
+          .update({ bet_status: 'settlement_failed' })
+          .eq('id', match.id);
       }
     }
 
@@ -288,5 +309,10 @@ async function startBattle(
       .from('matches')
       .update({ status: 'failed', completed_at: new Date().toISOString() })
       .eq('id', match.id);
+    try {
+      await refundMatch(match.id);
+    } catch (refundErr) {
+      console.error(`[Scheduler] Refund failed for battle-error match ${match.id}:`, refundErr);
+    }
   }
 }
