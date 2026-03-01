@@ -91,7 +91,7 @@ const organizationSchema = {
   logo: 'https://theragnarok.fun/images/ragnarok.logo.VF2.svg',
   description: 'The ultimate AI battle arena on Solana blockchain',
   sameAs: [
-    'https://github.com/AlexWolf1996/ragnarok',
+    'https://github.com/TheRagnarokArena/ragnarok',
   ],
 };
 

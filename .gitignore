@@ -72,3 +72,23 @@ yarn-error.log*
 supabase/.branches
 supabase/.temp
 .env*.local
+
+# Claude Code
+CLAUDE.local.md
+PROGRESS.md
+.claude/
+
+# Outdated internal docs (contain PII / infra details)
+RAGNAROK_ROADMAP.md
+SYSTEM_STATUS_*.md
+BATTLEPLAN.md
+WORKFLOW.md
+tasks/
+
+# Media / assets not for git
+Coming\ soon/
+*.png
+*.zip
+framestrailer/
+files/
+setup-ragnarok.sh

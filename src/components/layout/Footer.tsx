@@ -32,7 +32,7 @@ export default function Footer() {
             <a href="https://x.com/TheRagnarokAI" target="_blank" rel="noopener noreferrer" className="hover:text-[#c9a84c] transition-colors py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded">
               TWITTER
             </a>
-            <a href="https://github.com/AlexWolf1996/ragnarok" target="_blank" rel="noopener noreferrer" className="hover:text-[#c9a84c] transition-colors py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded">
+            <a href="https://github.com/TheRagnarokArena/ragnarok" target="_blank" rel="noopener noreferrer" className="hover:text-[#c9a84c] transition-colors py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded">
               GITHUB
             </a>
             <Link href="/docs" className="hover:text-[#c9a84c] transition-colors py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded">

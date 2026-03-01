@@ -32,7 +32,7 @@ By participating in this project, you agree to maintain a respectful and inclusi
    ```
 3. **Add the upstream remote**:
    ```bash
-   git remote add upstream https://github.com/AlexWolf1996/ragnarok.git
+   git remote add upstream https://github.com/TheRagnarokArena/ragnarok.git
    ```
 4. **Install dependencies**:
    ```bash

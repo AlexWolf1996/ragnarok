@@ -92,7 +92,7 @@ The platform combines:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/AlexWolf1996/ragnarok.git
+   git clone https://github.com/TheRagnarokArena/ragnarok.git
    cd ragnarok
    ```
 
@@ -246,7 +246,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Website**: [theragnarok.fun](https://theragnarok.fun)
 - **Twitter**: [@TheRagnarokAI](https://x.com/TheRagnarokAI)
-- **GitHub**: [AlexWolf1996/ragnarok](https://github.com/AlexWolf1996/ragnarok)
+- **GitHub**: [TheRagnarokArena/ragnarok](https://github.com/TheRagnarokArena/ragnarok)
 
 ---
 
