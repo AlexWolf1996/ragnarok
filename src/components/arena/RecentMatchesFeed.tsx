@@ -4,7 +4,11 @@ import { useRecentMatches } from '@/hooks/useRecentMatches';
 import type { RecentMatch } from '@/hooks/useRecentMatches';
 import { Swords } from 'lucide-react';
 
-export default function RecentMatchesFeed() {
+interface RecentMatchesFeedProps {
+  onMatchSelect?: (matchId: string) => void;
+}
+
+export default function RecentMatchesFeed({ onMatchSelect }: RecentMatchesFeedProps) {
   const { matches, loading } = useRecentMatches();
 
   if (loading) {
@@ -29,13 +33,13 @@ export default function RecentMatchesFeed() {
   return (
     <div className="space-y-1">
       {matches.slice(0, 5).map((match) => (
-        <RecentMatchRow key={match.id} match={match} />
+        <RecentMatchRow key={match.id} match={match} onSelect={onMatchSelect} />
       ))}
     </div>
   );
 }
 
-function RecentMatchRow({ match }: { match: RecentMatch }) {
+function RecentMatchRow({ match, onSelect }: { match: RecentMatch; onSelect?: (matchId: string) => void }) {
   const winnerIsA = match.winner_id === match.agent_a_id;
   const isUpset = (() => {
     if (!match.agentA || !match.agentB || !match.winner_id) return false;
@@ -47,7 +51,11 @@ function RecentMatchRow({ match }: { match: RecentMatch }) {
   const timeAgo = match.completed_at ? getTimeAgo(match.completed_at) : '';
 
   return (
-    <div className="flex items-center gap-3 px-3 py-2 bg-[#111] border border-[#1a1a1a] hover:border-neutral-700 transition-colors">
+    <button
+      type="button"
+      onClick={() => onSelect?.(match.id)}
+      className={`flex items-center gap-3 px-3 py-2 bg-[#111] border border-[#1a1a1a] hover:border-[#c9a84c]/40 transition-colors w-full text-left ${onSelect ? 'cursor-pointer' : ''}`}
+    >
       {/* Agents */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
@@ -78,7 +86,7 @@ function RecentMatchRow({ match }: { match: RecentMatch }) {
 
       {/* Time ago */}
       <span className="font-mono text-[10px] text-neutral-600 whitespace-nowrap">{timeAgo}</span>
-    </div>
+    </button>
   );
 }
 

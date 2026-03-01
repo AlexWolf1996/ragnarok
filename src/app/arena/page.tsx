@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
-import { Swords, Plus, Loader2, Crown } from 'lucide-react';
+import { Swords, Plus, Loader2, Crown, ScrollText } from 'lucide-react';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { Tables } from '@/lib/supabase/types';
 import {
@@ -28,7 +28,8 @@ import { useCurrentMatch } from '@/hooks/useCurrentMatch';
 import MatchLiveView from '@/components/arena/MatchLiveView';
 import RecentMatchesFeed from '@/components/arena/RecentMatchesFeed';
 import BetPanel from '@/components/arena/BetPanel';
-import SubmitChallenge from '@/components/arena/SubmitChallenge';
+import ActivityDrawer from '@/components/arena/ActivityDrawer';
+import MatchDetailModal from '@/components/arena/MatchDetailModal';
 import {
   TierSelector,
   ModeToggle,
@@ -60,6 +61,12 @@ function ArenaContent() {
   // Duel mode: current match + selected side for betting
   const { match: currentMatch } = useCurrentMatch();
   const [selectedSide, setSelectedSide] = useState<'A' | 'B' | null>(null);
+
+  // Activity drawer state
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Match detail modal
+  const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
 
   // Battle Royale state
   const [openBattles, setOpenBattles] = useState<BattleRoyaleWithRelations[]>([]);
@@ -213,41 +220,18 @@ function ArenaContent() {
     <div className="min-h-screen bg-[#0a0a12] py-4 px-3 sm:py-8 sm:px-6 relative">
       <CosmicBackground showParticles={true} showRunes={true} particleCount={25} />
       <div className="max-w-7xl mx-auto relative z-10">
-        {/* Header */}
+        {/* Title */}
         <motion.div
-          className="text-center mb-6"
+          className="text-center mb-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="font-[var(--font-orbitron)] text-2xl sm:text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-2" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
+          <h1 className="font-[var(--font-orbitron)] text-2xl sm:text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-1" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
             HALLS OF BATTLE
           </h1>
-          <p className="font-[var(--font-rajdhani)] text-sm tracking-[0.15em] text-neutral-400">
-            WHERE CHAMPIONS FORGE THEIR LEGEND IN BLOOD AND CODE
+          <p className="font-[var(--font-rajdhani)] text-sm tracking-[0.15em] text-neutral-500">
+            WHERE CHAMPIONS FORGE THEIR LEGEND
           </p>
-        </motion.div>
-
-        {/* Mode toggle + Tier (tier only in Ragnarok mode) */}
-        <motion.div
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-        >
-          <ModeToggle mode={mode} onModeChange={setMode} />
-          {mode === 'ragnarok' && (
-            <TierSelector selectedTier={tier} onTierChange={setTier} />
-          )}
-        </motion.div>
-
-        {/* Stats Bar */}
-        <motion.div
-          className="mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <StatsBar />
         </motion.div>
 
         {/* Content based on mode */}
@@ -258,62 +242,52 @@ function ArenaContent() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+              className="max-w-4xl mx-auto"
             >
-              {/* Main area: Live Match + Recent */}
-              <div className="lg:col-span-2 space-y-6">
+              {/* Toolbar — mode toggle left, activity right */}
+              <div className="flex items-center justify-between mb-5">
+                <ModeToggle mode={mode} onModeChange={setMode} />
+                <button
+                  onClick={() => setDrawerOpen(true)}
+                  className="flex items-center gap-2 px-3 py-2 border border-[#c9a84c]/30 hover:border-[#c9a84c] bg-[#c9a84c]/5 hover:bg-[#c9a84c]/10 transition-colors"
+                  title="My Activity"
+                >
+                  <ScrollText size={14} className="text-[#c9a84c]" />
+                  <span className="font-mono text-[10px] tracking-widest uppercase text-[#c9a84c] hidden sm:inline">
+                    Activity
+                  </span>
+                </button>
+              </div>
+
+              {/* Stats Bar */}
+              <div className="mb-6">
+                <StatsBar />
+              </div>
+
+              {/* Live Match */}
+              <div className="space-y-6">
                 <MatchLiveView
                   selectedSide={selectedSide}
                   onSelectSide={setSelectedSide}
                 />
 
-                {/* Submit Challenge */}
-                <SubmitChallenge />
-
-                {/* Recent Battles Feed */}
-                <section>
-                  <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
-                    <Swords size={16} className="text-[#D4A843]/70" />
-                    RECENT BATTLES
-                  </h2>
-                  <RecentMatchesFeed />
-                </section>
-              </div>
-
-              {/* Right Sidebar — Betting + Schedule */}
-              <aside className="space-y-6">
-                {/* Bet Panel */}
+                {/* Bet Panel — below match */}
                 <BetPanel match={currentMatch} selectedSide={selectedSide} />
 
-                {/* Upcoming Matches */}
-                <div className="bg-[#111] border border-[#1a1a1a] p-6">
-                  <div className="font-[var(--font-rajdhani)] text-xs tracking-widest uppercase text-[#D4A843] mb-3">
-                    Upcoming Matches
-                  </div>
-                  <UpcomingSchedule onBattleSelect={() => {}} />
+                {/* Upcoming + Recent row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <section>
+                    <UpcomingSchedule onBattleSelect={() => {}} />
+                  </section>
+                  <section>
+                    <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
+                      <Swords size={16} className="text-[#D4A843]/70" />
+                      RECENT BATTLES
+                    </h2>
+                    <RecentMatchesFeed onMatchSelect={setSelectedMatchId} />
+                  </section>
                 </div>
-
-                {/* Quick links */}
-                <div className="bg-[#111] border border-[#1a1a1a] p-6">
-                  <div className="font-[var(--font-rajdhani)] text-[10px] tracking-widest uppercase text-neutral-500 mb-4">
-                    PATHS OF GLORY
-                  </div>
-                  <div className="space-y-2">
-                    <a
-                      href="/register"
-                      className="block w-full text-center py-3 bg-[#0d0d0d] hover:bg-[#D4A843]/10 border border-[#1a1a1a] hover:border-[#D4A843]/50 font-[var(--font-rajdhani)] text-xs text-white tracking-widest uppercase transition-colors"
-                    >
-                      Forge New Champion
-                    </a>
-                    <a
-                      href="/leaderboard"
-                      className="block w-full text-center py-3 bg-[#0d0d0d] hover:bg-[#D4A843]/10 border border-[#1a1a1a] hover:border-[#D4A843]/50 font-[var(--font-rajdhani)] text-xs text-white tracking-widest uppercase transition-colors"
-                    >
-                      Hall of Champions
-                    </a>
-                  </div>
-                </div>
-              </aside>
+              </div>
             </motion.div>
           ) : (
             /* RAGNAROK MODE - Battle Royale */
@@ -322,8 +296,31 @@ function ArenaContent() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="grid grid-cols-1 lg:grid-cols-3 gap-8"
             >
+              {/* Toolbar */}
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-3">
+                  <ModeToggle mode={mode} onModeChange={setMode} />
+                  <TierSelector selectedTier={tier} onTierChange={setTier} />
+                </div>
+                <button
+                  onClick={() => setDrawerOpen(true)}
+                  className="flex items-center gap-2 px-3 py-2 border border-[#c9a84c]/30 hover:border-[#c9a84c] bg-[#c9a84c]/5 hover:bg-[#c9a84c]/10 transition-colors"
+                  title="My Activity"
+                >
+                  <ScrollText size={14} className="text-[#c9a84c]" />
+                  <span className="font-mono text-[10px] tracking-widest uppercase text-[#c9a84c] hidden sm:inline">
+                    Activity
+                  </span>
+                </button>
+              </div>
+
+              {/* Stats Bar */}
+              <div className="mb-6">
+                <StatsBar />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Main Content */}
               <div className="lg:col-span-2 space-y-6">
                 {/* Selected Battle View */}
@@ -464,6 +461,7 @@ function ArenaContent() {
                   </div>
                 </div>
               </aside>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -499,6 +497,12 @@ function ArenaContent() {
           />
         )}
       </AnimatePresence>
+
+      {/* Match Detail Modal */}
+      <MatchDetailModal matchId={selectedMatchId} onClose={() => setSelectedMatchId(null)} />
+
+      {/* Activity Drawer */}
+      <ActivityDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </div>
   );
 }

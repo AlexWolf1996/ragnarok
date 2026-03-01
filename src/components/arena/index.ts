@@ -15,3 +15,6 @@ export { default as RecentBattlesFeed } from './RecentBattlesFeed';
 export { default as BattleResultDisplay } from './BattleResultDisplay';
 export { default as BattleLoadingState } from './BattleLoadingState';
 export { default as BettingDuelPanel } from './BettingDuelPanel';
+export { default as ActivityDrawer } from './ActivityDrawer';
+export { default as MatchDetailModal } from './MatchDetailModal';
+export { default as MyChallenges } from './MyChallenges';
