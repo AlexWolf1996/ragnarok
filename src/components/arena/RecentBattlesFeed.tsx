@@ -64,10 +64,10 @@ function getDifficultyColor(difficulty: string): string {
   switch (difficulty) {
     case 'easy':
     case 'bifrost':
-      return 'text-amber-400';
+      return 'text-[#D4A843]';
     case 'medium':
     case 'midgard':
-      return 'text-amber-400';
+      return 'text-[#D4A843]';
     case 'hard':
     case 'asgard':
       return 'text-red-400';
@@ -96,7 +96,7 @@ function getChallengeTypeIcon(type: string): string {
 function getChallengeTypeBadgeColor(type: string): string {
   switch (type.toLowerCase()) {
     case 'reasoning':
-      return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+      return 'bg-[#c9a84c]/20 text-[#D4A843] border-[#c9a84c]/30';
     case 'creative':
       return 'bg-red-500/20 text-red-400 border-red-500/30';
     case 'strategy':
@@ -114,7 +114,7 @@ function getDifficultyBadgeColor(difficulty: string): string {
   switch (difficulty.toLowerCase()) {
     case 'easy':
     case 'bifrost':
-      return 'bg-amber-600/20 text-amber-300 border-amber-600/30';
+      return 'bg-[#a88a3d]/20 text-[#D4A843] border-[#c9a84c]/30';
     case 'medium':
     case 'midgard':
       return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
@@ -185,7 +185,7 @@ export default function RecentBattlesFeed({
     return (
       <div className="bg-black/40 border border-neutral-800 rounded-sm p-8">
         <div className="flex items-center justify-center gap-3">
-          <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+          <div className="w-2 h-2 bg-[#c9a84c] rounded-full animate-pulse" />
           <span className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
             Loading battle history...
           </span>
@@ -201,7 +201,7 @@ export default function RecentBattlesFeed({
         <p className="font-[var(--font-rajdhani)] text-sm text-red-400">{error}</p>
         <button
           onClick={() => fetchBattles()}
-          className="mt-3 px-4 py-2 text-xs font-[var(--font-orbitron)] text-neutral-400 hover:text-amber-500 transition-colors"
+          className="mt-3 px-4 py-2 text-xs font-[var(--font-orbitron)] text-neutral-400 hover:text-[#c9a84c] transition-colors"
         >
           Try Again
         </button>
@@ -212,7 +212,7 @@ export default function RecentBattlesFeed({
   if (battles.length === 0) {
     return (
       <div className="bg-black/40 border border-neutral-800 rounded-sm p-8 text-center">
-        <Swords size={32} className="text-amber-500/30 mx-auto mb-4" />
+        <Swords size={32} className="text-[#c9a84c]/30 mx-auto mb-4" />
         <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
           No battles have been fought yet. Be the first to write history.
         </p>
@@ -225,20 +225,20 @@ export default function RecentBattlesFeed({
       {/* Header with refresh */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-          <span className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-amber-500/70">
+          <div className="w-2 h-2 bg-[#c9a84c] rounded-full animate-pulse" />
+          <span className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-[#c9a84c]/70">
             LIVE FEED
           </span>
         </div>
         <button
           onClick={() => fetchBattles(true)}
           disabled={isRefreshing}
-          className="p-1.5 hover:bg-amber-500/10 rounded transition-colors disabled:opacity-50"
+          className="p-1.5 hover:bg-[#c9a84c]/10 rounded transition-colors disabled:opacity-50"
           title="Refresh"
         >
           <RefreshCw
             size={14}
-            className={`text-neutral-500 hover:text-amber-500 ${isRefreshing ? 'animate-spin' : ''}`}
+            className={`text-neutral-500 hover:text-[#c9a84c] ${isRefreshing ? 'animate-spin' : ''}`}
           />
         </button>
       </div>
@@ -270,7 +270,7 @@ export default function RecentBattlesFeed({
               >
                 <button
                   onClick={() => handleBattleClick(battle.id)}
-                  className="w-full text-left bg-black/40 border border-neutral-800 hover:border-amber-500/30 rounded-sm p-3 transition-all group"
+                  className="w-full text-left bg-black/40 border border-neutral-800 hover:border-[#c9a84c]/30 rounded-sm p-3 transition-all group"
                 >
                   {/* Main row */}
                   <div className="flex items-center gap-3">
@@ -287,7 +287,7 @@ export default function RecentBattlesFeed({
                           href={`/agents/${battle.agentA.id}`}
                           onClick={(e) => e.stopPropagation()}
                           className={`font-[var(--font-rajdhani)] font-bold truncate hover:underline ${
-                            isWinnerA ? 'text-amber-400 hover:text-amber-300' : 'text-neutral-400 hover:text-neutral-300'
+                            isWinnerA ? 'text-[#D4A843] hover:text-[#D4A843]' : 'text-neutral-400 hover:text-neutral-300'
                           }`}
                         >
                           {isWinnerA && <Trophy size={12} className="inline mr-1" />}
@@ -298,7 +298,7 @@ export default function RecentBattlesFeed({
                           href={`/agents/${battle.agentB.id}`}
                           onClick={(e) => e.stopPropagation()}
                           className={`font-[var(--font-rajdhani)] font-bold truncate hover:underline ${
-                            isWinnerB ? 'text-amber-400 hover:text-amber-300' : 'text-neutral-400 hover:text-neutral-300'
+                            isWinnerB ? 'text-[#D4A843] hover:text-[#D4A843]' : 'text-neutral-400 hover:text-neutral-300'
                           }`}
                         >
                           {isWinnerB && <Trophy size={12} className="inline mr-1" />}
@@ -327,7 +327,7 @@ export default function RecentBattlesFeed({
                       <div className="text-right">
                         <span
                           className={`font-mono text-sm font-bold ${
-                            isWinnerA ? 'text-amber-400' : 'text-neutral-500'
+                            isWinnerA ? 'text-[#D4A843]' : 'text-neutral-500'
                           }`}
                         >
                           {battle.agentA.score ?? '-'}
@@ -335,7 +335,7 @@ export default function RecentBattlesFeed({
                         <span className="text-neutral-600 mx-1">:</span>
                         <span
                           className={`font-mono text-sm font-bold ${
-                            isWinnerB ? 'text-amber-400' : 'text-neutral-500'
+                            isWinnerB ? 'text-[#D4A843]' : 'text-neutral-500'
                           }`}
                         >
                           {battle.agentB.score ?? '-'}
@@ -345,7 +345,7 @@ export default function RecentBattlesFeed({
                         size={14}
                         className={`text-neutral-600 transition-transform ${
                           isExpanded ? 'rotate-90' : ''
-                        } group-hover:text-amber-500`}
+                        } group-hover:text-[#c9a84c]`}
                       />
                     </div>
                   </div>
@@ -366,7 +366,7 @@ export default function RecentBattlesFeed({
                         className="overflow-hidden"
                       >
                         <div className="mt-3 pt-3 border-t border-neutral-800">
-                          <span className="text-[10px] font-[var(--font-orbitron)] text-amber-500/70 tracking-wider">
+                          <span className="text-[10px] font-[var(--font-orbitron)] text-[#c9a84c]/70 tracking-wider">
                             JUDGE VERDICT
                           </span>
                           <p className="font-[var(--font-rajdhani)] text-xs text-neutral-400 mt-1 leading-relaxed">

@@ -164,7 +164,7 @@ export default function AgentRegistrationForm() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c] to-transparent" />
 
         <h2 className="font-[var(--font-orbitron)] text-lg tracking-[0.15em] text-white mb-6 text-center">
           FORGE YOUR WARRIOR
@@ -197,7 +197,7 @@ export default function AgentRegistrationForm() {
               className={`w-full pl-10 pr-4 py-3 bg-black/60 border rounded-sm focus:outline-none font-[var(--font-rajdhani)] text-sm text-white placeholder-neutral-600 transition-colors ${
                 errors.name
                   ? 'border-red-500 focus:border-red-500'
-                  : 'border-neutral-800 focus:border-amber-500/50'
+                  : 'border-neutral-800 focus:border-[#c9a84c]/50'
               }`}
             />
           </div>
@@ -226,8 +226,8 @@ export default function AgentRegistrationForm() {
                 onClick={() => handleChange('avatar', avatar.id)}
                 className={`p-3 rounded-sm border transition-all flex flex-col items-center gap-1 ${
                   formData.avatar === avatar.id
-                    ? 'bg-amber-500/20 border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.2)]'
-                    : 'bg-black/40 border-neutral-800 hover:border-amber-500/50'
+                    ? 'bg-[#c9a84c]/20 border-[#c9a84c] shadow-[0_0_15px_rgba(245,158,11,0.2)]'
+                    : 'bg-black/40 border-neutral-800 hover:border-[#c9a84c]/50'
                 }`}
               >
                 <span className="text-2xl">{avatar.emoji}</span>
@@ -261,7 +261,7 @@ export default function AgentRegistrationForm() {
               className={`w-full pl-10 pr-4 py-3 bg-black/60 border rounded-sm focus:outline-none font-[var(--font-rajdhani)] text-sm text-white placeholder-neutral-600 transition-colors resize-none ${
                 errors.systemPrompt
                   ? 'border-red-500 focus:border-red-500'
-                  : 'border-neutral-800 focus:border-amber-500/50'
+                  : 'border-neutral-800 focus:border-[#c9a84c]/50'
               }`}
             />
           </div>
@@ -289,7 +289,7 @@ export default function AgentRegistrationForm() {
                   key={type}
                   type="button"
                   onClick={() => useExamplePrompt(i)}
-                  className="px-3 py-1 bg-black/40 border border-neutral-800 rounded-full font-[var(--font-rajdhani)] text-xs text-neutral-400 hover:text-amber-400 hover:border-amber-500/50 transition-colors"
+                  className="px-3 py-1 bg-black/40 border border-neutral-800 rounded-full font-[var(--font-rajdhani)] text-xs text-neutral-400 hover:text-[#D4A843] hover:border-[#c9a84c]/50 transition-colors"
                 >
                   {type}
                 </button>
@@ -297,7 +297,7 @@ export default function AgentRegistrationForm() {
               <button
                 type="button"
                 onClick={() => handleChange('systemPrompt', DEFAULT_SYSTEM_PROMPT)}
-                className="px-3 py-1 bg-black/40 border border-neutral-800 rounded-full font-[var(--font-rajdhani)] text-xs text-neutral-400 hover:text-amber-400 hover:border-amber-500/50 transition-colors"
+                className="px-3 py-1 bg-black/40 border border-neutral-800 rounded-full font-[var(--font-rajdhani)] text-xs text-neutral-400 hover:text-[#D4A843] hover:border-[#c9a84c]/50 transition-colors"
               >
                 Default
               </button>
@@ -309,7 +309,7 @@ export default function AgentRegistrationForm() {
         <button
           type="button"
           onClick={() => setShowPreview(!showPreview)}
-          className="w-full mb-4 lg:hidden flex items-center justify-center gap-2 py-2 border border-neutral-800 rounded-sm font-[var(--font-orbitron)] text-xs text-neutral-400 hover:border-amber-500/50 hover:text-amber-400 transition-colors"
+          className="w-full mb-4 lg:hidden flex items-center justify-center gap-2 py-2 border border-neutral-800 rounded-sm font-[var(--font-orbitron)] text-xs text-neutral-400 hover:border-[#c9a84c]/50 hover:text-[#D4A843] transition-colors"
         >
           <Eye size={14} />
           {showPreview ? 'HIDE PREVIEW' : 'SHOW PREVIEW'}
@@ -351,18 +351,18 @@ export default function AgentRegistrationForm() {
             exit={{ opacity: 0, x: 20 }}
           >
             <div className="sticky top-8">
-              <h3 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-amber-500/70 mb-4 flex items-center gap-2">
+              <h3 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-[#c9a84c]/70 mb-4 flex items-center gap-2">
                 <Eye size={14} />
                 ARENA PREVIEW
               </h3>
 
               {/* Preview Card */}
-              <div className="bg-black/60 border border-amber-500/30 rounded-sm p-6 relative overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+              <div className="bg-black/60 border border-[#c9a84c]/30 rounded-sm p-6 relative overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c] to-transparent" />
 
                 {/* Agent header */}
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-500/20 to-red-500/20 flex items-center justify-center border-2 border-amber-500/30 text-3xl">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#c9a84c]/20 to-red-500/20 flex items-center justify-center border-2 border-[#c9a84c]/30 text-3xl">
                     {selectedAvatar.emoji}
                   </div>
                   <div>
@@ -370,7 +370,7 @@ export default function AgentRegistrationForm() {
                       {formData.name || 'UNNAMED WARRIOR'}
                     </h4>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="font-mono text-sm text-amber-400">1000</span>
+                      <span className="font-mono text-sm text-[#D4A843]">1000</span>
                       <span className="font-[var(--font-rajdhani)] text-xs text-neutral-500">ELO</span>
                     </div>
                   </div>
@@ -395,8 +395,8 @@ export default function AgentRegistrationForm() {
                 {/* Fighting style preview */}
                 <div className="bg-black/40 border border-neutral-800 rounded-sm p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <Sparkles size={12} className="text-amber-500/70" />
-                    <span className="font-[var(--font-orbitron)] text-[10px] text-amber-500/70 tracking-wider">
+                    <Sparkles size={12} className="text-[#c9a84c]/70" />
+                    <span className="font-[var(--font-orbitron)] text-[10px] text-[#c9a84c]/70 tracking-wider">
                       FIGHTING STYLE
                     </span>
                   </div>

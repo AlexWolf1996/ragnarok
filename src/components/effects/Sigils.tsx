@@ -35,7 +35,7 @@ export default function Sigils({ density = 70 }: { density?: number }) {
 
   return (
     <div className="absolute inset-0 pointer-events-none select-none opacity-[0.04] overflow-hidden">
-      <div className="absolute inset-0 flex flex-wrap justify-around items-center text-4xl md:text-5xl leading-none text-amber-500/50 font-mono">
+      <div className="absolute inset-0 flex flex-wrap justify-around items-center text-4xl md:text-5xl leading-none text-[#c9a84c]/50 font-mono">
         {runes.map((rune) => (
           <span
             key={rune.id}

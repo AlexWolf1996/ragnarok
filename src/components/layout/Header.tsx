@@ -66,8 +66,8 @@ export default function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-[#0a0a12]/95 backdrop-blur-md border-b border-amber-500/10'
-          : 'bg-[#0a0a12]/80 backdrop-blur-sm border-b border-amber-500/10'
+          ? 'bg-[#0a0a12]/95 backdrop-blur-md border-b border-[#c9a84c]/10'
+          : 'bg-[#0a0a12]/80 backdrop-blur-sm border-b border-[#c9a84c]/10'
       }`}
       role="banner"
     >
@@ -78,7 +78,7 @@ export default function Header() {
         {/* Logo - Same as LandingHeader */}
         <Link
           href="/"
-          className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+          className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded"
           aria-label="Ragnarok - Home"
         >
           {!logoError && (
@@ -109,17 +109,17 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`font-mono text-xs tracking-[0.3em] transition-colors relative focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded px-1 ${
+                className={`font-mono text-xs tracking-[0.3em] transition-colors relative focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded px-1 ${
                   isActive
-                    ? 'text-amber-500'
-                    : 'text-[#71717a] hover:text-amber-500'
+                    ? 'text-[#c9a84c]'
+                    : 'text-[#71717a] hover:text-[#c9a84c]'
                 }`}
                 role="menuitem"
               >
                 {link.label}
                 {isActive && (
                   <motion.div
-                    className="absolute -bottom-1 left-0 right-0 h-px bg-amber-500"
+                    className="absolute -bottom-1 left-0 right-0 h-px bg-[#c9a84c]"
                     layoutId="activeNavIndicator"
                   />
                 )}
@@ -138,7 +138,7 @@ export default function Header() {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-[#e8e8e8] p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+          className="md:hidden text-[#e8e8e8] p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded"
           onClick={toggleMobileMenu}
           aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={mobileMenuOpen}
@@ -169,7 +169,7 @@ export default function Header() {
             {/* Menu panel */}
             <motion.div
               id="mobile-menu"
-              className="md:hidden absolute top-20 left-0 right-0 bg-[#111118] border-b border-amber-500/10 z-50"
+              className="md:hidden absolute top-20 left-0 right-0 bg-[#111118] border-b border-[#c9a84c]/10 z-50"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -184,10 +184,10 @@ export default function Header() {
                     <Link
                       key={link.href}
                       href={link.href}
-                      className={`block font-mono text-sm tracking-[0.3em] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded px-1 ${
+                      className={`block font-mono text-sm tracking-[0.3em] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded px-1 ${
                         isActive
-                          ? 'text-amber-500'
-                          : 'text-[#71717a] hover:text-amber-500'
+                          ? 'text-[#c9a84c]'
+                          : 'text-[#71717a] hover:text-[#c9a84c]'
                       }`}
                       onClick={closeMobileMenu}
                       role="menuitem"
@@ -197,7 +197,7 @@ export default function Header() {
                     </Link>
                   );
                 })}
-                <div className="pt-6 border-t border-amber-500/10 flex items-center gap-3">
+                <div className="pt-6 border-t border-[#c9a84c]/10 flex items-center gap-3">
                   <NotificationBell />
                   <div className="landing-wallet-btn">
                     <WalletMultiButton />

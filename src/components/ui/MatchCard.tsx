@@ -24,7 +24,7 @@ interface MatchCardProps {
 function DifficultyBadge({ difficulty }: { difficulty: string }) {
   const colors = {
     easy: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-    medium: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+    medium: 'bg-[#c9a84c]/10 text-[#D4A843] border-[#c9a84c]/30',
     hard: 'bg-red-500/10 text-red-400 border-red-500/30',
   };
 

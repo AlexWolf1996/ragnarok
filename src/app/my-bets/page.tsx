@@ -33,7 +33,7 @@ interface BetMatch {
 
 const TIER_COLORS: Record<string, string> = {
   bifrost: 'text-emerald-400',
-  midgard: 'text-amber-400',
+  midgard: 'text-[#D4A843]',
   asgard: 'text-red-400',
 };
 
@@ -52,7 +52,7 @@ function getStatusBadge(status: string | null) {
     case 'lost':
       return { label: 'LOST', color: 'bg-red-500/20 text-red-400 border-red-500/30' };
     case 'payout_failed':
-      return { label: 'PAYOUT PENDING', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' };
+      return { label: 'PAYOUT PENDING', color: 'bg-[#c9a84c]/20 text-[#D4A843] border-[#c9a84c]/30' };
     default:
       return { label: 'PENDING', color: 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30' };
   }
@@ -128,8 +128,8 @@ function MyBetsContent() {
       <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center relative">
         <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
         <div className="text-center relative z-10 max-w-md p-8">
-          <div className="w-16 h-16 rounded-full bg-black/60 border border-amber-600/30 flex items-center justify-center mx-auto mb-6" style={{ boxShadow: '0 0 40px rgba(245, 158, 11, 0.2)' }}>
-            <Wallet size={32} className="text-amber-500" />
+          <div className="w-16 h-16 rounded-full bg-black/60 border border-[#c9a84c]/30 flex items-center justify-center mx-auto mb-6" style={{ boxShadow: '0 0 40px rgba(245, 158, 11, 0.2)' }}>
+            <Wallet size={32} className="text-[#c9a84c]" />
           </div>
           <h1 className="font-[var(--font-orbitron)] text-2xl text-white tracking-wider mb-4" style={{ textShadow: '0 0 30px rgba(220, 38, 38, 0.3)' }}>
             CONNECT YOUR WALLET
@@ -148,8 +148,8 @@ function MyBetsContent() {
       <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center relative">
         <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
         <div className="text-center relative z-10">
-          <Loader2 size={48} className="text-amber-500 animate-spin mx-auto mb-4" />
-          <p className="font-[var(--font-orbitron)] text-sm text-amber-500/70 tracking-wider">CONSULTING THE NORNS...</p>
+          <Loader2 size={48} className="text-[#c9a84c] animate-spin mx-auto mb-4" />
+          <p className="font-[var(--font-orbitron)] text-sm text-[#c9a84c]/70 tracking-wider">CONSULTING THE NORNS...</p>
         </div>
       </div>
     );
@@ -161,12 +161,12 @@ function MyBetsContent() {
       <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center relative">
         <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
         <div className="text-center max-w-md p-8 relative z-10">
-          <Coins size={48} className="text-amber-500 mx-auto mb-4 opacity-50" />
+          <Coins size={48} className="text-[#c9a84c] mx-auto mb-4 opacity-50" />
           <h2 className="font-[var(--font-orbitron)] text-xl text-white mb-2">FATE IS UNCLEAR</h2>
           <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400 mb-6">{error}</p>
           <button
             onClick={loadBets}
-            className="px-6 py-3 border border-neutral-700 text-neutral-400 font-[var(--font-orbitron)] text-sm tracking-[0.15em] transition-all hover:border-amber-500 hover:text-amber-500"
+            className="px-6 py-3 border border-neutral-700 text-neutral-400 font-[var(--font-orbitron)] text-sm tracking-[0.15em] transition-all hover:border-[#c9a84c] hover:text-[#c9a84c]"
           >
             <RefreshCw size={14} className="inline mr-2" />
             TRY AGAIN
@@ -187,9 +187,9 @@ function MyBetsContent() {
           transition={{ duration: 0.6 }}
           className="text-center mb-8 sm:mb-10"
         >
-          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/60 border border-amber-600/30 flex items-center justify-center mx-auto mb-4 sm:mb-6" style={{ boxShadow: '0 0 40px rgba(245, 158, 11, 0.2)' }}>
-            <Coins size={28} className="text-amber-500 sm:hidden" />
-            <Coins size={32} className="text-amber-500 hidden sm:block" />
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/60 border border-[#c9a84c]/30 flex items-center justify-center mx-auto mb-4 sm:mb-6" style={{ boxShadow: '0 0 40px rgba(245, 158, 11, 0.2)' }}>
+            <Coins size={28} className="text-[#c9a84c] sm:hidden" />
+            <Coins size={32} className="text-[#c9a84c] hidden sm:block" />
           </div>
 
           <h1 className="font-[var(--font-orbitron)] text-2xl sm:text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-3 sm:mb-4" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
@@ -249,7 +249,7 @@ function MyBetsContent() {
           <button
             onClick={loadBets}
             disabled={loading}
-            className="px-4 py-2 bg-black/60 border border-neutral-800 hover:border-amber-500/50 transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-black/60 border border-neutral-800 hover:border-[#c9a84c]/50 transition-colors flex items-center gap-2"
           >
             <RefreshCw size={14} className={`text-neutral-500 ${loading ? 'animate-spin' : ''}`} />
             <span className="font-[var(--font-orbitron)] text-xs text-neutral-400">Refresh</span>
@@ -263,7 +263,7 @@ function MyBetsContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
         >
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c] to-transparent" />
 
           {/* Table header */}
           <div className="hidden md:grid grid-cols-12 gap-4 p-4 bg-black/60 border-b border-neutral-800">
@@ -286,7 +286,7 @@ function MyBetsContent() {
 
           {filteredBets.length === 0 ? (
             <div className="p-12 text-center">
-              <Coins size={48} className="text-amber-500/30 mx-auto mb-4" />
+              <Coins size={48} className="text-[#c9a84c]/30 mx-auto mb-4" />
               <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
                 {bets.length === 0 ? 'No wagers placed yet. Enter the arena and test your fate.' : `No ${filter} bets found.`}
               </p>
@@ -322,7 +322,7 @@ function MyBetsContent() {
                 return (
                   <motion.div
                     key={bet.id}
-                    className="grid grid-cols-12 gap-4 p-4 hover:bg-amber-500/5 transition-colors items-center"
+                    className="grid grid-cols-12 gap-4 p-4 hover:bg-[#c9a84c]/5 transition-colors items-center"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.03 }}
@@ -331,7 +331,7 @@ function MyBetsContent() {
                     <div className="col-span-12 md:col-span-3">
                       <div className="font-[var(--font-rajdhani)] text-sm text-white">
                         {bet.agent_a?.name ?? '?'}{' '}
-                        <span className="text-amber-500 font-[var(--font-orbitron)] text-[10px]">vs</span>{' '}
+                        <span className="text-[#c9a84c] font-[var(--font-orbitron)] text-[10px]">vs</span>{' '}
                         {bet.agent_b?.name ?? '?'}
                       </div>
                       <div className="flex items-center gap-2 mt-1">
@@ -393,7 +393,7 @@ function MyBetsContent() {
                           href={`https://solscan.io/tx/${bet.bet_tx_signature}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 font-mono text-[10px] text-neutral-500 hover:text-amber-400 transition-colors"
+                          className="inline-flex items-center gap-1 font-mono text-[10px] text-neutral-500 hover:text-[#D4A843] transition-colors"
                         >
                           bet <ExternalLink size={10} />
                         </a>

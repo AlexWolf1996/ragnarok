@@ -31,8 +31,8 @@ interface MatchCommentaryProps {
 // Color mapping for Tailwind classes
 const colorClasses: Record<CommentaryColor, { border: string; text: string }> = {
   amber: {
-    border: 'border-amber-500/30',
-    text: 'text-amber-400',
+    border: 'border-[#c9a84c]/30',
+    text: 'text-[#D4A843]',
   },
   cyan: {
     border: 'border-cyan-500/30',
@@ -341,14 +341,14 @@ export default function MatchCommentary({
         aria-label="Match commentary"
       >
         {/* Runes decoration */}
-        <div className="text-amber-500/40 text-xs mb-1 font-mono" aria-hidden="true">
+        <div className="text-[#c9a84c]/40 text-xs mb-1 font-mono" aria-hidden="true">
           ᚺᛖᛁᛗᛞᚨᛚᛚ
         </div>
 
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" aria-hidden="true" />
+            <span className="w-2 h-2 rounded-full bg-[#c9a84c] animate-pulse" aria-hidden="true" />
             <span className="text-xs font-bold text-gray-400 tracking-wider">
               HEIMDALL&apos;S SIGHT
             </span>
@@ -356,7 +356,7 @@ export default function MatchCommentary({
           {isAllComplete && (
             <button
               onClick={onDismiss}
-              className="text-gray-600 hover:text-gray-400 transition-colors p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              className="text-gray-600 hover:text-gray-400 transition-colors p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c]"
               title="Dismiss"
               aria-label="Dismiss commentary"
             >

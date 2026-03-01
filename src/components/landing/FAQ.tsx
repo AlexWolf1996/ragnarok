@@ -27,12 +27,12 @@ function FAQItem({ question, answer, isOpen, onToggle, delay }: FAQItemProps) {
     >
       <button
         onClick={onToggle}
-        className="w-full py-4 sm:py-6 flex items-center justify-between text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+        className="w-full py-4 sm:py-6 flex items-center justify-between text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c]"
         aria-expanded={isOpen}
       >
         <span
           className={`font-[var(--font-orbitron)] font-bold text-xs sm:text-sm tracking-[0.05em] sm:tracking-[0.08em] transition-colors duration-300 ${
-            isOpen ? 'text-amber-500' : 'text-white group-hover:text-amber-500'
+            isOpen ? 'text-[#c9a84c]' : 'text-white group-hover:text-[#c9a84c]'
           }`}
         >
           {question}
@@ -44,7 +44,7 @@ function FAQItem({ question, answer, isOpen, onToggle, delay }: FAQItemProps) {
         >
           <ChevronDown
             className={`w-5 h-5 transition-colors duration-300 ${
-              isOpen ? 'text-amber-500' : 'text-neutral-600 group-hover:text-amber-500'
+              isOpen ? 'text-[#c9a84c]' : 'text-neutral-600 group-hover:text-[#c9a84c]'
             }`}
           />
         </motion.div>
@@ -119,7 +119,7 @@ export default function FAQ() {
       <div className="relative z-10 max-w-[900px] mx-auto px-4 sm:px-6">
         <div className="mb-8 sm:mb-14 text-center">
           <motion.div
-            className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70"
+            className="font-mono text-[10px] tracking-[0.35em] uppercase text-[#c9a84c]/70"
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6 }}
@@ -133,7 +133,7 @@ export default function FAQ() {
             transition={{ duration: 0.6, delay: 0.1 }}
           >
             COMMON
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#c9a84c] via-[#D4A843] to-[#c9a84c]">
               {' '}QUESTIONS
             </span>
           </motion.h2>

@@ -77,7 +77,7 @@ export default function LandingHeader() {
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+          className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded"
           aria-label="Ragnarok - Home"
         >
           {!logoError && (
@@ -108,17 +108,17 @@ export default function LandingHeader() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`font-[var(--font-orbitron)] font-semibold text-[11px] tracking-[0.2em] transition-colors relative focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded px-1 ${
+                className={`font-[var(--font-orbitron)] font-semibold text-[11px] tracking-[0.2em] transition-colors relative focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded px-1 ${
                   isActive
-                    ? 'text-amber-500'
-                    : 'text-neutral-400 hover:text-amber-500'
+                    ? 'text-[#c9a84c]'
+                    : 'text-neutral-400 hover:text-[#c9a84c]'
                 }`}
                 role="menuitem"
               >
                 {link.label}
                 {isActive && (
                   <motion.div
-                    className="absolute -bottom-1 left-0 right-0 h-px bg-amber-500"
+                    className="absolute -bottom-1 left-0 right-0 h-px bg-[#c9a84c]"
                     layoutId="activeNavIndicator"
                   />
                 )}
@@ -136,7 +136,7 @@ export default function LandingHeader() {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-white p-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+          className="md:hidden text-white p-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded"
           onClick={toggleMobileMenu}
           aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={mobileMenuOpen}
@@ -182,10 +182,10 @@ export default function LandingHeader() {
                     <Link
                       key={link.href}
                       href={link.href}
-                      className={`block font-[var(--font-orbitron)] font-semibold text-sm tracking-[0.2em] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded px-1 ${
+                      className={`block font-[var(--font-orbitron)] font-semibold text-sm tracking-[0.2em] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] rounded px-1 ${
                         isActive
-                          ? 'text-amber-500'
-                          : 'text-neutral-400 hover:text-amber-500'
+                          ? 'text-[#c9a84c]'
+                          : 'text-neutral-400 hover:text-[#c9a84c]'
                       }`}
                       onClick={closeMobileMenu}
                       role="menuitem"

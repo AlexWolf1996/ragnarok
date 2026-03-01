@@ -161,7 +161,7 @@ export default function BettorLeaderboard() {
     <button
       onClick={() => handleSort(field)}
       className={`flex items-center gap-1 text-[10px] font-[var(--font-orbitron)] uppercase tracking-[0.2em] transition-colors ${
-        sortField === field ? 'text-amber-500' : 'text-neutral-500 hover:text-white'
+        sortField === field ? 'text-[#c9a84c]' : 'text-neutral-500 hover:text-white'
       }`}
     >
       {label}
@@ -177,8 +177,8 @@ export default function BettorLeaderboard() {
     return (
       <div className="flex justify-center py-20">
         <div className="text-center">
-          <Loader2 size={48} className="text-amber-500 animate-spin mx-auto mb-4" />
-          <p className="font-[var(--font-orbitron)] text-sm text-amber-500/70 tracking-wider">COUNTING THE SPOILS...</p>
+          <Loader2 size={48} className="text-[#c9a84c] animate-spin mx-auto mb-4" />
+          <p className="font-[var(--font-orbitron)] text-sm text-[#c9a84c]/70 tracking-wider">COUNTING THE SPOILS...</p>
         </div>
       </div>
     );
@@ -187,12 +187,12 @@ export default function BettorLeaderboard() {
   if (error) {
     return (
       <div className="text-center py-20">
-        <Coins size={48} className="text-amber-500 mx-auto mb-4 opacity-50" />
+        <Coins size={48} className="text-[#c9a84c] mx-auto mb-4 opacity-50" />
         <h2 className="font-[var(--font-orbitron)] text-xl text-white mb-2">THE LEDGER IS SEALED</h2>
         <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400 mb-6">{error}</p>
         <button
           onClick={loadData}
-          className="px-6 py-3 border border-neutral-700 text-neutral-400 font-[var(--font-orbitron)] text-sm tracking-[0.15em] transition-all hover:border-amber-500 hover:text-amber-500"
+          className="px-6 py-3 border border-neutral-700 text-neutral-400 font-[var(--font-orbitron)] text-sm tracking-[0.15em] transition-all hover:border-[#c9a84c] hover:text-[#c9a84c]"
         >
           <RefreshCw size={14} className="inline mr-2" />
           TRY AGAIN
@@ -241,7 +241,7 @@ export default function BettorLeaderboard() {
       >
         <button
           onClick={loadData}
-          className="px-4 py-2 bg-black/60 border border-neutral-800 rounded-sm hover:border-amber-500/50 transition-colors flex items-center gap-2"
+          className="px-4 py-2 bg-black/60 border border-neutral-800 rounded-sm hover:border-[#c9a84c]/50 transition-colors flex items-center gap-2"
         >
           <RefreshCw size={14} className="text-neutral-500" />
           <span className="font-[var(--font-orbitron)] text-xs text-neutral-400">Refresh</span>
@@ -255,7 +255,7 @@ export default function BettorLeaderboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.25 }}
       >
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c] to-transparent" />
 
         {/* Table header */}
         <div className="hidden md:grid grid-cols-12 gap-4 p-4 bg-black/60 border-b border-neutral-800">
@@ -281,7 +281,7 @@ export default function BettorLeaderboard() {
 
         {sorted.length === 0 ? (
           <div className="p-12 text-center">
-            <Coins size={48} className="text-amber-500/30 mx-auto mb-4" />
+            <Coins size={48} className="text-[#c9a84c]/30 mx-auto mb-4" />
             <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
               No wagers have been placed yet. Be the first to test fate.
             </p>
@@ -293,7 +293,7 @@ export default function BettorLeaderboard() {
               return (
                 <motion.div
                   key={bettor.wallet}
-                  className={`grid grid-cols-12 gap-4 p-4 hover:bg-amber-500/5 transition-colors items-center ${getRowStyle(rank)}`}
+                  className={`grid grid-cols-12 gap-4 p-4 hover:bg-[#c9a84c]/5 transition-colors items-center ${getRowStyle(rank)}`}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.04 }}
@@ -314,14 +314,14 @@ export default function BettorLeaderboard() {
                   {/* Wallet */}
                   <div className="col-span-6 md:col-span-3 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-black/60 border border-neutral-800 flex items-center justify-center">
-                      <Coins size={18} className="text-amber-500/50" />
+                      <Coins size={18} className="text-[#c9a84c]/50" />
                     </div>
                     <div>
                       <div className="font-mono text-sm text-white" title={bettor.wallet}>
                         {shortenWallet(bettor.wallet)}
                       </div>
                       {getRankTitle(rank) && (
-                        <p className="text-[10px] font-[var(--font-orbitron)] text-amber-500 tracking-[0.1em]">
+                        <p className="text-[10px] font-[var(--font-orbitron)] text-[#c9a84c] tracking-[0.1em]">
                           {getRankTitle(rank)}
                         </p>
                       )}
@@ -342,7 +342,7 @@ export default function BettorLeaderboard() {
                   {/* Win Rate */}
                   <div className="hidden md:flex col-span-2 items-center justify-center">
                     <span className={`font-[var(--font-orbitron)] font-bold ${
-                      bettor.winRate >= 70 ? 'text-amber-500' : bettor.winRate >= 50 ? 'text-white' : 'text-neutral-500'
+                      bettor.winRate >= 70 ? 'text-[#c9a84c]' : bettor.winRate >= 50 ? 'text-white' : 'text-neutral-500'
                     }`}>
                       {bettor.winRate.toFixed(0)}%
                     </span>

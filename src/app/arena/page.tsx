@@ -202,8 +202,8 @@ function ArenaContent() {
       <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center relative">
         <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
         <div className="text-center relative z-10">
-          <Loader2 size={32} className="text-amber-500 animate-spin mx-auto mb-4" />
-          <p className="font-[var(--font-orbitron)] text-sm text-amber-500/70 tracking-wider">THE GATES OF BATTLE OPEN...</p>
+          <Loader2 size={32} className="text-[#c9a84c] animate-spin mx-auto mb-4" />
+          <p className="font-[var(--font-orbitron)] text-sm text-[#c9a84c]/70 tracking-wider">THE GATES OF BATTLE OPEN...</p>
         </div>
       </div>
     );
@@ -367,7 +367,7 @@ function ArenaContent() {
                     <section>
                       <div className="flex items-center justify-between mb-4">
                         <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white flex items-center gap-2">
-                          <Crown size={16} className="text-amber-500" />
+                          <Crown size={16} className="text-[#c9a84c]" />
                           BATTLES AWAITING WARRIORS
                         </h2>
                         <button
@@ -381,7 +381,7 @@ function ArenaContent() {
 
                       {openBattles.length === 0 ? (
                         <div className="bg-black/40 border border-neutral-800 rounded-sm p-8 text-center">
-                          <Crown size={32} className="text-amber-500/50 mx-auto mb-4" />
+                          <Crown size={32} className="text-[#c9a84c]/50 mx-auto mb-4" />
                           <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
                             No battles gather warriors. Summon one or await the scheduled twilight.
                           </p>
@@ -404,7 +404,7 @@ function ArenaContent() {
                     {completedBattles.length > 0 && (
                       <section>
                         <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
-                          <Swords size={16} className="text-amber-500/70" />
+                          <Swords size={16} className="text-[#c9a84c]/70" />
                           FALLEN TWILIGHTS
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -438,26 +438,26 @@ function ArenaContent() {
 
                 {/* Quick Actions */}
                 <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 relative overflow-hidden">
-                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
-                  <h3 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-amber-500/70 mb-4">
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c]/50 to-transparent" />
+                  <h3 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-[#c9a84c]/70 mb-4">
                     PATHS OF GLORY
                   </h3>
                   <div className="space-y-3">
                     <button
                       onClick={() => setShowCreateBattle(true)}
-                      className="block w-full text-center py-3 bg-amber-500/10 border border-amber-600/30 hover:border-amber-500 rounded-sm font-[var(--font-orbitron)] text-xs text-amber-500 transition-colors"
+                      className="block w-full text-center py-3 bg-[#c9a84c]/10 border border-[#c9a84c]/30 hover:border-[#c9a84c] rounded-sm font-[var(--font-orbitron)] text-xs text-[#c9a84c] transition-colors"
                     >
                       Summon Custom Battle
                     </button>
                     <a
                       href="/register"
-                      className="block w-full text-center py-3 bg-black/40 hover:bg-amber-500/10 border border-neutral-800 hover:border-amber-500/50 rounded-sm font-[var(--font-orbitron)] text-xs text-white transition-colors"
+                      className="block w-full text-center py-3 bg-black/40 hover:bg-[#c9a84c]/10 border border-neutral-800 hover:border-[#c9a84c]/50 rounded-sm font-[var(--font-orbitron)] text-xs text-white transition-colors"
                     >
                       Forge New Champion
                     </a>
                     <a
                       href="/leaderboard"
-                      className="block w-full text-center py-3 bg-black/40 hover:bg-amber-500/10 border border-neutral-800 hover:border-amber-500/50 rounded-sm font-[var(--font-orbitron)] text-xs text-white transition-colors"
+                      className="block w-full text-center py-3 bg-black/40 hover:bg-[#c9a84c]/10 border border-neutral-800 hover:border-[#c9a84c]/50 rounded-sm font-[var(--font-orbitron)] text-xs text-white transition-colors"
                     >
                       Hall of Champions
                     </a>
@@ -507,8 +507,8 @@ function ArenaLoading() {
   return (
     <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center">
       <div className="text-center">
-        <Loader2 size={32} className="text-amber-500 animate-spin mx-auto mb-4" />
-        <p className="font-[var(--font-orbitron)] text-sm text-amber-500/70 tracking-wider">THE GATES OF BATTLE OPEN...</p>
+        <Loader2 size={32} className="text-[#c9a84c] animate-spin mx-auto mb-4" />
+        <p className="font-[var(--font-orbitron)] text-sm text-[#c9a84c]/70 tracking-wider">THE GATES OF BATTLE OPEN...</p>
       </div>
     </div>
   );

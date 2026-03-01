@@ -54,7 +54,7 @@ function PulsingDots() {
             repeat: Infinity,
             delay: i * 0.2,
           }}
-          className="w-1.5 h-1.5 bg-amber-500 rounded-full"
+          className="w-1.5 h-1.5 bg-[#c9a84c] rounded-full"
         />
       ))}
     </span>
@@ -89,7 +89,7 @@ export default function BattleLoadingState({
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="bg-black/80 backdrop-blur-sm border border-amber-500/30 rounded-sm overflow-hidden relative"
+      className="bg-black/80 backdrop-blur-sm border border-[#c9a84c]/30 rounded-sm overflow-hidden relative"
     >
       {/* Top glow line with animation */}
       <motion.div
@@ -118,7 +118,7 @@ export default function BattleLoadingState({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
-          className="font-[var(--font-orbitron)] text-lg md:text-xl tracking-[0.2em] text-amber-500 mb-2"
+          className="font-[var(--font-orbitron)] text-lg md:text-xl tracking-[0.2em] text-[#c9a84c] mb-2"
           style={{ textShadow: '0 0 30px rgba(245,158,11,0.5)' }}
         >
           {currentMessage}
@@ -171,7 +171,7 @@ export default function BattleLoadingState({
             transition={{ delay: 0.5 }}
             className="bg-black/60 border border-neutral-800 rounded-sm p-4 max-w-xl mx-auto mb-6"
           >
-            <span className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-amber-500/70 block mb-2">
+            <span className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-[#c9a84c]/70 block mb-2">
               THE CHALLENGE
             </span>
             <p className="font-[var(--font-rajdhani)] text-sm text-neutral-300 leading-relaxed">
@@ -186,7 +186,7 @@ export default function BattleLoadingState({
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 1, repeat: Infinity }}
-              className="w-2 h-2 bg-amber-500 rounded-full"
+              className="w-2 h-2 bg-[#c9a84c] rounded-full"
             />
             <span className="font-mono text-xs text-neutral-500">
               {elapsedSeconds}s elapsed

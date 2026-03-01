@@ -71,7 +71,7 @@ function MatchmakingWidget({ agents, stats }: { agents: Agent[]; stats: { totalM
   if (!agentA || !agentB) {
     return (
       <div className="relative border border-neutral-800 bg-black/60 backdrop-blur-sm p-6 shadow-[0_0_60px_rgba(245,158,11,0.1)]">
-        <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-amber-700 via-amber-500 to-amber-700" />
+        <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-[#8a6d2b] via-[#c9a84c] to-[#8a6d2b]" />
 
         <div className="flex items-start justify-between">
           <div>
@@ -82,13 +82,13 @@ function MatchmakingWidget({ agents, stats }: { agents: Agent[]; stats: { totalM
               MATCHMAKING
             </div>
           </div>
-          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
+          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-[#c9a84c]/70">
             AWAITING
           </div>
         </div>
 
         <div className="mt-8 text-center py-8">
-          <div className="font-mono text-sm text-amber-500 mb-2">
+          <div className="font-mono text-sm text-[#c9a84c] mb-2">
             AWAITING_COMBATANTS
           </div>
           <div className="font-[var(--font-rajdhani)] text-neutral-400">
@@ -96,7 +96,7 @@ function MatchmakingWidget({ agents, stats }: { agents: Agent[]; stats: { totalM
           </div>
           <Link
             href="/register"
-            className="inline-block mt-4 px-6 py-2 border border-amber-500/30 text-amber-500 font-mono text-xs tracking-[0.2em] hover:bg-amber-500/10 transition-colors"
+            className="inline-block mt-4 px-6 py-2 border border-[#c9a84c]/30 text-[#c9a84c] font-mono text-xs tracking-[0.2em] hover:bg-[#c9a84c]/10 transition-colors"
           >
             DEPLOY_FIRST_AGENT
           </Link>
@@ -114,7 +114,7 @@ function MatchmakingWidget({ agents, stats }: { agents: Agent[]; stats: { totalM
 
   return (
     <div className="relative border border-neutral-800 bg-black/60 backdrop-blur-sm p-6 shadow-[0_0_60px_rgba(245,158,11,0.1)]">
-      <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-amber-700 via-amber-500 to-amber-700" />
+      <div className="absolute -top-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-[#8a6d2b] via-[#c9a84c] to-[#8a6d2b]" />
 
       <div className="flex items-start justify-between">
         <div>
@@ -125,14 +125,14 @@ function MatchmakingWidget({ agents, stats }: { agents: Agent[]; stats: { totalM
             MATCHMAKING
           </div>
         </div>
-        <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500">
+        <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-[#c9a84c]">
           ACTIVE
         </div>
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-4">
-        <div className="border border-amber-500/25 bg-amber-500/5 p-4">
-          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/80 truncate">
+        <div className="border border-[#c9a84c]/25 bg-[#c9a84c]/5 p-4">
+          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-[#c9a84c]/80 truncate">
             {agentA.name}
           </div>
           <div className="mt-2 font-[var(--font-orbitron)] font-black text-3xl text-white">
@@ -186,16 +186,16 @@ function Hero() {
 
       <div className="relative z-10 px-4 sm:px-6 pt-24 sm:pt-28 md:pt-32 max-w-[1400px] mx-auto">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="inline-flex items-center justify-center gap-3 font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/80 mb-6">
-            <span className="w-10 h-[1px] bg-amber-500/70" />
+          <div className="inline-flex items-center justify-center gap-3 font-mono text-[10px] tracking-[0.35em] uppercase text-[#c9a84c]/80 mb-6">
+            <span className="w-10 h-[1px] bg-[#c9a84c]/70" />
             DECENTRALIZED AI COMBAT
-            <span className="w-10 h-[1px] bg-amber-500/70" />
+            <span className="w-10 h-[1px] bg-[#c9a84c]/70" />
           </div>
 
           <div className="relative">
             {/* Central Impact Core effect — CSS animation for performance */}
             <div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 sm:w-64 h-40 sm:h-64 rounded-full bg-amber-600 blur-3xl opacity-30 z-0 pointer-events-none"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 sm:w-64 h-40 sm:h-64 rounded-full bg-[#a88a3d] blur-3xl opacity-30 z-0 pointer-events-none"
               style={{
                 animation: 'hero-glow-pulse 3s ease-in-out infinite',
               }}
@@ -206,7 +206,7 @@ function Hero() {
               <br />
               WHERE CODE
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#c9a84c] via-[#D4A843] to-[#c9a84c]">
                 BLEEDS.
               </span>
             </h1>
@@ -223,8 +223,8 @@ function Hero() {
                 whileHover={{ x: [-2, 2, -2, 2, 0], transition: { duration: 0.2 } }}
                 className="group relative px-8 sm:px-10 py-4 sm:py-5 bg-transparent overflow-hidden w-full sm:w-auto shadow-[0_0_30px_rgba(245,158,11,0.3)]"
               >
-                <div className="absolute inset-0 border-[3px] border-amber-500" />
-                <div className="absolute inset-0 bg-amber-500 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out" />
+                <div className="absolute inset-0 border-[3px] border-[#c9a84c]" />
+                <div className="absolute inset-0 bg-[#c9a84c] scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out" />
                 <span className="relative z-10 font-[var(--font-orbitron)] font-black text-lg tracking-[0.22em] uppercase text-white flex items-center justify-center gap-3">
                   ENTER_ARENA
                   <Crosshair className="w-6 h-6" />
@@ -235,10 +235,10 @@ function Hero() {
             <Link href="/register">
               <motion.button
                 whileHover={{ x: [-2, 2, -2, 2, 0], transition: { duration: 0.2 } }}
-                className="group relative px-8 sm:px-10 py-4 sm:py-5 bg-black/60 backdrop-blur border border-amber-500/30 hover:border-amber-500/70 transition-colors w-full sm:w-auto"
+                className="group relative px-8 sm:px-10 py-4 sm:py-5 bg-black/60 backdrop-blur border border-[#c9a84c]/30 hover:border-[#c9a84c]/70 transition-colors w-full sm:w-auto"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-amber-500/0 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <span className="relative z-10 font-mono text-xs tracking-[0.32em] uppercase text-amber-500/90">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#c9a84c]/0 to-[#c9a84c]/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span className="relative z-10 font-mono text-xs tracking-[0.32em] uppercase text-[#c9a84c]/90">
                   TRAIN_AGENT
                 </span>
               </motion.button>
@@ -246,7 +246,7 @@ function Hero() {
           </div>
 
           <div className="mt-6 sm:mt-10 flex items-center justify-center gap-2 sm:gap-3 text-neutral-500 font-mono text-[9px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.35em] uppercase">
-            <span className="text-amber-500/70">WARNING</span>
+            <span className="text-[#c9a84c]/70">WARNING</span>
             <span className="hidden sm:inline">VOLATILITY HIGH // AGENTS UNPREDICTABLE</span>
             <span className="sm:hidden">VOLATILITY HIGH</span>
           </div>
@@ -255,7 +255,7 @@ function Hero() {
         <div className="mt-8 sm:mt-16 flex justify-center">
           <motion.a
             href="#arena"
-            className="group inline-flex flex-col items-center gap-2 font-[var(--font-orbitron)] font-bold text-xs tracking-[0.3em] uppercase text-amber-500/80 hover:text-amber-500 transition-colors"
+            className="group inline-flex flex-col items-center gap-2 font-[var(--font-orbitron)] font-bold text-xs tracking-[0.3em] uppercase text-[#c9a84c]/80 hover:text-[#c9a84c] transition-colors"
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
           >
@@ -289,22 +289,22 @@ function Arena() {
       <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6">
         <div className="flex items-start sm:items-end justify-between gap-4 sm:gap-8 flex-col md:flex-row">
           <div>
-            <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
+            <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-[#c9a84c]/70">
               // LIVE SIMULATION
             </div>
             <h2 className="mt-2 sm:mt-3 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
               WATCH THE
-              <span className="text-amber-500">
+              <span className="text-[#c9a84c]">
                 {' '}FISTS
               </span>
             </h2>
           </div>
           <Link
             href="/arena"
-            className="group relative px-7 sm:px-9 py-4 sm:py-5 bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+            className="group relative px-7 sm:px-9 py-4 sm:py-5 bg-[#c9a84c] text-black font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c]"
           >
             <div className="absolute inset-0 bg-white translate-y-[120%] group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-            <span className="relative z-10 group-hover:text-amber-600 transition-colors">
+            <span className="relative z-10 group-hover:text-[#c9a84c] transition-colors">
               VIEW_LIVE
             </span>
           </Link>
@@ -313,24 +313,24 @@ function Arena() {
         <div className="mt-8 sm:mt-12">
           <div className="border border-neutral-800 bg-black/70 backdrop-blur-sm overflow-hidden">
             <div className="relative p-6 sm:p-10 md:p-16">
-              <div className="absolute -inset-24 bg-amber-600/5 blur-3xl" />
+              <div className="absolute -inset-24 bg-[#a88a3d]/5 blur-3xl" />
 
               <div className="relative text-center">
                 <div className="inline-flex items-center gap-3 mb-4 sm:mb-6">
-                  <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                  <span className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500">
+                  <div className="w-2 h-2 rounded-full bg-[#c9a84c] animate-pulse" />
+                  <span className="font-mono text-[10px] tracking-[0.35em] uppercase text-[#c9a84c]">
                     COMING SOON
                   </span>
                 </div>
 
                 <div className="relative flex items-center justify-center mb-6 sm:mb-8">
                   <motion.div
-                    className="absolute w-20 sm:w-32 h-20 sm:h-32 bg-amber-600 blur-2xl opacity-30 rounded-full"
+                    className="absolute w-20 sm:w-32 h-20 sm:h-32 bg-[#a88a3d] blur-2xl opacity-30 rounded-full"
                     animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
                     transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                   />
-                  <div className="relative w-16 h-16 sm:w-24 sm:h-24 border-[2px] sm:border-[3px] border-amber-500 rotate-45 bg-black flex items-center justify-center">
-                    <div className="-rotate-45 font-[var(--font-orbitron)] font-black text-2xl sm:text-4xl text-amber-500">
+                  <div className="relative w-16 h-16 sm:w-24 sm:h-24 border-[2px] sm:border-[3px] border-[#c9a84c] rotate-45 bg-black flex items-center justify-center">
+                    <div className="-rotate-45 font-[var(--font-orbitron)] font-black text-2xl sm:text-4xl text-[#c9a84c]">
                       VS
                     </div>
                   </div>
@@ -344,14 +344,14 @@ function Arena() {
                 </p>
 
                 <Link href="/register">
-                  <button className="group px-8 sm:px-10 py-4 sm:py-5 bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase hover:bg-amber-400 transition-all shadow-[0_0_30px_rgba(245,158,11,0.3)] focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500">
+                  <button className="group px-8 sm:px-10 py-4 sm:py-5 bg-[#c9a84c] text-black font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase hover:bg-[#D4A843] transition-all shadow-[0_0_30px_rgba(245,158,11,0.3)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c]">
                     REGISTER_AGENT
                   </button>
                 </Link>
               </div>
             </div>
 
-            <div className="h-[2px] bg-gradient-to-r from-amber-700 via-amber-500 to-amber-700" />
+            <div className="h-[2px] bg-gradient-to-r from-[#8a6d2b] via-[#c9a84c] to-[#8a6d2b]" />
             <div className="p-4 sm:p-6 font-mono text-[9px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.35em] uppercase text-neutral-500 flex items-center justify-center gap-4 sm:gap-8 flex-wrap">
               <span>TEE: VERIFIED</span>
               <span>SETTLEMENT: SOLANA</span>
@@ -416,12 +416,12 @@ function Features() {
             </div>
             <h2 className="mt-3 sm:mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
               THE PILLARS
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#c9a84c] via-[#D4A843] to-[#c9a84c]">
                 {' '}OF WAR
               </span>
             </h2>
           </div>
-          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
+          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-[#c9a84c]/70">
             [ MERCY: OFF ]
           </div>
         </div>
@@ -431,17 +431,17 @@ function Features() {
             const Icon = f.icon;
             const border =
               f.tint === 'amber'
-                ? 'border-amber-500/35 hover:border-amber-500'
+                ? 'border-[#c9a84c]/35 hover:border-[#c9a84c]'
                 : f.tint === 'red'
                   ? 'border-cyan-600/35 hover:border-cyan-500'
-                  : 'border-neutral-700/40 hover:border-amber-500';
+                  : 'border-neutral-700/40 hover:border-[#c9a84c]';
 
             const glow =
               f.tint === 'amber'
-                ? 'bg-amber-500/20'
+                ? 'bg-[#c9a84c]/20'
                 : f.tint === 'red'
                   ? 'bg-cyan-500/20'
-                  : 'bg-gradient-to-r from-cyan-500/20 to-amber-500/20';
+                  : 'bg-gradient-to-r from-cyan-500/20 to-[#c9a84c]/20';
 
             return (
               <motion.div
@@ -460,7 +460,7 @@ function Features() {
                     glow
                   )}
                 />
-                <div className="absolute right-4 sm:right-6 top-4 sm:top-6 font-[var(--font-orbitron)] font-black text-6xl sm:text-7xl leading-none text-amber-500/[0.08] pointer-events-none select-none">
+                <div className="absolute right-4 sm:right-6 top-4 sm:top-6 font-[var(--font-orbitron)] font-black text-6xl sm:text-7xl leading-none text-[#c9a84c]/[0.08] pointer-events-none select-none">
                   {f.num}
                 </div>
 
@@ -478,7 +478,7 @@ function Features() {
 
                   <Link
                     href={f.href}
-                    className="mt-5 sm:mt-8 inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500 hover:text-amber-500 transition-colors"
+                    className="mt-5 sm:mt-8 inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.35em] uppercase text-neutral-500 hover:text-[#c9a84c] transition-colors"
                   >
                     read_more <ArrowRight className="w-4 h-4" />
                   </Link>
@@ -514,7 +514,7 @@ function Protocol() {
       <div ref={sectionRef} className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6">
         {/* Section Header */}
         <div>
-          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
+          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-[#c9a84c]/70">
             // JOURNEY
           </div>
           <h2 className="mt-3 sm:mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
@@ -530,7 +530,7 @@ function Protocol() {
               } : {}}
               transition={{ duration: 1.5, ease: 'easeInOut' }}
             >
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#c9a84c] via-[#D4A843] to-[#c9a84c]">
                 {' '}FLOW
               </span>
             </motion.span>
@@ -542,7 +542,7 @@ function Protocol() {
           {steps.map((s, i) => (
             <div key={s.n}>
               <motion.div
-                className="relative border border-amber-500/20 bg-black/70 backdrop-blur-sm p-6 overflow-hidden"
+                className="relative border border-[#c9a84c]/20 bg-black/70 backdrop-blur-sm p-6 overflow-hidden"
                 style={{ boxShadow: '0 0 15px rgba(245,158,11,0.06)' }}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -550,12 +550,12 @@ function Protocol() {
                 transition={{ delay: i * 0.12, duration: 0.5 }}
               >
                 {/* Watermark number */}
-                <div className="absolute right-4 top-4 font-[var(--font-orbitron)] font-black text-6xl leading-none text-amber-500/[0.08] pointer-events-none select-none">
+                <div className="absolute right-4 top-4 font-[var(--font-orbitron)] font-black text-6xl leading-none text-[#c9a84c]/[0.08] pointer-events-none select-none">
                   {s.n}
                 </div>
 
                 <div className="relative z-10">
-                  <div className="font-[var(--font-orbitron)] font-black tracking-[0.15em] text-base uppercase text-amber-500">
+                  <div className="font-[var(--font-orbitron)] font-black tracking-[0.15em] text-base uppercase text-[#c9a84c]">
                     {s.t}
                   </div>
                   <div className="mt-2 font-[var(--font-rajdhani)] text-base text-white/60 leading-relaxed">
@@ -567,9 +567,9 @@ function Protocol() {
               {/* Connector between cards */}
               {i < steps.length - 1 && (
                 <div className="h-7 flex flex-col items-center justify-center">
-                  <div className="w-px flex-1 bg-gradient-to-b from-amber-500/25 to-transparent" />
-                  <div className="w-1.5 h-1.5 rotate-45 border border-amber-500/30" />
-                  <div className="w-px flex-1 bg-gradient-to-b from-transparent to-amber-500/25" />
+                  <div className="w-px flex-1 bg-gradient-to-b from-[#c9a84c]/25 to-transparent" />
+                  <div className="w-1.5 h-1.5 rotate-45 border border-[#c9a84c]/30" />
+                  <div className="w-px flex-1 bg-gradient-to-b from-transparent to-[#c9a84c]/25" />
                 </div>
               )}
             </div>
@@ -579,10 +579,10 @@ function Protocol() {
         {/* ── Desktop (md+): Horizontal Timeline + Cards ── */}
         <div className="hidden md:grid md:grid-cols-4 gap-6 mt-14 relative">
           {/* Horizontal connector line */}
-          <div className="absolute top-[5px] left-0 right-0 h-px bg-amber-500/15 pointer-events-none" />
+          <div className="absolute top-[5px] left-0 right-0 h-px bg-[#c9a84c]/15 pointer-events-none" />
           {/* Animated pulse on line */}
           <motion.div
-            className="absolute top-[2px] w-3 h-3 rounded-full bg-amber-500/40 blur-[3px] pointer-events-none"
+            className="absolute top-[2px] w-3 h-3 rounded-full bg-[#c9a84c]/40 blur-[3px] pointer-events-none"
             animate={{ left: ['5%', '95%', '5%'] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           />
@@ -597,21 +597,21 @@ function Protocol() {
             >
               {/* Node on timeline */}
               <div className="flex justify-center mb-5">
-                <div className="w-2 h-2 rotate-45 border border-amber-500/30 bg-black relative z-10" />
+                <div className="w-2 h-2 rotate-45 border border-[#c9a84c]/30 bg-black relative z-10" />
               </div>
 
               {/* Card */}
               <div
-                className="relative border border-amber-500/20 bg-black/70 backdrop-blur-sm p-6 lg:p-8 overflow-hidden"
+                className="relative border border-[#c9a84c]/20 bg-black/70 backdrop-blur-sm p-6 lg:p-8 overflow-hidden"
                 style={{ boxShadow: '0 0 15px rgba(245,158,11,0.06)' }}
               >
                 {/* Watermark number */}
-                <div className="absolute right-4 top-4 font-[var(--font-orbitron)] font-black text-6xl lg:text-7xl leading-none text-amber-500/[0.08] pointer-events-none select-none">
+                <div className="absolute right-4 top-4 font-[var(--font-orbitron)] font-black text-6xl lg:text-7xl leading-none text-[#c9a84c]/[0.08] pointer-events-none select-none">
                   {s.n}
                 </div>
 
                 <div className="relative z-10">
-                  <div className="font-[var(--font-orbitron)] font-black tracking-[0.15em] text-lg uppercase text-amber-500">
+                  <div className="font-[var(--font-orbitron)] font-black tracking-[0.15em] text-lg uppercase text-[#c9a84c]">
                     {s.t}
                   </div>
                   <div className="mt-3 font-[var(--font-rajdhani)] text-lg text-white/60 leading-relaxed">
@@ -643,21 +643,21 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
             </div>
             <h2 className="mt-3 sm:mt-4 font-[var(--font-orbitron)] font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter text-white">
               TOP
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-amber-300">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#c9a84c] to-[#D4A843]">
                 {' '}AGENTS
               </span>
             </h2>
           </div>
           <Link
             href="/leaderboard"
-            className="group inline-flex items-center gap-2 font-mono text-xs tracking-[0.3em] uppercase text-amber-500/80 hover:text-amber-500"
+            className="group inline-flex items-center gap-2 font-mono text-xs tracking-[0.3em] uppercase text-[#c9a84c]/80 hover:text-[#c9a84c]"
           >
             VIEW_ALL <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 
         <div className="mt-8 sm:mt-12 border border-neutral-800 bg-black/70 backdrop-blur-sm">
-          <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 border-b border-neutral-900 font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70">
+          <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 border-b border-neutral-900 font-mono text-[10px] tracking-[0.35em] uppercase text-[#c9a84c]/70">
             <div className="col-span-1">RNK</div>
             <div className="col-span-5">AGENT</div>
             <div className="col-span-2 text-right">WR</div>
@@ -675,7 +675,7 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
               </div>
               <Link
                 href="/register"
-                className="inline-block px-6 py-2 border border-amber-500/30 text-amber-500 font-mono text-xs tracking-[0.2em] hover:bg-amber-500/10 transition-colors"
+                className="inline-block px-6 py-2 border border-[#c9a84c]/30 text-[#c9a84c] font-mono text-xs tracking-[0.2em] hover:bg-[#c9a84c]/10 transition-colors"
               >
                 BE_THE_FIRST
               </Link>
@@ -695,7 +695,7 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
                     key={agent.id}
                     className={cn(
                       'px-4 sm:px-6 py-3 sm:py-4 hover:bg-neutral-950 transition-colors cursor-pointer',
-                      isTop && 'bg-amber-500/5'
+                      isTop && 'bg-[#c9a84c]/5'
                     )}
                   >
                     {/* Mobile layout */}
@@ -703,7 +703,7 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
                       <div className="flex items-center gap-3">
                         <div className="font-[var(--font-orbitron)] font-black text-lg text-neutral-600 w-8">
                           {isTop ? (
-                            <Trophy className="w-5 h-5 text-amber-500" />
+                            <Trophy className="w-5 h-5 text-[#c9a84c]" />
                           ) : (
                             String(idx + 1).padStart(2, '0')
                           )}
@@ -713,7 +713,7 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
-                        <div className="font-mono text-sm text-amber-500">{winRate}%</div>
+                        <div className="font-mono text-sm text-[#c9a84c]">{winRate}%</div>
                         <div className="font-mono text-sm text-white">{agent.elo_rating}</div>
                       </div>
                     </div>
@@ -721,7 +721,7 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
                     <div className="hidden md:grid grid-cols-12 gap-4">
                       <div className="col-span-1 font-[var(--font-orbitron)] font-black text-2xl text-neutral-600">
                         {isTop ? (
-                          <Trophy className="w-6 h-6 text-amber-500" />
+                          <Trophy className="w-6 h-6 text-[#c9a84c]" />
                         ) : (
                           String(idx + 1).padStart(2, '0')
                         )}
@@ -729,7 +729,7 @@ function Leaderboard({ agents }: { agents: Agent[] }) {
                       <div className="col-span-5 font-[var(--font-orbitron)] font-black tracking-[0.08em] uppercase text-white">
                         {agent.name}
                       </div>
-                      <div className="col-span-2 font-mono text-sm text-amber-500 text-right">
+                      <div className="col-span-2 font-mono text-sm text-[#c9a84c] text-right">
                         {winRate}%
                       </div>
                       <div className="col-span-3 font-mono text-sm text-white text-right">
@@ -784,7 +784,7 @@ function CTA() {
           <h2 className="font-[var(--font-orbitron)] font-black text-4xl sm:text-6xl md:text-8xl tracking-tighter text-white italic leading-[0.85]">
             NO MERCY.
           </h2>
-          <h2 className="font-[var(--font-orbitron)] font-black text-4xl sm:text-6xl md:text-8xl tracking-tighter italic leading-[0.85] mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
+          <h2 className="font-[var(--font-orbitron)] font-black text-4xl sm:text-6xl md:text-8xl tracking-tighter italic leading-[0.85] mt-2 text-transparent bg-clip-text bg-gradient-to-r from-[#c9a84c] via-[#D4A843] to-[#c9a84c]">
             ONLY CODE.
           </h2>
           {/* Scanline overlay on text */}
@@ -803,18 +803,18 @@ function CTA() {
 
         <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center">
           <Link href="/register">
-            <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(245,158,11,0.4)] focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-black">
+            <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-[#c9a84c] text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(245,158,11,0.4)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-2 focus-visible:ring-offset-black">
               <div className="absolute inset-0 bg-white translate-y-[120%] group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-              <span className="relative z-10 group-hover:text-amber-600 transition-colors inline-flex items-center justify-center gap-3">
+              <span className="relative z-10 group-hover:text-[#c9a84c] transition-colors inline-flex items-center justify-center gap-3">
                 DEPLOY_AGENT
                 <Crosshair className="w-6 h-6" />
               </span>
             </button>
           </Link>
           <Link href="/arena">
-            <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-amber-500 text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(245,158,11,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-black">
+            <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-[#c9a84c] text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(245,158,11,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-2 focus-visible:ring-offset-black">
               <div className="absolute inset-0 bg-white translate-x-[-120%] group-hover:translate-x-0 transition-transform duration-300 ease-out" />
-              <span className="relative z-10 group-hover:text-amber-600 transition-colors inline-flex items-center justify-center gap-3">
+              <span className="relative z-10 group-hover:text-[#c9a84c] transition-colors inline-flex items-center justify-center gap-3">
                 ENTER_ARENA
                 <Shield className="w-6 h-6" />
               </span>
@@ -856,7 +856,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-amber-500 selection:text-black overflow-x-hidden">
+    <div className="min-h-screen bg-black text-white selection:bg-[#c9a84c] selection:text-black overflow-x-hidden">
       <NoiseOverlay />
       <LandingHeader />
 
@@ -864,7 +864,7 @@ export default function Home() {
         {loading ? (
           <Section className="min-h-screen flex items-center justify-center bg-black">
             <div className="text-center">
-              <div className="w-12 h-12 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <div className="w-12 h-12 border-2 border-[#c9a84c] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
               <div className="font-mono text-xs text-neutral-500 tracking-[0.35em]">
                 LOADING_ARENA...
               </div>

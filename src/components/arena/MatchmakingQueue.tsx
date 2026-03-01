@@ -134,7 +134,7 @@ export default function MatchmakingQueue({ agentId, onMatched }: MatchmakingQueu
             className="text-center py-6"
           >
             <Loader2
-              className="w-8 h-8 text-amber-500 mx-auto mb-3 animate-spin"
+              className="w-8 h-8 text-[#c9a84c] mx-auto mb-3 animate-spin"
               aria-hidden="true"
             />
             <p className="font-mono text-sm text-[#e8e8e8] mb-1">

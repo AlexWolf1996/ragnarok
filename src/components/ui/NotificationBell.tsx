@@ -33,7 +33,7 @@ export default function NotificationBell() {
     <div className="relative" ref={containerRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="relative p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-neutral-400 hover:text-[#D4A843] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+        className="relative p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-neutral-400 hover:text-[#D4A843] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c]"
         aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
       >
         <Bell size={18} />

@@ -30,14 +30,14 @@ function RoadmapPhase({ quarter, title, items, status, delay }: RoadmapPhaseProp
       <div
         className={`group relative border bg-black/70 backdrop-blur-xl p-5 sm:p-6 md:p-8 overflow-hidden transition-colors h-full ${
           status === 'current'
-            ? 'border-amber-500/50 hover:border-amber-500'
+            ? 'border-[#c9a84c]/50 hover:border-[#c9a84c]'
             : status === 'complete'
               ? 'border-green-500/30 hover:border-green-500/50'
               : 'border-neutral-800 hover:border-neutral-700'
         }`}
       >
         {status === 'current' && (
-          <div className="absolute -inset-20 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity bg-amber-500/10" />
+          <div className="absolute -inset-20 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity bg-[#c9a84c]/10" />
         )}
 
         <div className="relative z-10">
@@ -48,7 +48,7 @@ function RoadmapPhase({ quarter, title, items, status, delay }: RoadmapPhaseProp
             <div
               className={`w-8 h-8 border flex items-center justify-center ${
                 status === 'current'
-                  ? 'border-amber-500/50 text-amber-500'
+                  ? 'border-[#c9a84c]/50 text-[#c9a84c]'
                   : status === 'complete'
                     ? 'border-green-500/30 text-green-500'
                     : 'border-neutral-800 text-neutral-600'
@@ -61,7 +61,7 @@ function RoadmapPhase({ quarter, title, items, status, delay }: RoadmapPhaseProp
           <h3
             className={`font-[var(--font-orbitron)] font-black tracking-[0.12em] text-lg sm:text-xl mb-4 sm:mb-6 ${
               status === 'current'
-                ? 'text-amber-500'
+                ? 'text-[#c9a84c]'
                 : status === 'complete'
                   ? 'text-white'
                   : 'text-neutral-500'
@@ -78,7 +78,7 @@ function RoadmapPhase({ quarter, title, items, status, delay }: RoadmapPhaseProp
                     status === 'complete'
                       ? 'bg-green-500/60'
                       : status === 'current'
-                        ? 'bg-amber-500/60'
+                        ? 'bg-[#c9a84c]/60'
                         : 'bg-neutral-700'
                   }`}
                 />
@@ -132,7 +132,7 @@ export default function Roadmap() {
         <div className="flex items-start sm:items-end justify-between flex-col md:flex-row gap-4 sm:gap-8 mb-8 sm:mb-14">
           <div>
             <motion.div
-              className="font-mono text-[10px] tracking-[0.35em] uppercase text-amber-500/70"
+              className="font-mono text-[10px] tracking-[0.35em] uppercase text-[#c9a84c]/70"
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ duration: 0.6 }}
@@ -146,7 +146,7 @@ export default function Roadmap() {
               transition={{ duration: 0.6, delay: 0.1 }}
             >
               ROAD
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#c9a84c] via-[#D4A843] to-[#c9a84c]">
                 MAP
               </span>
             </motion.h2>

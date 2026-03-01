@@ -97,7 +97,7 @@ function AnimatedScore({
 
   return (
     <span className={`font-mono text-3xl sm:text-4xl md:text-5xl font-bold tabular-nums ${
-      isWinner ? 'text-amber-400' : 'text-neutral-400'
+      isWinner ? 'text-[#D4A843]' : 'text-neutral-400'
     }`}>
       {displayScore}
     </span>
@@ -119,7 +119,7 @@ function ScoreBar({ scoreA, scoreB }: { scoreA: number; scoreB: number }) {
   return (
     <div className="relative h-3 bg-neutral-800 rounded-full overflow-hidden">
       <motion.div
-        className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-600 to-amber-400"
+        className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#a88a3d] to-[#D4A843]"
         initial={{ width: '50%' }}
         animate={{ width: `${animatedPercent}%` }}
         transition={{ duration: 1, ease: 'easeOut', delay: 0.8 }}
@@ -138,7 +138,7 @@ function ScoreBar({ scoreA, scoreB }: { scoreA: number; scoreB: number }) {
 
 function getChallengeTypeColor(type: string): string {
   switch (type.toLowerCase()) {
-    case 'reasoning': return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+    case 'reasoning': return 'bg-[#c9a84c]/20 text-[#D4A843] border-[#c9a84c]/30';
     case 'creative': return 'bg-red-500/20 text-red-400 border-red-500/30';
     case 'strategy': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
     case 'code': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
@@ -150,7 +150,7 @@ function getChallengeTypeColor(type: string): string {
 function getDifficultyColor(difficulty: string): string {
   switch (difficulty.toLowerCase()) {
     case 'easy':
-    case 'bifrost': return 'bg-amber-600/20 text-amber-300 border-amber-600/30';
+    case 'bifrost': return 'bg-[#a88a3d]/20 text-[#D4A843] border-[#c9a84c]/30';
     case 'medium':
     case 'midgard': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
     case 'hard':
@@ -161,7 +161,7 @@ function getDifficultyColor(difficulty: string): string {
 
 function getJudgeColor(judgeId: string): string {
   switch (judgeId) {
-    case 'odin': return 'text-amber-400 border-amber-500/30 bg-amber-500/10';
+    case 'odin': return 'text-[#D4A843] border-[#c9a84c]/30 bg-[#c9a84c]/10';
     case 'thor': return 'text-blue-400 border-blue-500/30 bg-blue-500/10';
     case 'freya': return 'text-pink-400 border-pink-500/30 bg-pink-500/10';
     default: return 'text-neutral-400 border-neutral-500/30 bg-neutral-500/10';
@@ -196,10 +196,10 @@ export default function BattleResultDisplay({
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className="bg-black/80 backdrop-blur-sm border border-amber-500/30 rounded-sm overflow-hidden relative"
+      className="bg-black/80 backdrop-blur-sm border border-[#c9a84c]/30 rounded-sm overflow-hidden relative"
     >
       {/* Top glow line */}
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c] to-transparent" />
 
       {/* Challenge prompt banner */}
       <div className="bg-black/60 border-b border-neutral-800 p-4">
@@ -211,7 +211,7 @@ export default function BattleResultDisplay({
             {challenge.difficulty.toUpperCase()}
           </span>
         </div>
-        <h3 className="font-[var(--font-orbitron)] text-xs tracking-[0.15em] text-amber-500/70 text-center mb-1">
+        <h3 className="font-[var(--font-orbitron)] text-xs tracking-[0.15em] text-[#c9a84c]/70 text-center mb-1">
           TRIAL BY COMBAT
         </h3>
         <p className="font-[var(--font-rajdhani)] text-sm text-neutral-300 text-center max-w-2xl mx-auto line-clamp-2">
@@ -237,12 +237,12 @@ export default function BattleResultDisplay({
                 transition={{ delay: 1.8 }}
                 className="absolute -top-2 left-1/2 -translate-x-1/2"
               >
-                <Crown size={24} className="text-amber-400" />
+                <Crown size={24} className="text-[#D4A843]" />
               </motion.div>
             )}
             <div className={`w-16 h-16 md:w-20 md:h-20 mx-auto rounded-full bg-gradient-to-br ${
               agentA.isWinner
-                ? 'from-amber-500/30 to-amber-700/30 border-2 border-amber-500/50 shadow-[0_0_30px_rgba(245,158,11,0.3)]'
+                ? 'from-[#c9a84c]/30 to-[#8a6d2b]/30 border-2 border-[#c9a84c]/50 shadow-[0_0_30px_rgba(245,158,11,0.3)]'
                 : 'from-neutral-700/30 to-neutral-800/30 border border-neutral-700'
             } flex items-center justify-center mb-3 mt-4`}>
               <span className="font-[var(--font-orbitron)] text-2xl md:text-3xl text-white/80">
@@ -252,7 +252,7 @@ export default function BattleResultDisplay({
             <Link
               href={`/agents/${agentA.id}`}
               className={`font-[var(--font-orbitron)] text-sm md:text-base tracking-wider mb-1 block hover:underline ${
-                agentA.isWinner ? 'text-amber-400 hover:text-amber-300' : 'text-neutral-400 hover:text-neutral-300'
+                agentA.isWinner ? 'text-[#D4A843] hover:text-[#D4A843]' : 'text-neutral-400 hover:text-neutral-300'
               }`}
             >
               {agentA.name}
@@ -265,7 +265,7 @@ export default function BattleResultDisplay({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 2 }}
-                className="mt-1 font-[var(--font-orbitron)] text-[10px] text-amber-500 tracking-wider"
+                className="mt-1 font-[var(--font-orbitron)] text-[10px] text-[#c9a84c] tracking-wider"
               >
                 VICTOR
               </motion.div>
@@ -301,12 +301,12 @@ export default function BattleResultDisplay({
                 transition={{ delay: 1.8 }}
                 className="absolute -top-2 left-1/2 -translate-x-1/2"
               >
-                <Crown size={24} className="text-amber-400" />
+                <Crown size={24} className="text-[#D4A843]" />
               </motion.div>
             )}
             <div className={`w-16 h-16 md:w-20 md:h-20 mx-auto rounded-full bg-gradient-to-br ${
               agentB.isWinner
-                ? 'from-amber-500/30 to-amber-700/30 border-2 border-amber-500/50 shadow-[0_0_30px_rgba(245,158,11,0.3)]'
+                ? 'from-[#c9a84c]/30 to-[#8a6d2b]/30 border-2 border-[#c9a84c]/50 shadow-[0_0_30px_rgba(245,158,11,0.3)]'
                 : 'from-neutral-700/30 to-neutral-800/30 border border-neutral-700'
             } flex items-center justify-center mb-3 mt-4`}>
               <span className="font-[var(--font-orbitron)] text-2xl md:text-3xl text-white/80">
@@ -316,7 +316,7 @@ export default function BattleResultDisplay({
             <Link
               href={`/agents/${agentB.id}`}
               className={`font-[var(--font-orbitron)] text-sm md:text-base tracking-wider mb-1 block hover:underline ${
-                agentB.isWinner ? 'text-amber-400 hover:text-amber-300' : 'text-neutral-400 hover:text-neutral-300'
+                agentB.isWinner ? 'text-[#D4A843] hover:text-[#D4A843]' : 'text-neutral-400 hover:text-neutral-300'
               }`}
             >
               {agentB.name}
@@ -329,7 +329,7 @@ export default function BattleResultDisplay({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 2 }}
-                className="mt-1 font-[var(--font-orbitron)] text-[10px] text-amber-500 tracking-wider"
+                className="mt-1 font-[var(--font-orbitron)] text-[10px] text-[#c9a84c] tracking-wider"
               >
                 VICTOR
               </motion.div>
@@ -382,7 +382,7 @@ export default function BattleResultDisplay({
           >
             {/* Decision badge */}
             <div className="flex items-center justify-center gap-2 mb-3">
-              <h4 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-amber-500/70">
+              <h4 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-[#c9a84c]/70">
                 JUDGE PANEL
               </h4>
               {isSplitDecision && (
@@ -426,7 +426,7 @@ export default function BattleResultDisplay({
                       {/* Individual scores */}
                       <div className="flex items-center justify-center gap-2 mb-1">
                         <span className={`font-mono text-lg font-bold ${
-                          judge.winnerId === 'A' ? 'text-amber-400' : 'text-neutral-500'
+                          judge.winnerId === 'A' ? 'text-[#D4A843]' : 'text-neutral-500'
                         }`}>
                           {judge.scoreA}
                         </span>
@@ -440,7 +440,7 @@ export default function BattleResultDisplay({
 
                       {/* Winner indicator */}
                       <div className={`text-[9px] font-[var(--font-orbitron)] tracking-wider ${
-                        judge.winnerId === 'A' ? 'text-amber-400' :
+                        judge.winnerId === 'A' ? 'text-[#D4A843]' :
                         judge.winnerId === 'B' ? 'text-red-400' : 'text-neutral-500'
                       }`}>
                         {judge.winnerId === 'TIE' ? 'DRAW' : judge.winnerId === 'A' ? agentA.name.split(' ')[0] : agentB.name.split(' ')[0]}
@@ -456,9 +456,9 @@ export default function BattleResultDisplay({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 3.0 }}
-              className="mt-3 bg-black/40 border border-amber-500/20 rounded-sm p-3 relative"
+              className="mt-3 bg-black/40 border border-[#c9a84c]/20 rounded-sm p-3 relative"
             >
-              <Quote size={12} className="absolute top-2 left-2 text-amber-500/30" />
+              <Quote size={12} className="absolute top-2 left-2 text-[#c9a84c]/30" />
               <p className="font-[var(--font-rajdhani)] text-xs text-neutral-400 leading-relaxed text-center italic px-4">
                 {judges.filter(j => !j.failed).map(j => j.reasoning).join(' | ')}
               </p>
@@ -470,10 +470,10 @@ export default function BattleResultDisplay({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 2.4 }}
-            className="bg-black/40 border border-amber-500/20 rounded-sm p-4 mb-6 relative"
+            className="bg-black/40 border border-[#c9a84c]/20 rounded-sm p-4 mb-6 relative"
           >
-            <Quote size={16} className="absolute top-3 left-3 text-amber-500/30" />
-            <h4 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-amber-500/70 mb-2 text-center">
+            <Quote size={16} className="absolute top-3 left-3 text-[#c9a84c]/30" />
+            <h4 className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-[#c9a84c]/70 mb-2 text-center">
               THE ALLFATHER&apos;S VERDICT
             </h4>
             <p className="font-[var(--font-rajdhani)] text-sm text-neutral-300 leading-relaxed text-center italic px-4">
@@ -490,7 +490,7 @@ export default function BattleResultDisplay({
         >
           <button
             onClick={() => setShowResponses(!showResponses)}
-            className="w-full flex items-center justify-center gap-2 py-3 bg-black/40 hover:bg-black/60 border border-neutral-800 hover:border-amber-500/30 rounded-sm transition-colors mb-4"
+            className="w-full flex items-center justify-center gap-2 py-3 bg-black/40 hover:bg-black/60 border border-neutral-800 hover:border-[#c9a84c]/30 rounded-sm transition-colors mb-4"
           >
             <span className="font-[var(--font-orbitron)] text-xs tracking-wider text-neutral-400">
               READ WARRIOR RESPONSES
@@ -513,23 +513,23 @@ export default function BattleResultDisplay({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Agent A Response */}
                   <div className={`bg-black/40 border rounded-sm p-4 ${
-                    agentA.isWinner ? 'border-amber-500/30' : 'border-neutral-800'
+                    agentA.isWinner ? 'border-[#c9a84c]/30' : 'border-neutral-800'
                   }`}>
                     <div className="flex items-center gap-2 mb-3">
                       <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
                         agentA.isWinner
-                          ? 'bg-amber-500/20 text-amber-400'
+                          ? 'bg-[#c9a84c]/20 text-[#D4A843]'
                           : 'bg-neutral-700 text-neutral-400'
                       }`}>
                         {agentA.name.charAt(0)}
                       </div>
                       <span className={`font-[var(--font-orbitron)] text-xs tracking-wider ${
-                        agentA.isWinner ? 'text-amber-400' : 'text-neutral-400'
+                        agentA.isWinner ? 'text-[#D4A843]' : 'text-neutral-400'
                       }`}>
                         {agentA.name}
                       </span>
                       {agentA.isWinner && (
-                        <Crown size={12} className="text-amber-400" />
+                        <Crown size={12} className="text-[#D4A843]" />
                       )}
                     </div>
                     <div className="max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-transparent">
@@ -541,23 +541,23 @@ export default function BattleResultDisplay({
 
                   {/* Agent B Response */}
                   <div className={`bg-black/40 border rounded-sm p-4 ${
-                    agentB.isWinner ? 'border-amber-500/30' : 'border-neutral-800'
+                    agentB.isWinner ? 'border-[#c9a84c]/30' : 'border-neutral-800'
                   }`}>
                     <div className="flex items-center gap-2 mb-3">
                       <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
                         agentB.isWinner
-                          ? 'bg-amber-500/20 text-amber-400'
+                          ? 'bg-[#c9a84c]/20 text-[#D4A843]'
                           : 'bg-neutral-700 text-neutral-400'
                       }`}>
                         {agentB.name.charAt(0)}
                       </div>
                       <span className={`font-[var(--font-orbitron)] text-xs tracking-wider ${
-                        agentB.isWinner ? 'text-amber-400' : 'text-neutral-400'
+                        agentB.isWinner ? 'text-[#D4A843]' : 'text-neutral-400'
                       }`}>
                         {agentB.name}
                       </span>
                       {agentB.isWinner && (
-                        <Crown size={12} className="text-amber-400" />
+                        <Crown size={12} className="text-[#D4A843]" />
                       )}
                     </div>
                     <div className="max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-transparent">
@@ -582,7 +582,7 @@ export default function BattleResultDisplay({
           <button
             onClick={onFightAgain}
             disabled={isLoading}
-            className="flex-1 py-4 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-amber-600 hover:via-amber-500 hover:to-amber-600 shadow-[0_0_30px_rgba(245,158,11,0.3)]"
+            className="flex-1 py-4 bg-gradient-to-r from-[#8a6d2b] via-[#a88a3d] to-[#8a6d2b] text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-[#a88a3d] hover:via-[#c9a84c] hover:to-[#a88a3d] shadow-[0_0_30px_rgba(245,158,11,0.3)]"
           >
             <Zap size={16} />
             FIGHT AGAIN

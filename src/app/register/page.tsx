@@ -45,8 +45,8 @@ export default function RegisterPage() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-black/60 border border-neutral-800 rounded-sm p-8 relative overflow-hidden"
           >
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
-            <AlertCircle size={48} className="text-amber-500 mx-auto mb-4" />
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c] to-transparent" />
+            <AlertCircle size={48} className="text-[#c9a84c] mx-auto mb-4" />
             <h2 className="font-[var(--font-orbitron)] text-xl tracking-[0.1em] text-white mb-4" style={{ textShadow: '0 0 30px rgba(220, 38, 38, 0.3)' }}>
               YOUR WARRIOR ALREADY EXISTS
             </h2>
@@ -76,8 +76,8 @@ export default function RegisterPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/60 border border-amber-600/30 flex items-center justify-center mx-auto mb-4 sm:mb-6" style={{ boxShadow: '0 0 40px rgba(245, 158, 11, 0.2)' }}>
-            <Flame size={28} className="text-amber-500" />
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/60 border border-[#c9a84c]/30 flex items-center justify-center mx-auto mb-4 sm:mb-6" style={{ boxShadow: '0 0 40px rgba(245, 158, 11, 0.2)' }}>
+            <Flame size={28} className="text-[#c9a84c]" />
           </div>
           <h1 className="font-[var(--font-orbitron)] text-2xl sm:text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-3 sm:mb-4" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
             FORGE YOUR CHAMPION
@@ -96,8 +96,8 @@ export default function RegisterPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
-            <Shield size={48} className="text-amber-500/70 mx-auto mb-4" />
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c] to-transparent" />
+            <Shield size={48} className="text-[#c9a84c]/70 mx-auto mb-4" />
             <h2 className="font-[var(--font-orbitron)] text-lg tracking-[0.1em] text-white mb-4">
               BIND YOUR SOUL
             </h2>
@@ -114,8 +114,8 @@ export default function RegisterPage() {
         {/* Loading state */}
         {connected && checking && (
           <div className="flex flex-col items-center justify-center py-12">
-            <Loader2 size={32} className="text-amber-500 animate-spin mb-4" />
-            <p className="font-[var(--font-orbitron)] text-sm text-amber-500/70 tracking-wider">CONSULTING THE NORNS...</p>
+            <Loader2 size={32} className="text-[#c9a84c] animate-spin mb-4" />
+            <p className="font-[var(--font-orbitron)] text-sm text-[#c9a84c]/70 tracking-wider">CONSULTING THE NORNS...</p>
           </div>
         )}
 
@@ -129,8 +129,8 @@ export default function RegisterPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 text-center hover:border-amber-500/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all group">
-            <Bot size={24} className="text-amber-500 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+          <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 text-center hover:border-[#c9a84c]/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all group">
+            <Bot size={24} className="text-[#c9a84c] mx-auto mb-3 group-hover:scale-110 transition-transform" />
             <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.1em] text-white mb-2">
               YOUR EINHERJAR
             </h3>
@@ -139,8 +139,8 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 text-center hover:border-amber-500/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all group">
-            <Zap size={24} className="text-amber-500 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+          <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 text-center hover:border-[#c9a84c]/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all group">
+            <Zap size={24} className="text-[#c9a84c] mx-auto mb-3 group-hover:scale-110 transition-transform" />
             <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.1em] text-white mb-2">
               TRIAL BY FIRE
             </h3>
@@ -149,8 +149,8 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 text-center hover:border-amber-500/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all group">
-            <Shield size={24} className="text-amber-500 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+          <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 text-center hover:border-[#c9a84c]/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all group">
+            <Shield size={24} className="text-[#c9a84c] mx-auto mb-3 group-hover:scale-110 transition-transform" />
             <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.1em] text-white mb-2">
               ASCEND TO VALHALLA
             </h3>

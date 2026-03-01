@@ -81,13 +81,13 @@ const TIER_LABELS: Record<BettingTier, string> = {
 };
 
 const TIER_COLORS: Record<BettingTier, string> = {
-  bifrost: 'from-amber-700 to-amber-600',
-  midgard: 'from-amber-600 to-amber-500',
+  bifrost: 'from-[#8a6d2b] to-[#a88a3d]',
+  midgard: 'from-[#a88a3d] to-[#c9a84c]',
   asgard: 'from-red-600 to-red-500',
 };
 
 const CATEGORY_META: Record<string, { icon: string; color: string; border: string }> = {
-  reasoning: { icon: '🧠', color: 'text-amber-400', border: 'border-amber-500/30 bg-amber-500/10' },
+  reasoning: { icon: '🧠', color: 'text-[#D4A843]', border: 'border-[#c9a84c]/30 bg-[#c9a84c]/10' },
   creative: { icon: '🎨', color: 'text-red-400', border: 'border-red-500/30 bg-red-500/10' },
   strategy: { icon: '♟️', color: 'text-orange-400', border: 'border-orange-500/30 bg-orange-500/10' },
   code: { icon: '💻', color: 'text-yellow-400', border: 'border-yellow-500/30 bg-yellow-500/10' },
@@ -258,9 +258,9 @@ export default function BettingDuelPanel({
   if (agents.length < 2) {
     return (
       <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 relative">
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c] to-transparent" />
         <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-6 flex items-center gap-2">
-          <Plus size={16} className="text-amber-500" />
+          <Plus size={16} className="text-[#c9a84c]" />
           WAGE BATTLE
         </h2>
         <div className="text-center py-8">
@@ -277,18 +277,18 @@ export default function BettingDuelPanel({
 
   return (
     <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 relative">
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c] to-transparent" />
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white flex items-center gap-2">
-          <Zap size={16} className="text-amber-500" />
+          <Zap size={16} className="text-[#c9a84c]" />
           WAGE BATTLE
         </h2>
         {step !== 'select' && step !== 'fighting' && step !== 'paying' && step !== 'verifying' && (
           <button
             onClick={handleReset}
-            className="text-xs text-neutral-500 hover:text-amber-500 transition-colors"
+            className="text-xs text-neutral-500 hover:text-[#c9a84c] transition-colors"
           >
             Reset
           </button>
@@ -315,7 +315,7 @@ export default function BettingDuelPanel({
                   onClick={() => setSelectedChallenge('random')}
                   className={`py-2.5 px-2 rounded-sm border text-center transition-all ${
                     selectedChallenge === 'random'
-                      ? 'border-amber-500 bg-amber-500/10 text-amber-400'
+                      ? 'border-[#c9a84c] bg-[#c9a84c]/10 text-[#D4A843]'
                       : 'border-neutral-700 text-neutral-400 hover:border-neutral-500'
                   }`}
                 >
@@ -387,7 +387,7 @@ export default function BettingDuelPanel({
             <button
               onClick={handleProceedToBet}
               disabled={!canProceedToBet}
-              className="w-full py-4 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-amber-600 hover:via-amber-500 hover:to-amber-600 shadow-[0_0_30px_rgba(245,158,11,0.3)]"
+              className="w-full py-4 bg-gradient-to-r from-[#8a6d2b] via-[#a88a3d] to-[#8a6d2b] text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all hover:from-[#a88a3d] hover:via-[#c9a84c] hover:to-[#a88a3d] shadow-[0_0_30px_rgba(245,158,11,0.3)]"
             >
               <Swords size={16} />
               PLACE YOUR WAGER
@@ -411,7 +411,7 @@ export default function BettingDuelPanel({
                 <div className="font-[var(--font-orbitron)] text-xs text-white truncate">{agentA.name}</div>
                 <div className="font-mono text-[10px] text-neutral-500">{agentA.elo_rating} ELO</div>
                 {odds && (
-                  <div className="font-mono text-xs text-amber-500 mt-1">{odds.agentA}%</div>
+                  <div className="font-mono text-xs text-[#c9a84c] mt-1">{odds.agentA}%</div>
                 )}
               </div>
               <div className="text-center">
@@ -465,8 +465,8 @@ export default function BettingDuelPanel({
                   onClick={() => setBettorPick('A')}
                   className={`py-4 px-3 rounded-sm border transition-all ${
                     bettorPick === 'A'
-                      ? 'bg-amber-500/20 border-amber-500 text-amber-500'
-                      : 'border-neutral-700 text-neutral-400 hover:border-amber-500/50'
+                      ? 'bg-[#c9a84c]/20 border-[#c9a84c] text-[#c9a84c]'
+                      : 'border-neutral-700 text-neutral-400 hover:border-[#c9a84c]/50'
                   }`}
                 >
                   <div className="text-xl mb-1">{agentA.avatar_url || '⚔️'}</div>
@@ -496,9 +496,9 @@ export default function BettingDuelPanel({
 
             {/* Wallet Warning */}
             {!wallet.connected && (
-              <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-sm flex items-center gap-2">
-                <AlertTriangle size={14} className="text-amber-500 flex-shrink-0" />
-                <span className="font-[var(--font-rajdhani)] text-xs text-amber-400">
+              <div className="p-3 bg-[#c9a84c]/10 border border-[#c9a84c]/30 rounded-sm flex items-center gap-2">
+                <AlertTriangle size={14} className="text-[#c9a84c] flex-shrink-0" />
+                <span className="font-[var(--font-rajdhani)] text-xs text-[#D4A843]">
                   Connect your wallet to place bets
                 </span>
               </div>
@@ -529,7 +529,7 @@ export default function BettingDuelPanel({
             exit={{ opacity: 0 }}
             className="py-12 text-center"
           >
-            <Loader2 size={32} className="text-amber-500 animate-spin mx-auto mb-4" />
+            <Loader2 size={32} className="text-[#c9a84c] animate-spin mx-auto mb-4" />
             <p className="font-[var(--font-orbitron)] text-sm text-white tracking-wider mb-2">
               CONFIRM IN WALLET
             </p>
@@ -655,7 +655,7 @@ export default function BettingDuelPanel({
               <div className="flex items-center justify-between mb-3">
                 <div className="text-center flex-1">
                   <div className="text-xl mb-1">{agentA.avatar_url || '⚔️'}</div>
-                  <div className={`font-[var(--font-orbitron)] text-xs ${battleResult.battle.agentA.isWinner ? 'text-amber-500' : 'text-neutral-400'}`}>
+                  <div className={`font-[var(--font-orbitron)] text-xs ${battleResult.battle.agentA.isWinner ? 'text-[#c9a84c]' : 'text-neutral-400'}`}>
                     {agentA.name}
                     {battleResult.battle.agentA.isWinner && <Trophy size={12} className="inline ml-1" />}
                   </div>
@@ -667,7 +667,7 @@ export default function BettingDuelPanel({
                 <div className="font-[var(--font-orbitron)] text-neutral-600 text-xs">VS</div>
                 <div className="text-center flex-1">
                   <div className="text-xl mb-1">{agentB.avatar_url || '⚔️'}</div>
-                  <div className={`font-[var(--font-orbitron)] text-xs ${battleResult.battle.agentB.isWinner ? 'text-amber-500' : 'text-neutral-400'}`}>
+                  <div className={`font-[var(--font-orbitron)] text-xs ${battleResult.battle.agentB.isWinner ? 'text-[#c9a84c]' : 'text-neutral-400'}`}>
                     {agentB.name}
                     {battleResult.battle.agentB.isWinner && <Trophy size={12} className="inline ml-1" />}
                   </div>
@@ -682,7 +682,7 @@ export default function BettingDuelPanel({
                 {battleResult.battle.judges && battleResult.battle.judges.length > 0 ? (
                   <>
                     <div className="flex items-center justify-center gap-2 mb-2">
-                      <div className="text-[10px] font-[var(--font-orbitron)] text-amber-500/70 tracking-wider">
+                      <div className="text-[10px] font-[var(--font-orbitron)] text-[#c9a84c]/70 tracking-wider">
                         JUDGE PANEL
                       </div>
                       {battleResult.battle.isSplitDecision && (
@@ -703,7 +703,7 @@ export default function BettingDuelPanel({
                           className={`text-center p-1.5 rounded border ${
                             judge.failed
                               ? 'border-neutral-700 opacity-50'
-                              : judge.judgeId === 'odin' ? 'border-amber-500/30 bg-amber-500/5'
+                              : judge.judgeId === 'odin' ? 'border-[#c9a84c]/30 bg-[#c9a84c]/5'
                               : judge.judgeId === 'thor' ? 'border-blue-500/30 bg-blue-500/5'
                               : judge.judgeId === 'freya' ? 'border-pink-500/30 bg-pink-500/5'
                               : 'border-neutral-700'
@@ -716,7 +716,7 @@ export default function BettingDuelPanel({
                             <div className="text-[9px] text-neutral-600 font-mono">OFFLINE</div>
                           ) : (
                             <div className="font-mono text-xs font-bold">
-                              <span className={judge.winnerId === 'A' ? 'text-amber-400' : 'text-neutral-500'}>{judge.scoreA}</span>
+                              <span className={judge.winnerId === 'A' ? 'text-[#D4A843]' : 'text-neutral-500'}>{judge.scoreA}</span>
                               <span className="text-neutral-600 mx-0.5">-</span>
                               <span className={judge.winnerId === 'B' ? 'text-red-400' : 'text-neutral-500'}>{judge.scoreB}</span>
                             </div>
@@ -726,7 +726,7 @@ export default function BettingDuelPanel({
                     </div>
                   </>
                 ) : (
-                  <div className="text-[10px] font-[var(--font-orbitron)] text-amber-500/70 tracking-wider mb-1">
+                  <div className="text-[10px] font-[var(--font-orbitron)] text-[#c9a84c]/70 tracking-wider mb-1">
                     JUDGE VERDICT
                   </div>
                 )}
@@ -740,7 +740,7 @@ export default function BettingDuelPanel({
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={handleFightAgain}
-                className="py-3 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-white font-[var(--font-orbitron)] text-xs tracking-[0.1em] rounded-sm hover:from-amber-600 hover:via-amber-500 hover:to-amber-600 transition-all"
+                className="py-3 bg-gradient-to-r from-[#8a6d2b] via-[#a88a3d] to-[#8a6d2b] text-white font-[var(--font-orbitron)] text-xs tracking-[0.1em] rounded-sm hover:from-[#a88a3d] hover:via-[#c9a84c] hover:to-[#a88a3d] transition-all"
               >
                 REMATCH
               </button>
