@@ -22,10 +22,10 @@ export const runtime = 'nodejs';
 export const maxDuration = 60;
 
 // Timing constants (in milliseconds)
-const BETTING_WINDOW_MS = 10 * 60 * 1000;  // 10 min betting window
-const MATCH_INTERVAL_MS = 30 * 60 * 1000;  // 30 min between matches
+const BETTING_WINDOW_MS = 15 * 60 * 1000;  // 15 min betting window
+const MATCH_INTERVAL_MS = 60 * 60 * 1000;  // 60 min between matches (~14 battles/day)
 const STUCK_IN_PROGRESS_MS = 5 * 60 * 1000; // Force-complete after 5 min
-const STUCK_BETTING_MS = 15 * 60 * 1000;    // Force-start after 15 min
+const STUCK_BETTING_MS = 20 * 60 * 1000;    // Force-start after 20 min
 const LOCK_TIMEOUT_S = 50; // Lock expires after 50 seconds
 
 async function handler(request: NextRequest) {
