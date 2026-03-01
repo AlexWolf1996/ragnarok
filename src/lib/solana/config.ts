@@ -20,14 +20,12 @@ export const getSolanaNetwork = (): WalletAdapterNetwork => {
   }
 };
 
+/**
+ * Browser-safe RPC endpoint.
+ * Always returns the public Solana mainnet endpoint which has permissive CORS.
+ * Helius / premium RPCs are used server-side only (see getConnection()).
+ */
 export const getSolanaEndpoint = (): string => {
-  // Always return a valid URL - use env var if available, otherwise default
-  const customRpc = process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
-  if (customRpc && customRpc.startsWith('http')) {
-    return customRpc;
-  }
-
-  // Use default for build time or when env var not set
   return DEFAULT_RPC_URL;
 };
 

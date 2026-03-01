@@ -16,8 +16,9 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
   ]);
 }
 
+// Browser-safe RPC endpoints (CORS-friendly only).
+// Public mainnet is listed first — premium RPCs like Helius often block browser CORS.
 const CLIENT_RPC_ENDPOINTS = [
-  process.env.NEXT_PUBLIC_SOLANA_RPC_URL,
   'https://api.mainnet-beta.solana.com',
 ].filter((url): url is string => Boolean(url && url.startsWith('http')));
 
@@ -99,8 +100,21 @@ export async function transferToTreasury(
   try {
     const treasuryWallet = getTreasuryWallet();
 
-    // Prefer the connection passed from WalletProvider, fall back to failover chain
-    const connection = existingConnection || await getClientConnection();
+    // Use passed connection, but health-check it first.
+    // If the endpoint has CORS issues (e.g. Helius free tier), fall back to
+    // getClientConnection() which uses public mainnet (always CORS-friendly).
+    let connection: Connection;
+    if (existingConnection) {
+      try {
+        await withTimeout(existingConnection.getLatestBlockhash('confirmed'), 8_000, 'RPC health-check');
+        connection = existingConnection;
+      } catch {
+        console.warn('[Solana Transfer] Passed connection failed health-check, using fallback...');
+        connection = await getClientConnection();
+      }
+    } else {
+      connection = await getClientConnection();
+    }
 
     console.log(`[Solana Transfer] Initiating ${amountSol} SOL transfer to treasury: ${treasuryWallet.toBase58()}`);
 
