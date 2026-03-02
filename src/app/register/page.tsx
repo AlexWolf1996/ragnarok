@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useRouter } from 'next/navigation';
-import { Bot, Shield, Zap, AlertCircle, Loader2, Flame, Globe } from 'lucide-react';
+import { Bot, Shield, Zap, AlertCircle, Loader2, Flame, Globe, Eye } from 'lucide-react';
 import AgentRegistrationForm from '@/components/ui/AgentRegistrationForm';
 import CosmicBackground from '@/components/ui/CosmicBackground';
 import { getAgentByWallet } from '@/lib/supabase/client';
@@ -15,6 +15,9 @@ export default function RegisterPage() {
   const router = useRouter();
   const [checking, setChecking] = useState(true);
   const [hasAgent, setHasAgent] = useState(false);
+  const [existingAgentId, setExistingAgentId] = useState<string | null>(null);
+  const [existingAgentName, setExistingAgentName] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     async function checkExistingAgent() {
@@ -23,6 +26,8 @@ export default function RegisterPage() {
           const agent = await getAgentByWallet(publicKey.toBase58());
           if (agent) {
             setHasAgent(true);
+            setExistingAgentId(agent.id);
+            setExistingAgentName(agent.name);
           }
         } catch {
           // No agent found, continue
@@ -34,37 +39,7 @@ export default function RegisterPage() {
     checkExistingAgent();
   }, [connected, publicKey]);
 
-  // If user already has an agent, show message
-  if (connected && hasAgent) {
-    return (
-      <div className="min-h-screen bg-[#0a0a12] py-20 px-4 relative">
-        <CosmicBackground showParticles={true} showRunes={true} particleCount={20} />
-        <div className="max-w-lg mx-auto text-center relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-black/60 border border-neutral-800 rounded-sm p-8 relative overflow-hidden"
-          >
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c] to-transparent" />
-            <AlertCircle size={48} className="text-[#c9a84c] mx-auto mb-4" />
-            <h2 className="font-[var(--font-orbitron)] text-xl tracking-[0.1em] text-white mb-4" style={{ textShadow: '0 0 30px rgba(220, 38, 38, 0.3)' }}>
-              YOUR WARRIOR ALREADY EXISTS
-            </h2>
-            <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400 mb-6">
-              A champion has already been forged with this soul (wallet).
-              Each soul may command only one warrior in the realm of Ragnarok.
-            </p>
-            <button
-              onClick={() => router.push('/arena')}
-              className="px-6 py-3 bg-gradient-to-r from-red-700 via-red-600 to-red-700 text-white font-[var(--font-orbitron)] text-sm tracking-[0.15em] rounded-sm hover:from-red-600 hover:via-red-500 hover:to-red-600 transition-all shadow-[0_0_30px_rgba(220,38,38,0.3)]"
-            >
-              ENTER THE HALLS OF BATTLE
-            </button>
-          </motion.div>
-        </div>
-      </div>
-    );
-  }
+  // Existing agent banner is rendered inline below, no longer blocks the page
 
   return (
     <div className="min-h-screen bg-[#0a0a12] py-20 px-4 relative">
@@ -122,8 +97,57 @@ export default function RegisterPage() {
           </div>
         )}
 
-        {/* Registration form */}
+        {/* Existing agent banner */}
+        {connected && !checking && hasAgent && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-black/60 border border-[#c9a84c]/30 rounded-sm p-8 max-w-lg mx-auto text-center relative overflow-hidden mb-8"
+          >
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c] to-transparent" />
+            <AlertCircle size={40} className="text-[#c9a84c] mx-auto mb-4" />
+            <h2 className="font-[var(--font-orbitron)] text-lg tracking-[0.1em] text-white mb-3" style={{ textShadow: '0 0 30px rgba(201, 168, 76, 0.3)' }}>
+              YOUR WARRIOR ALREADY EXISTS
+            </h2>
+            <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400 mb-6">
+              A champion{existingAgentName ? ` — ${existingAgentName} —` : ''} has already been forged with this soul.
+              Each soul may command only one warrior in Ragnarok.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              {existingAgentId && (
+                <button
+                  onClick={() => router.push(`/agents/${existingAgentId}`)}
+                  className="px-6 py-3 bg-gradient-to-r from-[#c9a84c] to-[#D4A843] text-black font-[var(--font-orbitron)] text-xs tracking-[0.15em] rounded-sm hover:from-[#D4A843] hover:to-[#c9a84c] transition-all shadow-[0_0_20px_rgba(201,168,76,0.2)]"
+                >
+                  VIEW YOUR CHAMPION
+                </button>
+              )}
+              <button
+                onClick={() => setShowPreview(!showPreview)}
+                className="px-6 py-3 border border-neutral-700 text-neutral-300 font-[var(--font-orbitron)] text-xs tracking-[0.15em] rounded-sm hover:border-[#c9a84c]/50 hover:text-white transition-all flex items-center justify-center gap-2"
+              >
+                <Eye size={14} />
+                {showPreview ? 'HIDE FORM' : 'PREVIEW REGISTRATION'}
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Registration form (or preview for existing users) */}
         {connected && !checking && !hasAgent && <AgentRegistrationForm />}
+        {connected && !checking && hasAgent && showPreview && (
+          <div className="relative">
+            <div className="absolute inset-0 z-20 pointer-events-auto" />
+            <div className="opacity-60 pointer-events-none">
+              <AgentRegistrationForm />
+            </div>
+            <div className="text-center mt-4">
+              <p className="font-[var(--font-rajdhani)] text-xs text-neutral-500 tracking-wider">
+                PREVIEW ONLY — SUBMISSION DISABLED
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Info cards */}
         <motion.div
