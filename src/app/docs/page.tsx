@@ -237,7 +237,7 @@ function StepCard({
       animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
       transition={{ duration: 0.4, delay }}
     >
-      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#c9a84c]/10 border border-[#c9a84c]/30 flex items-center justify-center">
+      <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-[#0a0a0f] border border-[#c9a84c]/30 flex items-center justify-center">
         <span className="font-[var(--font-orbitron)] text-xs text-[#c9a84c]">{number}</span>
       </div>
       <div>
