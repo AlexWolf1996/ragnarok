@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useRouter } from 'next/navigation';
+import WalletButton from '@/components/wallet/WalletButton';
 import { Bot, Shield, Zap, AlertCircle, Loader2, Flame, Globe, Eye } from 'lucide-react';
 import AgentRegistrationForm from '@/components/ui/AgentRegistrationForm';
 import CosmicBackground from '@/components/ui/CosmicBackground';
@@ -83,8 +83,8 @@ export default function RegisterPage() {
               Connect your Solana wallet to bind your soul to a champion.
               This sacred link cannot be broken — choose wisely.
             </p>
-            <div className="landing-wallet-btn">
-              <WalletMultiButton className="!mx-auto" />
+            <div className="flex justify-center">
+              <WalletButton />
             </div>
           </motion.div>
         )}

@@ -211,29 +211,72 @@ body {
   letter-spacing: 0.05em;
 }
 
-/* Landing wallet button styling */
-.landing-wallet-btn .wallet-adapter-button {
-  background: transparent !important;
-  border: 1px solid #333340 !important;
-  color: #666670 !important;
-  font-family: var(--font-jetbrains-mono), monospace !important;
-  font-size: 12px !important;
-  letter-spacing: 0.2em !important;
-  text-transform: uppercase !important;
-  padding: 12px 24px !important;
-  border-radius: 0 !important;
-  transition: all 0.3s ease !important;
+/* Landing wallet button styling (legacy — kept for wallet modal buttons) */
+
+/* Custom wallet button — shared across landing + app */
+.wallet-btn {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 12px 24px;
+  border: 1px solid #333340;
+  background: transparent;
+  color: #666670;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.landing-wallet-btn .wallet-adapter-button:hover {
-  border-color: #e8e8e8 !important;
-  color: #e8e8e8 !important;
-  box-shadow: none !important;
-  transform: none !important;
+.wallet-btn:hover {
+  border-color: #e8e8e8;
+  color: #e8e8e8;
 }
 
-.landing-wallet-btn .wallet-adapter-button-start-icon {
-  display: none !important;
+.wallet-btn-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+/* Wallet dropdown menu */
+.wallet-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 180px;
+  background: #111118;
+  border: 1px solid #1a1a25;
+  z-index: 100;
+  padding: 4px;
+}
+
+.wallet-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #8a8a95;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.wallet-dropdown-item:hover {
+  color: #e8e8e8;
+  background: #1a1a25;
+}
+
+.wallet-dropdown-disconnect:hover {
+  color: #c41e3a;
 }
 
 /* Scan lines effect for hero */
@@ -298,30 +341,7 @@ body {
    Monochrome styling for all app pages
    ============================================ */
 
-/* Editorial wallet button - used in Header and app pages */
-.editorial-wallet-btn .wallet-adapter-button {
-  background: transparent !important;
-  border: 1px solid #1a1a25 !important;
-  color: #666670 !important;
-  font-family: var(--font-jetbrains-mono), monospace !important;
-  font-size: 11px !important;
-  letter-spacing: 0.15em !important;
-  text-transform: uppercase !important;
-  padding: 10px 16px !important;
-  border-radius: 4px !important;
-  transition: all 0.2s ease !important;
-}
-
-.editorial-wallet-btn .wallet-adapter-button:hover {
-  border-color: #333340 !important;
-  color: #e8e8e8 !important;
-  box-shadow: none !important;
-  transform: none !important;
-}
-
-.editorial-wallet-btn .wallet-adapter-button-start-icon {
-  margin-right: 8px !important;
-}
+/* Editorial wallet button (legacy — removed, using custom WalletButton) */
 
 /* Wallet modal overrides for editorial style */
 .wallet-adapter-modal-wrapper {

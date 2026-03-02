@@ -5,9 +5,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Menu, X } from 'lucide-react';
 import NotificationBell from '@/components/ui/NotificationBell';
+import WalletButton from '@/components/wallet/WalletButton';
 
 const navLinks = [
   { href: '/arena', label: 'ARENA' },
@@ -131,9 +131,7 @@ export default function Header() {
         {/* Notifications + Wallet Connect */}
         <div className="hidden md:flex items-center gap-2">
           <NotificationBell />
-          <div className="landing-wallet-btn">
-            <WalletMultiButton />
-          </div>
+          <WalletButton />
         </div>
 
         {/* Mobile Menu Button */}
@@ -199,9 +197,7 @@ export default function Header() {
                 })}
                 <div className="pt-6 border-t border-[#c9a84c]/10 flex items-center gap-3">
                   <NotificationBell />
-                  <div className="landing-wallet-btn">
-                    <WalletMultiButton />
-                  </div>
+                  <WalletButton />
                 </div>
               </div>
             </motion.div>
