@@ -300,7 +300,7 @@ export default function BettorLeaderboard() {
                 >
                   {/* Rank */}
                   <div className="col-span-2 md:col-span-1 flex items-center">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-mono font-bold ${getRankStyle(rank)}`}>
+                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-mono font-bold text-sm sm:text-base ${getRankStyle(rank)}`}>
                       {rank === 1 ? (
                         <Crown size={20} />
                       ) : rank <= 3 ? (

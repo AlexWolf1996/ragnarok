@@ -41,7 +41,7 @@ function CountdownBlock({ value, label, isSeconds }: CountdownBlockProps) {
   return (
     <div className="text-center">
       <div
-        className={`countdown-digit font-mono text-4xl md:text-6xl font-light tracking-wider ${
+        className={`countdown-digit font-mono text-2xl sm:text-4xl md:text-6xl font-light tracking-wider ${
           isSeconds ? 'text-[#c41e3a]' : 'text-[#e8e8e8]'
         } ${isFlipping ? 'digit-flip' : ''}`}
       >

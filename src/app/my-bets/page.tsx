@@ -245,7 +245,7 @@ function MyBetsContent() {
 
         {/* Bets List */}
         <motion.div
-          className="bg-black/40 border border-neutral-800 rounded-sm overflow-hidden relative"
+          className="bg-black/40 border border-neutral-800 rounded-sm overflow-x-auto overflow-hidden relative"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}

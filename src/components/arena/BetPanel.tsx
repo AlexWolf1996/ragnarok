@@ -352,13 +352,13 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
                 Minimum wager is {MIN_BET} SOL
               </div>
             )}
-            <div className="grid grid-cols-4 gap-1 mt-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-1 mt-2">
               {QUICK_PICKS.map((amt) => (
                 <button
                   key={amt}
                   onClick={() => { setBetAmount(amt); setCustomInput(String(amt)); }}
                   disabled={isLoading}
-                  className={`min-h-[32px] py-1.5 border font-mono text-[10px] tracking-wider transition-all ${
+                  className={`min-h-[44px] sm:min-h-[32px] py-1.5 border font-mono text-[10px] tracking-wider transition-all ${
                     betAmount === amt
                       ? 'border-[#D4A843] bg-[#D4A843]/10 text-[#D4A843] shadow-[0_0_10px_rgba(201,168,76,0.2)]'
                       : 'border-neutral-800 text-neutral-500 hover:border-neutral-600'

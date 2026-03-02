@@ -216,7 +216,7 @@ function ArenaContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] py-4 px-3 sm:py-8 sm:px-6 relative">
+    <div className="min-h-screen bg-[#0a0a12] py-4 px-4 sm:py-8 sm:px-6 relative">
       <CosmicBackground showParticles={true} showRunes={true} particleCount={25} />
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Title */}
