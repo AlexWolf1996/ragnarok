@@ -22,10 +22,10 @@ export default function ParimutuelExplainer({ poolA, poolB, agentAName, agentBNa
   const payoutB = poolB > 0 ? prizePool / poolB : 0;
 
   return (
-    <div className="border border-[#1a1a1a]">
+    <div className="border border-neutral-800">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-3 py-2 hover:bg-[#1a1a1a]/50 transition-colors"
+        className="w-full flex items-center justify-between px-3 py-2 hover:bg-white/5 transition-colors"
       >
         <span className="font-mono text-[10px] text-neutral-500 tracking-widest uppercase">
           How do odds work?
@@ -48,7 +48,7 @@ export default function ParimutuelExplainer({ poolA, poolB, agentAName, agentBNa
               <span className="text-[#c0392b]">Pool {agentBName ?? 'B'}</span>
               <span className="text-neutral-300">{poolB.toFixed(4)} SOL</span>
             </div>
-            <div className="border-t border-[#1a1a1a] my-1" />
+            <div className="border-t border-neutral-800 my-1" />
             <div className="flex justify-between font-mono text-[10px]">
               <span className="text-neutral-500">Total Pool</span>
               <span className="text-neutral-300">{total.toFixed(4)} SOL</span>

@@ -66,14 +66,14 @@ export default function ActivityDrawer({ open, onClose }: ActivityDrawerProps) {
 
           {/* Drawer panel */}
           <motion.aside
-            className="fixed top-0 right-0 bottom-0 w-80 sm:w-96 bg-[#0a0a0f] border-l border-[#1a1a1a] z-50 flex flex-col overflow-hidden"
+            className="fixed top-0 right-0 bottom-0 w-80 sm:w-96 bg-[#0a0a0f] border-l border-neutral-800 z-50 flex flex-col overflow-hidden"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a1a]">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-800">
               <span className="font-[var(--font-orbitron)] text-xs tracking-[0.15em] text-white">
                 MY ACTIVITY
               </span>
@@ -86,7 +86,7 @@ export default function ActivityDrawer({ open, onClose }: ActivityDrawerProps) {
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-[#1a1a1a]">
+            <div className="flex border-b border-neutral-800">
               <TabButton
                 active={tab === 'bets'}
                 onClick={() => setTab('bets')}
@@ -107,7 +107,7 @@ export default function ActivityDrawer({ open, onClose }: ActivityDrawerProps) {
             </div>
 
             {/* Bottom: Submit Challenge (collapsible) */}
-            <div className="border-t border-[#1a1a1a]">
+            <div className="border-t border-neutral-800">
               <SubmitChallenge />
             </div>
           </motion.aside>
@@ -218,7 +218,7 @@ function MyBetsTab() {
   return (
     <div className="space-y-3">
       {/* Mini stats */}
-      <div className="flex items-center justify-between pb-3 border-b border-[#1a1a1a]">
+      <div className="flex items-center justify-between pb-3 border-b border-neutral-800">
         <div className="flex items-center gap-3 font-mono text-[10px]">
           <span className="text-neutral-500">{bets.length} bets</span>
           <span className="text-emerald-400">{wins}W</span>
@@ -280,7 +280,7 @@ function BetHistoryCard({ bet }: { bet: BetEntry }) {
   const pickedAgentName = bet.picked_agent?.name;
 
   return (
-    <div className="border border-[#1a1a1a] bg-[#0d0d0d] p-3 space-y-2">
+    <div className="border border-neutral-800 bg-black/40 backdrop-blur-sm p-3 space-y-2">
       {/* Match + status */}
       <div className="flex items-center justify-between">
         <div className="font-[var(--font-rajdhani)] text-xs text-white truncate mr-2">

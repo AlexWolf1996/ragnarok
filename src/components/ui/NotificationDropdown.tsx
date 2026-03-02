@@ -58,9 +58,9 @@ export default function NotificationDropdown({
       <div className="fixed inset-0 z-40" onClick={onClose} />
 
       {/* Dropdown */}
-      <div className="absolute right-0 top-full mt-2 w-80 bg-[#111] border border-[#1a1a1a] z-50 shadow-xl shadow-black/50">
+      <div className="absolute right-0 top-full mt-2 w-80 bg-black/40 backdrop-blur-sm border border-neutral-800 z-50 shadow-xl shadow-black/50">
         {/* Header */}
-        <div className="flex items-center justify-between px-3 py-2 border-b border-[#1a1a1a]">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-neutral-800">
           <span className="font-mono text-[10px] text-neutral-400 tracking-widest uppercase">
             Notifications
           </span>
@@ -85,7 +85,7 @@ export default function NotificationDropdown({
               <button
                 key={n.id}
                 onClick={() => onMarkAsRead(n.id)}
-                className={`w-full text-left px-3 py-2 border-l-2 ${getNotificationBorder(n.type)} hover:bg-[#1a1a1a]/50 transition-colors`}
+                className={`w-full text-left px-3 py-2 border-l-2 ${getNotificationBorder(n.type)} hover:bg-white/5 transition-colors`}
               >
                 <div className="flex items-start gap-2">
                   <div className="mt-0.5 flex-shrink-0">{getNotificationIcon(n.type)}</div>

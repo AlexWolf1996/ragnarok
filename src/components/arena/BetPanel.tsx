@@ -139,7 +139,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
         </div>
 
         {/* Status-specific message */}
-        <div className="pt-2 border-t border-[#1a1a1a]">
+        <div className="pt-2 border-t border-neutral-800">
           {betStatus === 'won' && (
             <div className="text-center space-y-1">
               <div className="font-[var(--font-rajdhani)] text-sm tracking-widest uppercase text-emerald-400">
@@ -340,7 +340,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
                 }}
                 disabled={isLoading}
                 className={`w-full bg-black border py-2.5 px-3 pr-12 font-mono text-sm text-white outline-none transition-colors ${
-                  !isValidBet ? 'border-red-500/50' : 'border-[#1a1a1a] focus:border-[#D4A843]'
+                  !isValidBet ? 'border-red-500/50' : 'border-neutral-800 focus:border-[#D4A843]'
                 } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] text-neutral-500">
@@ -361,7 +361,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
                   className={`min-h-[32px] py-1.5 border font-mono text-[10px] tracking-wider transition-all ${
                     betAmount === amt
                       ? 'border-[#D4A843] bg-[#D4A843]/10 text-[#D4A843] shadow-[0_0_10px_rgba(201,168,76,0.2)]'
-                      : 'border-[#1a1a1a] text-neutral-500 hover:border-neutral-600'
+                      : 'border-neutral-800 text-neutral-500 hover:border-neutral-600'
                   } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {amt}
@@ -481,7 +481,7 @@ function getStatusMessage(status: string | null) {
       return {
         title: 'Predictions',
         message: 'No active match. The scheduler will summon the next battle.',
-        borderClass: 'border-[#1a1a1a]',
+        borderClass: 'border-neutral-800',
         iconClass: 'text-neutral-600',
         titleClass: 'text-neutral-500',
       };

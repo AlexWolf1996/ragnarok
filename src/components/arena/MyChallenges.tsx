@@ -53,7 +53,7 @@ export default function MyChallenges() {
         const cfg = STATUS_CONFIG[c.status];
         const Icon = cfg.icon;
         return (
-          <div key={c.id} className="border border-[#1a1a1a] bg-[#0d0d0d] p-3 space-y-2">
+          <div key={c.id} className="border border-neutral-800 bg-black/40 backdrop-blur-sm p-3 space-y-2">
             {/* Top row: category + status */}
             <div className="flex items-center justify-between">
               <span className="font-mono text-[10px] tracking-widest uppercase text-[#c9a84c]">

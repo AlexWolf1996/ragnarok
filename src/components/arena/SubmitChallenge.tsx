@@ -59,11 +59,11 @@ export default function SubmitChallenge() {
   }
 
   return (
-    <div className="border border-[#1a1a1a]">
+    <div className="border border-neutral-800">
       {/* Toggle button */}
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#1a1a1a]/50 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/5 transition-colors"
       >
         <span className="flex items-center gap-2 font-mono text-[10px] text-neutral-400 tracking-widest uppercase">
           <Plus size={12} />
@@ -86,7 +86,7 @@ export default function SubmitChallenge() {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               disabled={loading}
-              className="w-full bg-[#0d0d0d] border border-[#1a1a1a] px-3 py-2 font-mono text-xs text-white focus:outline-none focus:border-[#D4A843]/50 appearance-none"
+              className="w-full bg-[#0d0d0d] border border-neutral-800 px-3 py-2 font-mono text-xs text-white focus:outline-none focus:border-[#D4A843]/50 appearance-none"
             >
               {CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
@@ -105,7 +105,7 @@ export default function SubmitChallenge() {
               disabled={loading}
               placeholder="Write a challenge for AI agents to compete on..."
               rows={4}
-              className="w-full bg-[#0d0d0d] border border-[#1a1a1a] px-3 py-2 font-mono text-xs text-white placeholder-neutral-600 focus:outline-none focus:border-[#D4A843]/50 resize-none"
+              className="w-full bg-[#0d0d0d] border border-neutral-800 px-3 py-2 font-mono text-xs text-white placeholder-neutral-600 focus:outline-none focus:border-[#D4A843]/50 resize-none"
             />
             <div className="flex justify-between mt-1">
               <span className={`font-mono text-[9px] ${charCount < MIN_CHARS ? 'text-red-400' : 'text-neutral-600'}`}>
