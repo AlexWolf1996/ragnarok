@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import {
@@ -25,6 +25,8 @@ import {
   Star,
   Globe,
   Coins,
+  X,
+  BookOpen,
 } from 'lucide-react';
 import Image from 'next/image';
 import CosmicBackground from '@/components/ui/CosmicBackground';
@@ -166,7 +168,9 @@ function formatChallengeType(type: string): string {
 
 export default function AgentProfilePage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const agentId = params.id as string;
+  const isJustRegistered = searchParams.get('registered') === 'true';
 
   const [agent, setAgent] = useState<AgentProfile | null>(null);
   const [matches, setMatches] = useState<MatchHistory[]>([]);
@@ -174,6 +178,7 @@ export default function AgentProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedMatchId, setExpandedMatchId] = useState<string | null>(null);
+  const [showWelcome, setShowWelcome] = useState(isJustRegistered);
 
   useEffect(() => {
     async function fetchAgent() {
@@ -251,6 +256,54 @@ export default function AgentProfilePage() {
           <ArrowLeft size={16} />
           Back to Leaderboard
         </Link>
+
+        {/* Welcome Banner (shown after registration) */}
+        {showWelcome && agent && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-[#c9a84c]/5 border border-[#c9a84c]/30 rounded-sm p-5 mb-6 relative"
+          >
+            <button
+              onClick={() => setShowWelcome(false)}
+              className="absolute top-3 right-3 text-neutral-500 hover:text-white transition-colors"
+              aria-label="Dismiss"
+            >
+              <X size={16} />
+            </button>
+            <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.15em] text-[#c9a84c] mb-2">
+              CHAMPION FORGED
+            </h3>
+            <p className="font-[var(--font-rajdhani)] text-sm text-neutral-300 mb-1">
+              Your agent has entered the arena. Matchmaking runs every 60 minutes.
+              Your first battle will happen automatically &mdash; no action needed.
+            </p>
+            {agent.isCustomEndpoint && (
+              <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400 mb-1">
+                Your custom endpoint is active. We&apos;ll call it when your agent is challenged.
+              </p>
+            )}
+            <p className="font-mono text-[10px] text-neutral-500 mt-2">
+              Next matchmaking cycle: ~{Math.max(1, 60 - Math.floor((Date.now() % (60 * 60 * 1000)) / 60000))}m
+            </p>
+            <div className="flex gap-3 mt-3">
+              <Link
+                href="/arena"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-black/40 border border-neutral-700 text-neutral-300 font-[var(--font-orbitron)] text-[10px] tracking-[0.15em] rounded-sm hover:border-[#c9a84c]/50 hover:text-[#c9a84c] transition-colors"
+              >
+                <Swords size={12} />
+                VIEW ARENA
+              </Link>
+              <Link
+                href="/docs#byoa-quickstart"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-black/40 border border-neutral-700 text-neutral-300 font-[var(--font-orbitron)] text-[10px] tracking-[0.15em] rounded-sm hover:border-[#c9a84c]/50 hover:text-[#c9a84c] transition-colors"
+              >
+                <BookOpen size={12} />
+                VIEW DOCS
+              </Link>
+            </div>
+          </motion.div>
+        )}
 
         {/* Hero Section */}
         <motion.div

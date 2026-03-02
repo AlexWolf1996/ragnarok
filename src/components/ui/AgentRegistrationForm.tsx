@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { Bot, Check, Loader2, AlertCircle, Sparkles, Flame, Eye, Swords, ChevronDown, Globe, Zap } from 'lucide-react';
+import Link from 'next/link';
+import { Bot, Check, Loader2, AlertCircle, Sparkles, Flame, Eye, Swords, Globe, Zap } from 'lucide-react';
 import { checkAgentNameExists, getAgentByWallet } from '@/lib/supabase/client';
 
 // Norse-themed avatar icons
@@ -53,10 +54,16 @@ interface FormErrors {
   general?: string;
 }
 
+type AgentMode = 'personality' | 'byoa';
+
 export default function AgentRegistrationForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { publicKey, connected } = useWallet();
 
+  const [mode, setMode] = useState<AgentMode>(
+    searchParams.get('mode') === 'byoa' ? 'byoa' : 'personality'
+  );
   const [formData, setFormData] = useState<FormData>({
     name: '',
     avatar: 'wolf',
@@ -66,8 +73,14 @@ export default function AgentRegistrationForm() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [showEndpoint, setShowEndpoint] = useState(false);
   const [endpointTest, setEndpointTest] = useState<EndpointTestResult>({ status: 'idle' });
+
+  // Sync mode from URL param
+  useEffect(() => {
+    if (searchParams.get('mode') === 'byoa') {
+      setMode('byoa');
+    }
+  }, [searchParams]);
 
   const selectedAvatar = AVATAR_OPTIONS.find(a => a.id === formData.avatar)!;
 
@@ -96,14 +109,14 @@ export default function AgentRegistrationForm() {
       }
     }
 
-    // System prompt validation (10-500 chars)
+    // System prompt validation (10-2000 chars)
     const trimmedPrompt = formData.systemPrompt.trim();
-    if (!trimmedPrompt) {
+    if (!trimmedPrompt && mode === 'personality') {
       newErrors.systemPrompt = 'System prompt is required';
-    } else if (trimmedPrompt.length < 10) {
+    } else if (trimmedPrompt && trimmedPrompt.length < 10) {
       newErrors.systemPrompt = 'System prompt must be at least 10 characters';
-    } else if (trimmedPrompt.length > 500) {
-      newErrors.systemPrompt = 'System prompt must be 500 characters or less';
+    } else if (trimmedPrompt.length > 2000) {
+      newErrors.systemPrompt = 'System prompt must be 2000 characters or less';
     }
 
     setErrors(newErrors);
@@ -156,8 +169,8 @@ export default function AgentRegistrationForm() {
         throw new Error(data.error || 'Failed to register agent');
       }
 
-      // Redirect to arena with success
-      router.push('/arena?registered=true');
+      // Redirect to agent profile with success
+      router.push(`/agents/${data.agent.id}?registered=true`);
     } catch (err) {
       setErrors({
         general: err instanceof Error ? err.message : 'Failed to register agent',
@@ -213,9 +226,41 @@ export default function AgentRegistrationForm() {
       >
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c] to-transparent" />
 
-        <h2 className="font-[var(--font-orbitron)] text-lg tracking-[0.15em] text-white mb-6 text-center">
+        <h2 className="font-[var(--font-orbitron)] text-lg tracking-[0.15em] text-white mb-5 text-center">
           FORGE YOUR WARRIOR
         </h2>
+
+        {/* Mode Toggle */}
+        <div className="flex mb-6 border border-neutral-800 rounded-sm overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setMode('personality')}
+            className={`flex-1 py-2.5 font-[var(--font-orbitron)] text-[10px] tracking-[0.15em] transition-colors ${
+              mode === 'personality'
+                ? 'bg-[#c9a84c]/10 text-[#c9a84c] border-r border-neutral-800'
+                : 'bg-black/40 text-neutral-500 hover:text-neutral-400 border-r border-neutral-800'
+            }`}
+          >
+            <span className="flex items-center justify-center gap-1.5">
+              <Sparkles size={12} />
+              PERSONALITY MODE
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('byoa')}
+            className={`flex-1 py-2.5 font-[var(--font-orbitron)] text-[10px] tracking-[0.15em] transition-colors ${
+              mode === 'byoa'
+                ? 'bg-[#c9a84c]/10 text-[#c9a84c]'
+                : 'bg-black/40 text-neutral-500 hover:text-neutral-400'
+            }`}
+          >
+            <span className="flex items-center justify-center gap-1.5">
+              <Globe size={12} />
+              BRING YOUR OWN AGENT
+            </span>
+          </button>
+        </div>
 
         {/* General error */}
         {errors.general && (
@@ -286,13 +331,95 @@ export default function AgentRegistrationForm() {
           </div>
         </div>
 
+        {/* BYOA: Endpoint URL (shown prominently when BYOA tab selected) */}
+        {mode === 'byoa' && (
+          <div className="mb-5">
+            <label className="block text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">
+              ENDPOINT URL <span className="text-red-500">*</span>
+            </label>
+            <p className="font-[var(--font-rajdhani)] text-xs text-neutral-500 mb-3">
+              Your endpoint receives POST{' '}
+              <code className="text-[#D4A843]">{`{ prompt, agent_name }`}</code>, must return{' '}
+              <code className="text-[#D4A843]">{`{ response }`}</code> within 30s. HTTPS only.
+            </p>
+
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Globe
+                  size={14}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500"
+                />
+                <input
+                  type="url"
+                  value={formData.endpointUrl}
+                  onChange={(e) => {
+                    handleChange('endpointUrl', e.target.value);
+                    setEndpointTest({ status: 'idle' });
+                  }}
+                  placeholder="https://your-model-api.com/respond"
+                  className={`w-full pl-9 pr-3 py-2.5 bg-black/60 border rounded-sm focus:outline-none font-mono text-xs text-white placeholder-neutral-600 transition-colors ${
+                    errors.endpointUrl
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-neutral-800 focus:border-[#c9a84c]/50'
+                  }`}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={testEndpoint}
+                disabled={!formData.endpointUrl.trim() || endpointTest.status === 'testing'}
+                className="px-4 py-2.5 bg-black/60 border border-neutral-800 rounded-sm font-[var(--font-orbitron)] text-[10px] tracking-wider text-neutral-400 hover:border-[#c9a84c]/50 hover:text-[#D4A843] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {endpointTest.status === 'testing' ? (
+                  <Loader2 size={12} className="animate-spin" />
+                ) : (
+                  <Zap size={12} />
+                )}
+                TEST
+              </button>
+            </div>
+
+            {/* Test result */}
+            {endpointTest.status === 'success' && (
+              <div className="flex items-center gap-2 p-2.5 mt-3 bg-emerald-500/10 border border-emerald-500/30 rounded-sm">
+                <Check size={14} className="text-emerald-400 flex-shrink-0" />
+                <span className="font-[var(--font-rajdhani)] text-xs text-emerald-400">
+                  Endpoint healthy &mdash; {endpointTest.latency_ms}ms latency
+                </span>
+              </div>
+            )}
+            {endpointTest.status === 'error' && (
+              <div className="flex items-center gap-2 p-2.5 mt-3 bg-red-500/10 border border-red-500/30 rounded-sm">
+                <AlertCircle size={14} className="text-red-400 flex-shrink-0" />
+                <span className="font-[var(--font-rajdhani)] text-xs text-red-400">
+                  {endpointTest.error}
+                  {endpointTest.latency_ms ? ` (${endpointTest.latency_ms}ms)` : ''}
+                </span>
+              </div>
+            )}
+            {errors.endpointUrl && (
+              <p className="font-[var(--font-rajdhani)] text-xs text-red-400 mt-1">{errors.endpointUrl}</p>
+            )}
+
+            <Link
+              href="/docs#byoa-quickstart"
+              className="inline-block mt-3 font-mono text-[10px] tracking-[0.15em] text-[#c9a84c]/70 hover:text-[#c9a84c] transition-colors"
+            >
+              Read the quickstart guide &rarr;
+            </Link>
+          </div>
+        )}
+
         {/* System Prompt */}
         <div className="mb-6">
           <label className="block text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">
-            FIGHTING STYLE <span className="text-red-500">*</span>
+            {mode === 'byoa' ? 'FALLBACK PERSONALITY (optional)' : 'FIGHTING STYLE'}{' '}
+            {mode === 'personality' && <span className="text-red-500">*</span>}
           </label>
           <p className="font-[var(--font-rajdhani)] text-xs text-neutral-500 mb-3">
-            Define your warrior&apos;s personality. This shapes how they think and respond in battle.
+            {mode === 'byoa'
+              ? 'Used if your endpoint is unreachable. Leave the default or customize.'
+              : "Define your warrior's personality. This shapes how they think and respond in battle."}
           </p>
           <div className="relative">
             <Sparkles
@@ -303,8 +430,8 @@ export default function AgentRegistrationForm() {
               value={formData.systemPrompt}
               onChange={(e) => handleChange('systemPrompt', e.target.value)}
               placeholder="Define your agent's personality and battle strategy..."
-              rows={5}
-              maxLength={500}
+              rows={mode === 'byoa' ? 3 : 5}
+              maxLength={2000}
               className={`w-full pl-10 pr-4 py-3 bg-black/60 border rounded-sm focus:outline-none font-[var(--font-rajdhani)] text-sm text-white placeholder-neutral-600 transition-colors resize-none ${
                 errors.systemPrompt
                   ? 'border-red-500 focus:border-red-500'
@@ -319,133 +446,39 @@ export default function AgentRegistrationForm() {
               <span />
             )}
             <span className={`font-mono text-[10px] ${
-              formData.systemPrompt.length > 500 ? 'text-red-400' : 'text-neutral-600'
+              formData.systemPrompt.length > 2000 ? 'text-red-400' : 'text-neutral-600'
             }`}>
-              {formData.systemPrompt.length}/500
+              {formData.systemPrompt.length}/2000
             </span>
           </div>
 
-          {/* Example prompts */}
-          <div className="mt-3">
-            <p className="font-[var(--font-orbitron)] text-[10px] text-neutral-600 tracking-wider mb-2">
-              TRY AN ARCHETYPE:
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {['Logician', 'Poet', 'Strategist', 'Sage'].map((type, i) => (
+          {/* Example prompts (only in personality mode) */}
+          {mode === 'personality' && (
+            <div className="mt-3">
+              <p className="font-[var(--font-orbitron)] text-[10px] text-neutral-600 tracking-wider mb-2">
+                TRY AN ARCHETYPE:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {['Logician', 'Poet', 'Strategist', 'Sage'].map((type, i) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => applyExamplePrompt(i)}
+                    className="px-3 py-1 bg-black/40 border border-neutral-800 rounded-full font-[var(--font-rajdhani)] text-xs text-neutral-400 hover:text-[#D4A843] hover:border-[#c9a84c]/50 transition-colors"
+                  >
+                    {type}
+                  </button>
+                ))}
                 <button
-                  key={type}
                   type="button"
-                  onClick={() => applyExamplePrompt(i)}
+                  onClick={() => handleChange('systemPrompt', DEFAULT_SYSTEM_PROMPT)}
                   className="px-3 py-1 bg-black/40 border border-neutral-800 rounded-full font-[var(--font-rajdhani)] text-xs text-neutral-400 hover:text-[#D4A843] hover:border-[#c9a84c]/50 transition-colors"
                 >
-                  {type}
+                  Default
                 </button>
-              ))}
-              <button
-                type="button"
-                onClick={() => handleChange('systemPrompt', DEFAULT_SYSTEM_PROMPT)}
-                className="px-3 py-1 bg-black/40 border border-neutral-800 rounded-full font-[var(--font-rajdhani)] text-xs text-neutral-400 hover:text-[#D4A843] hover:border-[#c9a84c]/50 transition-colors"
-              >
-                Default
-              </button>
+              </div>
             </div>
-          </div>
-        </div>
-
-        {/* Custom API Endpoint (Advanced) */}
-        <div className="mb-6">
-          <button
-            type="button"
-            onClick={() => setShowEndpoint(!showEndpoint)}
-            className="w-full flex items-center justify-between py-2 px-3 bg-black/40 border border-neutral-800 rounded-sm font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-neutral-500 hover:border-[#c9a84c]/30 hover:text-neutral-400 transition-colors"
-          >
-            <span className="flex items-center gap-2">
-              <Globe size={12} />
-              CUSTOM API ENDPOINT (ADVANCED)
-            </span>
-            <ChevronDown
-              size={14}
-              className={`transition-transform ${showEndpoint ? 'rotate-180' : ''}`}
-            />
-          </button>
-
-          <AnimatePresence>
-            {showEndpoint && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="overflow-hidden"
-              >
-                <div className="pt-3 space-y-3">
-                  <p className="font-[var(--font-rajdhani)] text-xs text-neutral-500">
-                    Point your agent to a custom model endpoint. It receives POST{' '}
-                    <code className="text-[#D4A843]">{`{ prompt, agent_name }`}</code>, must return{' '}
-                    <code className="text-[#D4A843]">{`{ response }`}</code> within 30s. HTTPS only.
-                  </p>
-
-                  <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <Globe
-                        size={14}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500"
-                      />
-                      <input
-                        type="url"
-                        value={formData.endpointUrl}
-                        onChange={(e) => {
-                          handleChange('endpointUrl', e.target.value);
-                          setEndpointTest({ status: 'idle' });
-                        }}
-                        placeholder="https://your-model-api.com/respond"
-                        className={`w-full pl-9 pr-3 py-2.5 bg-black/60 border rounded-sm focus:outline-none font-mono text-xs text-white placeholder-neutral-600 transition-colors ${
-                          errors.endpointUrl
-                            ? 'border-red-500 focus:border-red-500'
-                            : 'border-neutral-800 focus:border-[#c9a84c]/50'
-                        }`}
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={testEndpoint}
-                      disabled={!formData.endpointUrl.trim() || endpointTest.status === 'testing'}
-                      className="px-4 py-2.5 bg-black/60 border border-neutral-800 rounded-sm font-[var(--font-orbitron)] text-[10px] tracking-wider text-neutral-400 hover:border-[#c9a84c]/50 hover:text-[#D4A843] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                      {endpointTest.status === 'testing' ? (
-                        <Loader2 size={12} className="animate-spin" />
-                      ) : (
-                        <Zap size={12} />
-                      )}
-                      TEST
-                    </button>
-                  </div>
-
-                  {/* Test result */}
-                  {endpointTest.status === 'success' && (
-                    <div className="flex items-center gap-2 p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-sm">
-                      <Check size={14} className="text-emerald-400 flex-shrink-0" />
-                      <span className="font-[var(--font-rajdhani)] text-xs text-emerald-400">
-                        Endpoint healthy &mdash; {endpointTest.latency_ms}ms latency
-                      </span>
-                    </div>
-                  )}
-                  {endpointTest.status === 'error' && (
-                    <div className="flex items-center gap-2 p-2.5 bg-red-500/10 border border-red-500/30 rounded-sm">
-                      <AlertCircle size={14} className="text-red-400 flex-shrink-0" />
-                      <span className="font-[var(--font-rajdhani)] text-xs text-red-400">
-                        {endpointTest.error}
-                        {endpointTest.latency_ms ? ` (${endpointTest.latency_ms}ms)` : ''}
-                      </span>
-                    </div>
-                  )}
-                  {errors.endpointUrl && (
-                    <p className="font-[var(--font-rajdhani)] text-xs text-red-400">{errors.endpointUrl}</p>
-                  )}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          )}
         </div>
 
         {/* Preview toggle (mobile) */}

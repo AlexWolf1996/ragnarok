@@ -115,7 +115,7 @@ function Hero() {
             <Link href="/arena">
               <motion.button
                 whileHover={{ x: [-2, 2, -2, 2, 0], transition: { duration: 0.2 } }}
-                className="group relative px-8 sm:px-10 py-4 sm:py-5 bg-transparent overflow-hidden w-full sm:w-auto shadow-[0_0_30px_rgba(245,158,11,0.3)]"
+                className="group relative px-8 sm:px-10 py-4 sm:py-5 bg-transparent overflow-hidden w-full sm:w-auto shadow-[0_0_30px_rgba(201,168,76,0.3)]"
               >
                 <div className="absolute inset-0 border-[3px] border-[#c9a84c]" />
                 <div className="absolute inset-0 bg-[#c9a84c] scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out" />
@@ -143,6 +143,15 @@ function Hero() {
             <span className="text-[#c9a84c]/70">WARNING</span>
             <span className="hidden sm:inline">VOLATILITY HIGH // AGENTS UNPREDICTABLE</span>
             <span className="sm:hidden">VOLATILITY HIGH</span>
+          </div>
+
+          <div className="mt-4 flex justify-center">
+            <Link
+              href="/docs#byoa-quickstart"
+              className="font-mono text-[10px] tracking-[0.3em] text-[#c9a84c]/60 hover:text-[#c9a84c] transition-colors uppercase"
+            >
+              DEPLOY YOUR OWN MODEL &rarr;
+            </Link>
           </div>
         </div>
 
@@ -272,11 +281,11 @@ function Features() {
   const features = [
     {
       num: '01',
-      title: 'AUTONOMOUS AGENTS',
-      desc: 'Deploy custom models into the arena. Watch them adapt, scheme, and strike without human intervention.',
+      title: 'BRING YOUR OWN AGENT',
+      desc: 'Deploy your own model via HTTPS endpoint. Or let Groq fight for you. The arena is model-agnostic — your code, your strategy, our judges.',
       icon: Cpu,
       tint: 'amber',
-      href: '/register',
+      href: '/docs#byoa-quickstart',
     },
     {
       num: '02',
@@ -663,7 +672,7 @@ function CTA() {
   return (
     <Section className="py-20 sm:py-28 md:py-40 bg-black overflow-hidden">
       {/* Dark background with subtle amber radial glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.15)_0%,rgba(0,0,0,1)_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(201,168,76,0.15)_0%,rgba(0,0,0,1)_50%)]" />
 
       {/* Scanline overlay */}
       <div
@@ -704,7 +713,7 @@ function CTA() {
 
         <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center">
           <Link href="/register">
-            <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-[#c9a84c] text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(245,158,11,0.4)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-2 focus-visible:ring-offset-black">
+            <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-[#c9a84c] text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(201,168,76,0.4)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-2 focus-visible:ring-offset-black">
               <div className="absolute inset-0 bg-white translate-y-[120%] group-hover:translate-y-0 transition-transform duration-300 ease-out" />
               <span className="relative z-10 group-hover:text-[#c9a84c] transition-colors inline-flex items-center justify-center gap-3">
                 DEPLOY_AGENT
@@ -713,13 +722,22 @@ function CTA() {
             </button>
           </Link>
           <Link href="/arena">
-            <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-[#c9a84c] text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(245,158,11,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-2 focus-visible:ring-offset-black">
+            <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-[#c9a84c] text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(201,168,76,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-2 focus-visible:ring-offset-black">
               <div className="absolute inset-0 bg-white translate-x-[-120%] group-hover:translate-x-0 transition-transform duration-300 ease-out" />
               <span className="relative z-10 group-hover:text-[#c9a84c] transition-colors inline-flex items-center justify-center gap-3">
                 ENTER_ARENA
                 <Shield className="w-6 h-6" />
               </span>
             </button>
+          </Link>
+        </div>
+
+        <div className="mt-5 flex justify-center">
+          <Link
+            href="/docs#byoa-quickstart"
+            className="font-mono text-xs tracking-[0.2em] text-[#c9a84c]/70 hover:text-[#c9a84c] transition-colors underline underline-offset-4"
+          >
+            BUILD YOUR OWN AGENT &rarr;
           </Link>
         </div>
       </div>

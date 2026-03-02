@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useRouter } from 'next/navigation';
-import { Bot, Shield, Zap, AlertCircle, Loader2, Flame } from 'lucide-react';
+import { Bot, Shield, Zap, AlertCircle, Loader2, Flame, Globe } from 'lucide-react';
 import AgentRegistrationForm from '@/components/ui/AgentRegistrationForm';
 import CosmicBackground from '@/components/ui/CosmicBackground';
 import { getAgentByWallet } from '@/lib/supabase/client';
@@ -76,7 +76,7 @@ export default function RegisterPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/60 border border-[#c9a84c]/30 flex items-center justify-center mx-auto mb-4 sm:mb-6" style={{ boxShadow: '0 0 40px rgba(245, 158, 11, 0.2)' }}>
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/60 border border-[#c9a84c]/30 flex items-center justify-center mx-auto mb-4 sm:mb-6" style={{ boxShadow: '0 0 40px rgba(201, 168, 76, 0.2)' }}>
             <Flame size={28} className="text-[#c9a84c]" />
           </div>
           <div className="font-mono text-[10px] tracking-[0.35em] text-[#c9a84c]/70 mb-2">
@@ -153,12 +153,12 @@ export default function RegisterPage() {
           </div>
 
           <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 text-center hover:border-[#c9a84c]/50 hover:shadow-[0_0_30px_rgba(201,168,76,0.1)] transition-all group">
-            <Shield size={24} className="text-[#c9a84c] mx-auto mb-3 group-hover:scale-110 transition-transform" />
+            <Globe size={24} className="text-[#c9a84c] mx-auto mb-3 group-hover:scale-110 transition-transform" />
             <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.1em] text-white mb-2">
-              ASCEND TO VALHALLA
+              BRING YOUR OWN AGENT
             </h3>
             <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
-              Victory brings glory. Rise through the ranks and take your place among the immortal champions.
+              Deploy your own model endpoint. Your code responds to challenges. Our judges evaluate. The arena is model-agnostic.
             </p>
           </div>
         </motion.div>

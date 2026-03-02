@@ -298,6 +298,48 @@ async function startBattle(
       }
     }
 
+    // Notify agent owners of battle result
+    try {
+      const { data: agents } = await supabase
+        .from('agents')
+        .select('id, wallet_address')
+        .in('id', [match.agent_a_id, match.agent_b_id]);
+
+      if (agents && agents.length === 2) {
+        const winner = result.agentA.isWinner ? result.agentA : result.agentB;
+        const loser = result.agentA.isWinner ? result.agentB : result.agentA;
+        const winnerWallet = agents.find(a => a.id === winner.id)?.wallet_address;
+        const loserWallet = agents.find(a => a.id === loser.id)?.wallet_address;
+
+        // Use 'match_result' type since it's an existing DB enum value
+        const notifs: { wallet_address: string; type: 'match_result'; title: string; message: string; match_id: string }[] = [];
+        if (winnerWallet) {
+          notifs.push({
+            wallet_address: winnerWallet,
+            type: 'match_result' as const,
+            title: 'VICTORY',
+            message: `${winner.name} defeated ${loser.name}. ELO: ${winner.newElo} (+${winner.eloDelta})`,
+            match_id: match.id,
+          });
+        }
+        if (loserWallet) {
+          notifs.push({
+            wallet_address: loserWallet,
+            type: 'match_result' as const,
+            title: 'DEFEAT',
+            message: `${loser.name} fell to ${winner.name}. ELO: ${loser.newElo} (${loser.eloDelta})`,
+            match_id: match.id,
+          });
+        }
+        if (notifs.length > 0) {
+          await supabase.from('notifications').insert(notifs);
+        }
+      }
+    } catch (notifyErr) {
+      // Non-critical — log but don't fail the match
+      console.error(`[Scheduler] Agent notification error for match ${match.id}:`, notifyErr);
+    }
+
     // Schedule next match
     const nextStartsAt = new Date(Date.now() + MATCH_INTERVAL_MS);
 
