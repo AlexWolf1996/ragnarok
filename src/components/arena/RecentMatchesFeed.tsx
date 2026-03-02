@@ -15,7 +15,7 @@ export default function RecentMatchesFeed({ onMatchSelect }: RecentMatchesFeedPr
     return (
       <div className="space-y-2">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="h-14 bg-[#111] border border-[#1a1a1a] animate-pulse" />
+          <div key={i} className="h-14 bg-black/40 backdrop-blur-sm border border-neutral-800 animate-pulse" />
         ))}
       </div>
     );
@@ -23,7 +23,7 @@ export default function RecentMatchesFeed({ onMatchSelect }: RecentMatchesFeedPr
 
   if (matches.length === 0) {
     return (
-      <div className="bg-[#111] border border-[#1a1a1a] p-6 text-center">
+      <div className="bg-black/40 backdrop-blur-sm border border-neutral-800 p-6 text-center">
         <Swords size={24} className="text-neutral-600 mx-auto mb-2" />
         <p className="font-mono text-xs text-neutral-500">No recent battles</p>
       </div>
@@ -54,7 +54,7 @@ function RecentMatchRow({ match, onSelect }: { match: RecentMatch; onSelect?: (m
     <button
       type="button"
       onClick={() => onSelect?.(match.id)}
-      className={`flex items-center gap-3 px-3 py-2 bg-[#111] border border-[#1a1a1a] hover:border-[#c9a84c]/40 transition-colors w-full text-left ${onSelect ? 'cursor-pointer' : ''}`}
+      className={`flex items-center gap-3 px-3 py-2 bg-black/40 backdrop-blur-sm border border-neutral-800 hover:border-[#c9a84c]/40 transition-colors w-full text-left ${onSelect ? 'cursor-pointer' : ''}`}
     >
       {/* Agents */}
       <div className="flex-1 min-w-0">

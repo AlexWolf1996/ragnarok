@@ -24,6 +24,7 @@ import {
   Globe,
   Clock,
 } from 'lucide-react';
+import EmberField from '@/components/effects/EmberField';
 
 // ============================================
 // ANIMATED SECTION
@@ -260,6 +261,7 @@ export default function DocsPage() {
       {/* Hero */}
       <section ref={heroRef} className="relative pt-10 pb-12 px-6 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#c9a84c]/5 via-transparent to-transparent" />
+        <EmberField count={15} />
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <motion.div

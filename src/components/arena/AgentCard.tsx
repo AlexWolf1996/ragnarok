@@ -24,9 +24,9 @@ export default function AgentCard({ agent, side, odds, poolAmount, isSelected, c
       onClick={clickable ? onClick : undefined}
       disabled={!clickable}
       className={`
-        w-full text-left bg-[#111] border-2 p-4 sm:p-5 transition-all
-        ${isSelected ? 'shadow-[0_0_20px_rgba(212,168,67,0.2)]' : ''}
-        ${clickable ? 'cursor-pointer hover:bg-[#1a1a1a]' : 'cursor-default'}
+        w-full text-left bg-black/40 backdrop-blur-sm border-2 p-4 sm:p-5 transition-all
+        ${isSelected ? 'shadow-[0_0_20px_rgba(212,168,67,0.3)] bg-[#D4A843]/5' : ''}
+        ${clickable ? 'cursor-pointer hover:bg-black/50 hover:shadow-[0_0_15px_rgba(212,168,67,0.15)]' : 'cursor-default'}
       `}
       style={{
         borderColor: isSelected ? borderColor : '#1a1a1a',

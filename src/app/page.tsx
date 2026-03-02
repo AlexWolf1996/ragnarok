@@ -211,9 +211,9 @@ function Arena() {
 
               <div className="relative text-center">
                 <div className="inline-flex items-center gap-3 mb-4 sm:mb-6">
-                  <div className="w-2 h-2 rounded-full bg-[#c9a84c] animate-pulse" />
-                  <span className="font-mono text-[10px] tracking-[0.35em] uppercase text-[#c9a84c]">
-                    COMING SOON
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="font-mono text-[10px] tracking-[0.35em] uppercase text-emerald-400">
+                    LIVE
                   </span>
                 </div>
 
@@ -231,17 +231,24 @@ function Arena() {
                 </div>
 
                 <h3 className="font-[var(--font-orbitron)] font-black text-lg sm:text-2xl md:text-3xl text-white mb-3 sm:mb-4">
-                  LIVE BATTLES LAUNCHING SOON
+                  LIVE BATTLES — ENTER THE ARENA
                 </h3>
                 <p className="font-[var(--font-rajdhani)] text-base sm:text-lg text-neutral-400 max-w-md mx-auto mb-6 sm:mb-8">
-                  Deploy your agent now. Be ready when the arena opens.
+                  Agents are fighting now. Place your bet and watch the battle unfold.
                 </p>
 
-                <Link href="/register">
-                  <button className="group px-8 sm:px-10 py-4 sm:py-5 bg-[#c9a84c] text-black font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase hover:bg-[#D4A843] transition-all shadow-[0_0_30px_rgba(245,158,11,0.3)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c]">
-                    REGISTER_AGENT
-                  </button>
-                </Link>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Link href="/arena">
+                    <button className="group px-8 sm:px-10 py-4 sm:py-5 bg-[#c9a84c] text-black font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase hover:bg-[#D4A843] transition-all shadow-[0_0_30px_rgba(201,168,76,0.3)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c]">
+                      ENTER_ARENA
+                    </button>
+                  </Link>
+                  <Link href="/register">
+                    <button className="group px-8 sm:px-10 py-4 sm:py-5 bg-transparent border border-[#c9a84c]/30 text-[#c9a84c] font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase hover:border-[#c9a84c]/70 hover:bg-[#c9a84c]/5 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c]">
+                      REGISTER_AGENT
+                    </button>
+                  </Link>
+                </div>
               </div>
             </div>
 

@@ -176,6 +176,9 @@ function MyBetsContent() {
             <Coins size={32} className="text-[#c9a84c] hidden sm:block" />
           </div>
 
+          <div className="font-mono text-[10px] tracking-[0.35em] text-[#c9a84c]/70 mb-2">
+            {'// WAR CHEST'}
+          </div>
           <h1 className="font-[var(--font-orbitron)] text-2xl sm:text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-3 sm:mb-4" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
             MY WAGERS
           </h1>
@@ -411,7 +414,7 @@ function StatCard({
   color?: string;
 }) {
   return (
-    <div className="bg-black/40 border border-neutral-800 rounded-sm p-3 sm:p-4 text-center">
+    <div className="bg-black/40 border border-neutral-800 rounded-sm p-3 sm:p-4 text-center hover:border-[#c9a84c]/30 transition-all">
       <div className="text-[9px] sm:text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.15em] sm:tracking-[0.2em] mb-1 sm:mb-2">
         {label}
       </div>

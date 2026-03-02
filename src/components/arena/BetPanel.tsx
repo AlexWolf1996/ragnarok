@@ -104,7 +104,8 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   // ──────────────────────────────────────────────
   if (hasBet && !showBetForm) {
     return (
-      <div className="bg-[#111] border border-emerald-500/30 p-6 space-y-4">
+      <div className="bg-black/40 backdrop-blur-sm border border-emerald-500/30 p-6 space-y-4 relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
         {/* Header */}
         <div className="flex items-center gap-2">
           <TrendingUp size={14} className="text-emerald-400" />
@@ -203,7 +204,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   if (!isBettingOpen) {
     const statusMessage = getStatusMessage(match?.status ?? null);
     return (
-      <div className={`bg-[#111] border p-6 ${statusMessage.borderClass}`}>
+      <div className={`bg-black/40 backdrop-blur-sm border p-6 ${statusMessage.borderClass}`}>
         <div className="flex items-center gap-2 mb-3">
           <Swords size={14} className={statusMessage.iconClass} />
           <span className={`font-[var(--font-rajdhani)] text-xs tracking-widest uppercase ${statusMessage.titleClass}`}>
@@ -222,7 +223,8 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   // ──────────────────────────────────────────────
   if (!wallet.connected) {
     return (
-      <div className="bg-[#111] border border-[#1a1a1a] p-6">
+      <div className="bg-black/40 backdrop-blur-sm border border-neutral-800 p-6 relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c]/50 to-transparent" />
         <div className="flex items-center gap-2 mb-3">
           <Swords size={14} className="text-[#D4A843]" />
           <span className="font-[var(--font-rajdhani)] text-xs tracking-widest uppercase text-[#D4A843]">
@@ -247,7 +249,8 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   // ──────────────────────────────────────────────
   if (betPlaced && !showBetForm) {
     return (
-      <div className="bg-[#111] border border-emerald-500/30 p-6">
+      <div className="bg-black/40 backdrop-blur-sm border border-emerald-500/30 p-6 relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
         <div className="text-center space-y-3">
           <div className="w-10 h-10 border border-emerald-500/50 flex items-center justify-center mx-auto">
             <Check size={20} className="text-emerald-400" />
@@ -276,7 +279,8 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   // RENDER: Betting form
   // ──────────────────────────────────────────────
   return (
-    <div className="bg-[#111] border border-[#D4A843]/30 p-6 space-y-4">
+    <div className="bg-black/40 backdrop-blur-sm border border-[#D4A843]/30 p-6 space-y-4 relative overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c]/50 to-transparent" />
       {/* Header */}
       <div className="flex items-center gap-2">
         <Swords size={14} className="text-[#D4A843]" />
@@ -354,9 +358,9 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
                   key={amt}
                   onClick={() => { setBetAmount(amt); setCustomInput(String(amt)); }}
                   disabled={isLoading}
-                  className={`min-h-[32px] py-1.5 border font-mono text-[10px] tracking-wider transition-colors ${
+                  className={`min-h-[32px] py-1.5 border font-mono text-[10px] tracking-wider transition-all ${
                     betAmount === amt
-                      ? 'border-[#D4A843] bg-[#D4A843]/10 text-[#D4A843]'
+                      ? 'border-[#D4A843] bg-[#D4A843]/10 text-[#D4A843] shadow-[0_0_10px_rgba(201,168,76,0.2)]'
                       : 'border-[#1a1a1a] text-neutral-500 hover:border-neutral-600'
                   } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
@@ -392,7 +396,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
             className={`w-full min-h-[44px] py-3 border font-[var(--font-rajdhani)] text-xs tracking-widest uppercase transition-all ${
               isLoading || !isValidBet
                 ? 'border-neutral-700 bg-neutral-800 text-neutral-500 cursor-not-allowed'
-                : 'border-[#D4A843] bg-gradient-to-r from-[#D4A843]/20 via-[#D4A843]/10 to-[#D4A843]/20 text-[#D4A843] hover:bg-[#D4A843]/30'
+                : 'border-[#D4A843] bg-gradient-to-r from-[#D4A843]/20 via-[#D4A843]/10 to-[#D4A843]/20 text-[#D4A843] hover:bg-[#D4A843]/30 shadow-[0_0_20px_rgba(201,168,76,0.3)]'
             }`}
           >
             {transferring ? (

@@ -79,6 +79,9 @@ export default function RegisterPage() {
           <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/60 border border-[#c9a84c]/30 flex items-center justify-center mx-auto mb-4 sm:mb-6" style={{ boxShadow: '0 0 40px rgba(245, 158, 11, 0.2)' }}>
             <Flame size={28} className="text-[#c9a84c]" />
           </div>
+          <div className="font-mono text-[10px] tracking-[0.35em] text-[#c9a84c]/70 mb-2">
+            {'// AGENT FORGE'}
+          </div>
           <h1 className="font-[var(--font-orbitron)] text-2xl sm:text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-3 sm:mb-4" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
             FORGE YOUR CHAMPION
           </h1>
@@ -129,7 +132,7 @@ export default function RegisterPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 text-center hover:border-[#c9a84c]/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all group">
+          <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 text-center hover:border-[#c9a84c]/50 hover:shadow-[0_0_30px_rgba(201,168,76,0.1)] transition-all group">
             <Bot size={24} className="text-[#c9a84c] mx-auto mb-3 group-hover:scale-110 transition-transform" />
             <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.1em] text-white mb-2">
               YOUR EINHERJAR
@@ -139,7 +142,7 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 text-center hover:border-[#c9a84c]/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all group">
+          <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 text-center hover:border-[#c9a84c]/50 hover:shadow-[0_0_30px_rgba(201,168,76,0.1)] transition-all group">
             <Zap size={24} className="text-[#c9a84c] mx-auto mb-3 group-hover:scale-110 transition-transform" />
             <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.1em] text-white mb-2">
               TRIAL BY FIRE
@@ -149,7 +152,7 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 text-center hover:border-[#c9a84c]/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all group">
+          <div className="bg-black/40 border border-neutral-800 rounded-sm p-6 text-center hover:border-[#c9a84c]/50 hover:shadow-[0_0_30px_rgba(201,168,76,0.1)] transition-all group">
             <Shield size={24} className="text-[#c9a84c] mx-auto mb-3 group-hover:scale-110 transition-transform" />
             <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.1em] text-white mb-2">
               ASCEND TO VALHALLA

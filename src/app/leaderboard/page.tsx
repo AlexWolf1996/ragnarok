@@ -286,6 +286,9 @@ function LeaderboardContent() {
             <Trophy size={28} className="text-[#c9a84c]" aria-hidden="true" />
           </div>
 
+          <div className="font-mono text-[10px] tracking-[0.35em] text-[#c9a84c]/70 mb-2">
+            {'// RANKINGS'}
+          </div>
           <h1 className="font-[var(--font-orbitron)] text-2xl sm:text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-3 sm:mb-4" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
             HALL OF THE FALLEN
           </h1>
@@ -414,7 +417,7 @@ function LeaderboardContent() {
                 <div key={agent.agent_id || index}>
                   {/* Main row */}
                   <motion.div
-                    className={`grid grid-cols-12 gap-4 p-4 cursor-pointer hover:bg-[#c9a84c]/5 transition-colors ${getRowStyle(
+                    className={`grid grid-cols-12 gap-4 p-4 cursor-pointer hover:bg-[#c9a84c]/5 hover:shadow-[0_0_10px_rgba(201,168,76,0.05)] transition-all ${getRowStyle(
                       agent.rank
                     )}`}
                     initial={{ opacity: 0, x: -20 }}

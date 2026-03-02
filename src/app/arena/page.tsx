@@ -225,8 +225,14 @@ function ArenaContent() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="font-[var(--font-orbitron)] text-2xl sm:text-3xl md:text-4xl tracking-[0.15em] text-white font-bold mb-1" style={{ textShadow: '0 0 40px rgba(220, 38, 38, 0.4)' }}>
-            HALLS OF BATTLE
+          <div className="font-mono text-[10px] tracking-[0.35em] text-[#c9a84c]/70 mb-2">
+            {'// LIVE ARENA'}
+          </div>
+          <h1 className="font-[var(--font-orbitron)] text-3xl sm:text-4xl md:text-5xl tracking-[0.15em] text-white font-black mb-1">
+            HALLS OF{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#c9a84c] via-[#D4A843] to-[#c9a84c]">
+              BATTLE
+            </span>
           </h1>
           <p className="font-[var(--font-rajdhani)] text-sm tracking-[0.15em] text-neutral-500">
             WHERE CHAMPIONS FORGE THEIR LEGEND
@@ -248,7 +254,7 @@ function ArenaContent() {
                 <ModeToggle mode={mode} onModeChange={setMode} />
                 <button
                   onClick={() => setDrawerOpen(true)}
-                  className="flex items-center gap-2 px-3 py-2 border border-[#c9a84c]/30 hover:border-[#c9a84c] bg-[#c9a84c]/5 hover:bg-[#c9a84c]/10 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 border border-[#c9a84c]/30 hover:border-[#c9a84c] bg-[#c9a84c]/5 hover:bg-[#c9a84c]/10 transition-all hover:shadow-[0_0_15px_rgba(201,168,76,0.2)]"
                   title="My Activity"
                 >
                   <ScrollText size={14} className="text-[#c9a84c]" />
@@ -275,7 +281,8 @@ function ArenaContent() {
 
                 {/* Recent battles */}
                 <section>
-                  <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
+                  <div className="font-mono text-[10px] tracking-[0.35em] text-neutral-500 mb-1">{'// BATTLE FEED'}</div>
+                  <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.15em] text-white mb-4 flex items-center gap-2">
                     <Swords size={16} className="text-[#D4A843]/70" />
                     RECENT BATTLES
                   </h2>
@@ -299,7 +306,7 @@ function ArenaContent() {
                 </div>
                 <button
                   onClick={() => setDrawerOpen(true)}
-                  className="flex items-center gap-2 px-3 py-2 border border-[#c9a84c]/30 hover:border-[#c9a84c] bg-[#c9a84c]/5 hover:bg-[#c9a84c]/10 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 border border-[#c9a84c]/30 hover:border-[#c9a84c] bg-[#c9a84c]/5 hover:bg-[#c9a84c]/10 transition-all hover:shadow-[0_0_15px_rgba(201,168,76,0.2)]"
                   title="My Activity"
                 >
                   <ScrollText size={14} className="text-[#c9a84c]" />

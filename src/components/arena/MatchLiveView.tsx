@@ -27,32 +27,32 @@ export default function MatchLiveView({ selectedSide, onSelectSide }: MatchLiveV
     return (
       <div className="space-y-4">
         {/* Skeleton status bar */}
-        <div className="h-8 bg-[#111] border border-[#1a1a1a] animate-pulse" />
+        <div className="h-8 bg-black/40 backdrop-blur-sm border border-neutral-800 animate-pulse" />
         {/* Skeleton agent cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-[#111] border border-[#1a1a1a] p-5 space-y-3 animate-pulse">
-            <div className="h-3 w-20 bg-[#1a1a1a]" />
+          <div className="bg-black/40 backdrop-blur-sm border border-neutral-800 p-5 space-y-3 animate-pulse">
+            <div className="h-3 w-20 bg-neutral-800" />
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-[#1a1a1a]" />
+              <div className="w-12 h-12 bg-neutral-800" />
               <div className="space-y-2 flex-1">
-                <div className="h-4 w-28 bg-[#1a1a1a]" />
-                <div className="h-3 w-16 bg-[#1a1a1a]" />
+                <div className="h-4 w-28 bg-neutral-800" />
+                <div className="h-3 w-16 bg-neutral-800" />
               </div>
             </div>
-            <div className="h-3 w-32 bg-[#1a1a1a]" />
-            <div className="h-8 w-full bg-[#1a1a1a]" />
+            <div className="h-3 w-32 bg-neutral-800" />
+            <div className="h-8 w-full bg-neutral-800" />
           </div>
-          <div className="bg-[#111] border border-[#1a1a1a] p-5 space-y-3 animate-pulse">
-            <div className="h-3 w-20 bg-[#1a1a1a]" />
+          <div className="bg-black/40 backdrop-blur-sm border border-neutral-800 p-5 space-y-3 animate-pulse">
+            <div className="h-3 w-20 bg-neutral-800" />
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-[#1a1a1a]" />
+              <div className="w-12 h-12 bg-neutral-800" />
               <div className="space-y-2 flex-1">
-                <div className="h-4 w-28 bg-[#1a1a1a]" />
-                <div className="h-3 w-16 bg-[#1a1a1a]" />
+                <div className="h-4 w-28 bg-neutral-800" />
+                <div className="h-3 w-16 bg-neutral-800" />
               </div>
             </div>
-            <div className="h-3 w-32 bg-[#1a1a1a]" />
-            <div className="h-8 w-full bg-[#1a1a1a]" />
+            <div className="h-3 w-32 bg-neutral-800" />
+            <div className="h-8 w-full bg-neutral-800" />
           </div>
         </div>
         {/* Skeleton odds bar */}
@@ -64,7 +64,7 @@ export default function MatchLiveView({ selectedSide, onSelectSide }: MatchLiveV
 
   if (error) {
     return (
-      <div className="bg-[#111] border border-[#1a1a1a] p-8 text-center">
+      <div className="bg-black/40 backdrop-blur-sm border border-neutral-800 p-8 text-center">
         <p className="font-mono text-xs text-red-400 mb-3">Failed to load match</p>
         <button
           onClick={refresh}
@@ -168,8 +168,9 @@ function NoMatchView() {
   const next = matches[0];
 
   return (
-    <div className="bg-[#111] border border-[#1a1a1a] p-8 sm:p-12 text-center">
-      <Swords size={32} className="text-neutral-600 mx-auto mb-4" />
+    <div className="bg-black/40 backdrop-blur-sm border border-neutral-800 p-8 sm:p-12 text-center relative overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c]/50 to-transparent" />
+      <Swords size={32} className="text-[#c9a84c]/30 mx-auto mb-4" />
       <div className="font-[var(--font-rajdhani)] text-lg text-white tracking-widest uppercase mb-2">
         The Arena Awaits
       </div>
@@ -194,7 +195,7 @@ function NoMatchView() {
 
 function InProgressView({ agentAName, agentBName, startedAt }: { agentAName?: string; agentBName?: string; startedAt?: string | null }) {
   return (
-    <div className="bg-[#111] border border-red-500/20 p-6">
+    <div className="bg-black/40 backdrop-blur-sm border border-red-500/20 p-6 shadow-[0_0_30px_rgba(220,38,38,0.1)]">
       <div className="text-center mb-4 space-y-1">
         <span className="font-mono text-[10px] text-red-400 tracking-widest uppercase block">
           Battle in Progress
@@ -230,7 +231,7 @@ function InProgressView({ agentAName, agentBName, startedAt }: { agentAName?: st
 
 function JudgingView() {
   return (
-    <div className="bg-[#111] border border-[#D4A843]/20 p-6 text-center">
+    <div className="bg-black/40 backdrop-blur-sm border border-[#D4A843]/20 p-6 text-center shadow-[0_0_30px_rgba(201,168,76,0.1)]">
       <div className="font-mono text-[10px] text-[#D4A843] tracking-widest uppercase mb-2">
         Three judges deliberating...
       </div>
