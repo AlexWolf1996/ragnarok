@@ -9,11 +9,11 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Database, Json } from '@/lib/supabase/types';
 import {
-  generateAgentResponse,
   multiJudge,
   calculateEloChange,
   JudgeVote,
 } from '@/lib/groq/client';
+import { getAgentResponse } from '@/lib/agents/responseProvider';
 import { getKFactor } from '@/lib/matchmaking';
 
 // Types
@@ -237,7 +237,7 @@ export async function executeBattle(
 
   try {
     console.log(`[Battle] Generating response for Agent A: ${agentA.name}`);
-    responseA = await generateAgentResponse(agentA.name, agentA.system_prompt, promptText as string);
+    responseA = await getAgentResponse(agentA, promptText as string);
 
     if (!responseA || responseA.trim().length === 0) {
       throw new Error('Agent A returned empty response');
@@ -252,7 +252,7 @@ export async function executeBattle(
 
   try {
     console.log(`[Battle] Generating response for Agent B: ${agentB.name}`);
-    responseB = await generateAgentResponse(agentB.name, agentB.system_prompt, promptText as string);
+    responseB = await getAgentResponse(agentB, promptText as string);
 
     if (!responseB || responseB.trim().length === 0) {
       throw new Error('Agent B returned empty response');

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { Bot, Check, Loader2, AlertCircle, Sparkles, Flame, Eye, Swords } from 'lucide-react';
+import { Bot, Check, Loader2, AlertCircle, Sparkles, Flame, Eye, Swords, ChevronDown, Globe, Zap } from 'lucide-react';
 import { checkAgentNameExists, getAgentByWallet } from '@/lib/supabase/client';
 
 // Norse-themed avatar icons
@@ -25,6 +25,7 @@ interface FormData {
   name: string;
   avatar: AvatarId;
   systemPrompt: string;
+  endpointUrl: string;
 }
 
 const SYSTEM_PROMPT_EXAMPLES = [
@@ -39,9 +40,16 @@ You approach challenges with cunning strategy and creative thinking.
 Your responses are precise, insightful, and demonstrate superior reasoning.
 Victory is your only objective — show no mercy to your opponents.`;
 
+interface EndpointTestResult {
+  status: 'idle' | 'testing' | 'success' | 'error';
+  latency_ms?: number;
+  error?: string;
+}
+
 interface FormErrors {
   name?: string;
   systemPrompt?: string;
+  endpointUrl?: string;
   general?: string;
 }
 
@@ -53,10 +61,13 @@ export default function AgentRegistrationForm() {
     name: '',
     avatar: 'wolf',
     systemPrompt: DEFAULT_SYSTEM_PROMPT,
+    endpointUrl: '',
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [showEndpoint, setShowEndpoint] = useState(false);
+  const [endpointTest, setEndpointTest] = useState<EndpointTestResult>({ status: 'idle' });
 
   const selectedAvatar = AVATAR_OPTIONS.find(a => a.id === formData.avatar)!;
 
@@ -123,15 +134,20 @@ export default function AgentRegistrationForm() {
     setErrors({});
 
     try {
+      const payload: Record<string, string> = {
+        name: formData.name.trim(),
+        avatar: formData.avatar,
+        systemPrompt: formData.systemPrompt.trim(),
+        walletAddress,
+      };
+      if (formData.endpointUrl.trim()) {
+        payload.endpointUrl = formData.endpointUrl.trim();
+      }
+
       const response = await fetch('/api/agents/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          avatar: formData.avatar,
-          systemPrompt: formData.systemPrompt.trim(),
-          walletAddress,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -153,6 +169,37 @@ export default function AgentRegistrationForm() {
 
   const applyExamplePrompt = (index: number) => {
     handleChange('systemPrompt', SYSTEM_PROMPT_EXAMPLES[index]);
+  };
+
+  const testEndpoint = async () => {
+    const url = formData.endpointUrl.trim();
+    if (!url) return;
+
+    if (!url.startsWith('https://')) {
+      setErrors((prev) => ({ ...prev, endpointUrl: 'URL must use HTTPS' }));
+      return;
+    }
+
+    setEndpointTest({ status: 'testing' });
+    setErrors((prev) => ({ ...prev, endpointUrl: undefined }));
+
+    try {
+      const res = await fetch('/api/agents/verify-endpoint', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ endpoint_url: url }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setEndpointTest({ status: 'success', latency_ms: data.latency_ms });
+      } else {
+        setEndpointTest({ status: 'error', error: data.error, latency_ms: data.latency_ms });
+      }
+    } catch {
+      setEndpointTest({ status: 'error', error: 'Failed to verify endpoint' });
+    }
   };
 
   return (
@@ -226,7 +273,7 @@ export default function AgentRegistrationForm() {
                 onClick={() => handleChange('avatar', avatar.id)}
                 className={`p-3 rounded-sm border transition-all flex flex-col items-center gap-1 ${
                   formData.avatar === avatar.id
-                    ? 'bg-[#c9a84c]/20 border-[#c9a84c] shadow-[0_0_15px_rgba(245,158,11,0.2)]'
+                    ? 'bg-[#c9a84c]/20 border-[#c9a84c] shadow-[0_0_15px_rgba(201,168,76,0.2)]'
                     : 'bg-black/40 border-neutral-800 hover:border-[#c9a84c]/50'
                 }`}
               >
@@ -303,6 +350,102 @@ export default function AgentRegistrationForm() {
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Custom API Endpoint (Advanced) */}
+        <div className="mb-6">
+          <button
+            type="button"
+            onClick={() => setShowEndpoint(!showEndpoint)}
+            className="w-full flex items-center justify-between py-2 px-3 bg-black/40 border border-neutral-800 rounded-sm font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-neutral-500 hover:border-[#c9a84c]/30 hover:text-neutral-400 transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              <Globe size={12} />
+              CUSTOM API ENDPOINT (ADVANCED)
+            </span>
+            <ChevronDown
+              size={14}
+              className={`transition-transform ${showEndpoint ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          <AnimatePresence>
+            {showEndpoint && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="pt-3 space-y-3">
+                  <p className="font-[var(--font-rajdhani)] text-xs text-neutral-500">
+                    Point your agent to a custom model endpoint. It receives POST{' '}
+                    <code className="text-[#D4A843]">{`{ prompt, agent_name }`}</code>, must return{' '}
+                    <code className="text-[#D4A843]">{`{ response }`}</code> within 10s. HTTPS only.
+                  </p>
+
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Globe
+                        size={14}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500"
+                      />
+                      <input
+                        type="url"
+                        value={formData.endpointUrl}
+                        onChange={(e) => {
+                          handleChange('endpointUrl', e.target.value);
+                          setEndpointTest({ status: 'idle' });
+                        }}
+                        placeholder="https://your-model-api.com/respond"
+                        className={`w-full pl-9 pr-3 py-2.5 bg-black/60 border rounded-sm focus:outline-none font-mono text-xs text-white placeholder-neutral-600 transition-colors ${
+                          errors.endpointUrl
+                            ? 'border-red-500 focus:border-red-500'
+                            : 'border-neutral-800 focus:border-[#c9a84c]/50'
+                        }`}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={testEndpoint}
+                      disabled={!formData.endpointUrl.trim() || endpointTest.status === 'testing'}
+                      className="px-4 py-2.5 bg-black/60 border border-neutral-800 rounded-sm font-[var(--font-orbitron)] text-[10px] tracking-wider text-neutral-400 hover:border-[#c9a84c]/50 hover:text-[#D4A843] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {endpointTest.status === 'testing' ? (
+                        <Loader2 size={12} className="animate-spin" />
+                      ) : (
+                        <Zap size={12} />
+                      )}
+                      TEST
+                    </button>
+                  </div>
+
+                  {/* Test result */}
+                  {endpointTest.status === 'success' && (
+                    <div className="flex items-center gap-2 p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-sm">
+                      <Check size={14} className="text-emerald-400 flex-shrink-0" />
+                      <span className="font-[var(--font-rajdhani)] text-xs text-emerald-400">
+                        Endpoint healthy &mdash; {endpointTest.latency_ms}ms latency
+                      </span>
+                    </div>
+                  )}
+                  {endpointTest.status === 'error' && (
+                    <div className="flex items-center gap-2 p-2.5 bg-red-500/10 border border-red-500/30 rounded-sm">
+                      <AlertCircle size={14} className="text-red-400 flex-shrink-0" />
+                      <span className="font-[var(--font-rajdhani)] text-xs text-red-400">
+                        {endpointTest.error}
+                        {endpointTest.latency_ms ? ` (${endpointTest.latency_ms}ms)` : ''}
+                      </span>
+                    </div>
+                  )}
+                  {errors.endpointUrl && (
+                    <p className="font-[var(--font-rajdhani)] text-xs text-red-400">{errors.endpointUrl}</p>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Preview toggle (mobile) */}

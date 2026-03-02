@@ -99,6 +99,71 @@ export function isValidTransactionSignature(signature: string): boolean {
 }
 
 // =============================================================================
+// SSRF Prevention
+// =============================================================================
+
+const PRIVATE_IP_RANGES = [
+  /^127\./,                          // loopback
+  /^10\./,                           // Class A private
+  /^172\.(1[6-9]|2\d|3[01])\./,     // Class B private
+  /^192\.168\./,                     // Class C private
+  /^169\.254\./,                     // link-local
+  /^0\./,                            // "this" network
+  /^100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\./, // shared address space (RFC 6598)
+];
+
+const BLOCKED_HOSTNAMES = [
+  'localhost',
+  'metadata.google.internal',        // GCP metadata
+  'instance-data',                   // AWS metadata alias
+];
+
+/**
+ * Check if a hostname resolves to a private/reserved address or is otherwise
+ * blocked for SSRF prevention. Works on hostname strings (not full URLs).
+ */
+export function isPrivateOrReservedHost(hostname: string): boolean {
+  const lower = hostname.toLowerCase();
+
+  if (BLOCKED_HOSTNAMES.includes(lower)) return true;
+  if (lower.endsWith('.local')) return true;
+  if (lower.endsWith('.internal')) return true;
+
+  // Check raw IP addresses against private ranges
+  if (PRIVATE_IP_RANGES.some((re) => re.test(hostname))) return true;
+
+  // IPv6 loopback
+  if (hostname === '::1' || hostname === '[::1]') return true;
+
+  // IPv4-mapped IPv6 (e.g. ::ffff:127.0.0.1)
+  if (hostname.startsWith('::ffff:') || hostname.startsWith('[::ffff:')) return true;
+
+  // IPv6 private ranges
+  const bare = hostname.replace(/^\[|\]$/g, '').toLowerCase();
+  if (/^f[cd]/.test(bare)) return true;    // Unique Local (fc00::/7)
+  if (/^fe[89ab]/.test(bare)) return true;  // Link-local (fe80::/10)
+
+  return false;
+}
+
+/**
+ * Zod schema for custom agent API endpoints.
+ * Enforces HTTPS and blocks private/reserved hosts.
+ */
+export const agentEndpointUrlSchema = z
+  .string()
+  .url('Invalid URL format')
+  .refine((url) => url.startsWith('https://'), 'URL must use HTTPS protocol')
+  .refine((url) => {
+    try {
+      const { hostname } = new URL(url);
+      return !isPrivateOrReservedHost(hostname);
+    } catch {
+      return false;
+    }
+  }, 'URL must not target private or reserved addresses');
+
+// =============================================================================
 // Agent Registration Validation
 // =============================================================================
 
@@ -114,7 +179,7 @@ export const agentNameSchema = z
 export const agentRegistrationSchema = z.object({
   name: agentNameSchema,
   wallet_address: walletAddressSchema,
-  endpoint_url: httpsUrlSchema,
+  endpoint_url: agentEndpointUrlSchema.optional(),
   avatar_url: httpsUrlSchema.optional(),
   description: z.string().max(500, 'Description too long').optional(),
 });

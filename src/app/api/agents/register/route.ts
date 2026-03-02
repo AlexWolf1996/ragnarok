@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/supabase/types';
+import { agentEndpointUrlSchema, isPrivateOrReservedHost } from '@/lib/validation';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+
+export const runtime = 'nodejs';
+export const maxDuration = 30;
 
 // Create admin client for server-side operations
 function getSupabaseAdmin() {
@@ -32,12 +37,23 @@ interface RegisterRequest {
   avatar: string;
   systemPrompt: string;
   walletAddress: string;
+  endpointUrl?: string;
 }
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 5 registrations per IP per minute
+    const ip = getClientIp(request);
+    const rateCheck = checkRateLimit(`agent-register:${ip}`, 5);
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Try again in a minute.' },
+        { status: 429 },
+      );
+    }
+
     const body: RegisterRequest = await request.json();
-    const { name, avatar, systemPrompt, walletAddress } = body;
+    const { name, avatar, systemPrompt, walletAddress, endpointUrl } = body;
 
     // Validate wallet address
     if (!walletAddress || walletAddress.length < 32) {
@@ -103,6 +119,65 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate optional custom endpoint
+    let validatedEndpoint = 'groq://ragnarok';
+    if (endpointUrl && endpointUrl.trim()) {
+      const urlResult = agentEndpointUrlSchema.safeParse(endpointUrl.trim());
+      if (!urlResult.success) {
+        const msg = urlResult.error.errors[0]?.message || 'Invalid endpoint URL';
+        return NextResponse.json({ error: msg }, { status: 400 });
+      }
+
+      // Double-check SSRF at runtime
+      const parsed = new URL(endpointUrl.trim());
+      if (isPrivateOrReservedHost(parsed.hostname)) {
+        return NextResponse.json(
+          { error: 'Endpoint URL must not target private or reserved addresses' },
+          { status: 400 },
+        );
+      }
+
+      // Health-check the endpoint before accepting
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10_000);
+        const response = await fetch(endpointUrl.trim(), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: 'Health check: respond with a short greeting.',
+            agent_name: '__health_check__',
+          }),
+          signal: controller.signal,
+          credentials: 'omit',
+          redirect: 'error',
+        });
+        clearTimeout(timeout);
+
+        if (!response.ok) {
+          return NextResponse.json(
+            { error: `Custom endpoint returned HTTP ${response.status}. It must return 200 with { response: string }.` },
+            { status: 400 },
+          );
+        }
+
+        const data = await response.json();
+        if (!data.response || typeof data.response !== 'string') {
+          return NextResponse.json(
+            { error: 'Custom endpoint must return JSON with a "response" string field' },
+            { status: 400 },
+          );
+        }
+
+        validatedEndpoint = endpointUrl.trim();
+      } catch (fetchErr) {
+        const msg = fetchErr instanceof DOMException && fetchErr.name === 'AbortError'
+          ? 'Custom endpoint timed out (10s limit)'
+          : 'Failed to reach custom endpoint';
+        return NextResponse.json({ error: msg }, { status: 400 });
+      }
+    }
+
     const supabase = getSupabaseAdmin();
 
     // Check max 3 agents per wallet
@@ -147,7 +222,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the agent
-    // Note: api_endpoint is legacy - battles now use Groq directly
     const { data: agent, error: insertError } = await supabase
       .from('agents')
       .insert({
@@ -155,7 +229,7 @@ export async function POST(request: NextRequest) {
         wallet_address: walletAddress,
         avatar_url: AVATAR_EMOJIS[avatar], // Store emoji as avatar_url
         system_prompt: trimmedPrompt,
-        api_endpoint: 'groq://ragnarok', // Placeholder - battles use Groq API
+        api_endpoint: validatedEndpoint,
         elo_rating: 1000,
         wins: 0,
         losses: 0,
@@ -184,7 +258,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Registration failed' },
+      { error: 'Registration failed' },
       { status: 500 }
     );
   }
