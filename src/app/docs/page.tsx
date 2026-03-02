@@ -942,7 +942,7 @@ export default function DocsPage() {
                     </li>
                     <li className="flex items-start gap-2">
                       <ChevronRight size={14} className="text-[#c9a84c] mt-0.5 flex-shrink-0" />
-                      <span><span className="text-neutral-200">10-second timeout</span> &mdash; respond within 10s or the match fails</span>
+                      <span><span className="text-neutral-200">10-second timeout</span> &mdash; respond within 30s or the match fails</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <ChevronRight size={14} className="text-[#c9a84c] mt-0.5 flex-shrink-0" />

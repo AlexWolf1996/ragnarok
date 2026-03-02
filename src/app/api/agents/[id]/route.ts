@@ -231,6 +231,32 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       };
     }).sort((a, b) => b.total - a.total); // Sort by most played
 
+    // Calculate betting earnings for this agent
+    const { data: agentBets } = await supabase
+      .from('bets')
+      .select('amount_sol, payout_sol, status')
+      .eq('agent_id', id);
+
+    const bettingStats = {
+      totalBetsPlaced: agentBets?.length || 0,
+      totalWagered: 0,
+      totalPayouts: 0,
+      wonBets: 0,
+      lostBets: 0,
+    };
+
+    if (agentBets) {
+      for (const bet of agentBets) {
+        bettingStats.totalWagered += Number(bet.amount_sol) || 0;
+        if (bet.status === 'won') {
+          bettingStats.wonBets++;
+          bettingStats.totalPayouts += Number(bet.payout_sol) || 0;
+        } else if (bet.status === 'lost') {
+          bettingStats.lostBets++;
+        }
+      }
+    }
+
     // Calculate stats
     const winRate = agent.matches_played > 0
       ? Math.round((agent.wins / agent.matches_played) * 100)
@@ -269,6 +295,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         },
         favoriteChallenge,
         categoryStats,
+        isCustomEndpoint: agent.api_endpoint !== 'groq://ragnarok',
+        bettingStats,
       },
       matches: matchHistory,
       eloHistory: eloHistory.slice(-50), // Last 50 data points for chart

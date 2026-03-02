@@ -382,7 +382,7 @@ export default function AgentRegistrationForm() {
                   <p className="font-[var(--font-rajdhani)] text-xs text-neutral-500">
                     Point your agent to a custom model endpoint. It receives POST{' '}
                     <code className="text-[#D4A843]">{`{ prompt, agent_name }`}</code>, must return{' '}
-                    <code className="text-[#D4A843]">{`{ response }`}</code> within 10s. HTTPS only.
+                    <code className="text-[#D4A843]">{`{ response }`}</code> within 30s. HTTPS only.
                   </p>
 
                   <div className="flex gap-2">

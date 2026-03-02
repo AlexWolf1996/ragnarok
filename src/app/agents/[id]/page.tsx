@@ -23,10 +23,20 @@ import {
   Calendar,
   Award,
   Star,
+  Globe,
+  Coins,
 } from 'lucide-react';
 import Image from 'next/image';
 import CosmicBackground from '@/components/ui/CosmicBackground';
 import EloChart from '@/components/ui/EloChart';
+
+interface BettingStats {
+  totalBetsPlaced: number;
+  totalWagered: number;
+  totalPayouts: number;
+  wonBets: number;
+  lostBets: number;
+}
 
 interface AgentProfile {
   id: string;
@@ -59,6 +69,8 @@ interface AgentProfile {
     total: number;
     winRate: number;
   }[];
+  isCustomEndpoint: boolean;
+  bettingStats: BettingStats;
 }
 
 interface MatchHistory {
@@ -277,9 +289,17 @@ export default function AgentProfilePage() {
 
             {/* Info */}
             <div className="flex-1 text-center md:text-left">
-              <h1 className="font-[var(--font-orbitron)] text-2xl md:text-3xl tracking-[0.1em] text-white mb-1">
-                {agent.name}
-              </h1>
+              <div className="flex items-center gap-3 mb-1 justify-center md:justify-start flex-wrap">
+                <h1 className="font-[var(--font-orbitron)] text-2xl md:text-3xl tracking-[0.1em] text-white">
+                  {agent.name}
+                </h1>
+                {agent.isCustomEndpoint && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-cyan-500/10 border border-cyan-500/30 rounded-sm font-[var(--font-orbitron)] text-[9px] tracking-[0.15em] text-cyan-400">
+                    <Globe size={10} />
+                    BYOA
+                  </span>
+                )}
+              </div>
               <p className="font-mono text-xs text-neutral-500 mb-1">
                 {agent.walletAddress.slice(0, 4)}...{agent.walletAddress.slice(-4)}
               </p>
@@ -395,6 +415,49 @@ export default function AgentProfilePage() {
             <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-wider">SPECIALTY</div>
           </div>
         </motion.div>
+
+        {/* Betting Earnings */}
+        {agent.bettingStats && agent.bettingStats.totalBetsPlaced > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12 }}
+            className="bg-black/40 border border-neutral-800 rounded-sm p-6 mb-6"
+          >
+            <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
+              <Coins size={16} className="text-[#c9a84c]/70" />
+              BETTING EARNINGS
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-black/30 rounded-sm p-3 text-center">
+                <div className="font-mono text-lg font-bold text-[#D4A843]">
+                  {agent.bettingStats.totalWagered.toFixed(2)}
+                </div>
+                <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-wider">SOL WAGERED</div>
+              </div>
+              <div className="bg-black/30 rounded-sm p-3 text-center">
+                <div className="font-mono text-lg font-bold text-emerald-400">
+                  {agent.bettingStats.totalPayouts.toFixed(2)}
+                </div>
+                <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-wider">SOL PAID OUT</div>
+              </div>
+              <div className="bg-black/30 rounded-sm p-3 text-center">
+                <div className="font-mono text-lg font-bold text-white">
+                  {agent.bettingStats.totalBetsPlaced}
+                </div>
+                <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-wider">TOTAL BETS</div>
+              </div>
+              <div className="bg-black/30 rounded-sm p-3 text-center">
+                <div className="font-mono text-lg font-bold text-white">
+                  {agent.bettingStats.totalBetsPlaced > 0
+                    ? Math.round((agent.bettingStats.wonBets / agent.bettingStats.totalBetsPlaced) * 100)
+                    : 0}%
+                </div>
+                <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-wider">BACKER WIN RATE</div>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* ELO Chart */}
         <motion.div

@@ -12,7 +12,7 @@
 import { generateAgentResponse } from '@/lib/groq/client';
 import { isPrivateOrReservedHost } from '@/lib/validation';
 
-const CUSTOM_ENDPOINT_TIMEOUT_MS = 10_000;
+const CUSTOM_ENDPOINT_TIMEOUT_MS = 30_000;
 const MAX_RESPONSE_LENGTH = 10_000;
 
 interface AgentRecord {
@@ -103,7 +103,7 @@ async function callCustomEndpoint(
     return sanitized;
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
-      throw new Error('Custom endpoint timed out (10s limit)');
+      throw new Error('Custom endpoint timed out (30s limit)');
     }
     throw error;
   } finally {
