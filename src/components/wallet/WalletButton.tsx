@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
-import { Copy, LogOut, ChevronDown } from 'lucide-react';
+import { Copy, LogOut, ChevronDown, RefreshCw } from 'lucide-react';
 
 export default function WalletButton() {
   const { connected, publicKey, disconnect, select, wallet } = useWallet();
@@ -54,6 +54,13 @@ export default function WalletButton() {
     }
   }, [address]);
 
+  const handleChangeWallet = useCallback(async () => {
+    await disconnect();
+    select(null);
+    setDropdownOpen(false);
+    setVisible(true);
+  }, [disconnect, select, setVisible]);
+
   const handleDisconnect = useCallback(async () => {
     await disconnect();
     select(null);
@@ -100,6 +107,10 @@ export default function WalletButton() {
           <button onClick={handleCopy} className="wallet-dropdown-item" role="menuitem">
             <Copy size={13} />
             <span>{copied ? 'COPIED' : 'COPY ADDRESS'}</span>
+          </button>
+          <button onClick={handleChangeWallet} className="wallet-dropdown-item" role="menuitem">
+            <RefreshCw size={13} />
+            <span>CHANGE WALLET</span>
           </button>
           <button onClick={handleDisconnect} className="wallet-dropdown-item wallet-dropdown-disconnect" role="menuitem">
             <LogOut size={13} />
