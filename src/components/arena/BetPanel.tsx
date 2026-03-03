@@ -36,7 +36,10 @@ function friendlyTransferError(raw: string, betAmount: number): string {
 export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   const wallet = useWallet();
   const { connection } = useConnection();
-  const { setVisible: openWalletModal } = useWalletModal();
+  const { setVisible } = useWalletModal();
+  const openWalletModal = useCallback(() => {
+    setVisible(true);
+  }, [setVisible]);
   const toast = useToast();
   const { placeBet, loading: placingBet, error: betError, success: betPlaced, reset } = usePlaceBet();
   const { poolA, poolB, oddsA, oddsB } = useMatchOdds(
@@ -107,7 +110,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
 
       setTransferring(false);
 
-      toast.info('Recording', 'Verifying and recording your prediction...');
+      toast.info('Recording', 'Verifying and recording your prophecy...');
       await placeBet({
         match_id: match.id,
         agent_id: selectedAgentId,
@@ -116,19 +119,19 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
         wallet_address: wallet.publicKey.toString(),
       });
 
-      toast.success('Prediction Placed', `${betAmount} SOL on ${selectedAgent?.name ?? 'your champion'}`);
+      toast.success('Prophecy Sealed', `${betAmount} SOL on ${selectedAgent?.name ?? 'your champion'}`);
       setShowBetForm(false);
       refreshBets();
       fetchBalance();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to place bet';
-      toast.error('Bet Failed', friendlyTransferError(msg, betAmount));
+      const msg = err instanceof Error ? err.message : 'Failed to place prophecy';
+      toast.error('Prophecy Failed', friendlyTransferError(msg, betAmount));
       setTransferring(false);
     }
   };
 
   // ──────────────────────────────────────────────
-  // RENDER: User has an active bet — show position
+  // RENDER: User has an active prophecy — show position
   // ──────────────────────────────────────────────
   if (hasBet && !showBetForm) {
     return (
@@ -138,7 +141,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
         <div className="flex items-center gap-2">
           <TrendingUp size={14} className="text-emerald-400" />
           <span className="font-[var(--font-rajdhani)] text-xs tracking-widest uppercase text-emerald-400">
-            Your Position
+            Your Prophecy
           </span>
         </div>
 
@@ -194,7 +197,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
                 Battle in Progress
               </div>
               <div className="font-mono text-[11px] text-neutral-600 mt-1">
-                Agents are competing. Your prediction is locked.
+                Agents are competing. Your prophecy is sealed.
               </div>
             </div>
           )}
@@ -217,7 +220,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
                 onClick={() => { reset(); setShowBetForm(true); }}
                 className="font-mono text-xs text-neutral-500 hover:text-[#D4A843] tracking-widest uppercase transition-colors"
               >
-                Place Another Prediction
+                Place Another Prophecy
               </button>
             </div>
           )}
@@ -227,7 +230,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   }
 
   // ──────────────────────────────────────────────
-  // RENDER: Betting not open (and no active bet)
+  // RENDER: Prophecies not open (and no active prophecy)
   // ──────────────────────────────────────────────
   if (!isBettingOpen) {
     const statusMessage = getStatusMessage(match?.status ?? null);
@@ -256,18 +259,18 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
         <div className="flex items-center gap-2 mb-3">
           <Swords size={14} className="text-[#D4A843]" />
           <span className="font-[var(--font-rajdhani)] text-xs tracking-widest uppercase text-[#D4A843]">
-            Place Your Prediction
+            Stake Your Prophecy
           </span>
         </div>
         <p className="font-mono text-xs text-neutral-500 mb-3">
-          Connect your wallet to place predictions on this match.
+          Connect your wallet to stake your prophecy on this match.
         </p>
         <button
-          onClick={() => openWalletModal(true)}
+          onClick={openWalletModal}
           className="w-full min-h-[48px] py-3 border border-[#D4A843]/40 hover:border-[#D4A843] bg-[#D4A843]/5 hover:bg-[#D4A843]/10 text-center font-mono text-xs text-[#D4A843] tracking-widest uppercase transition-colors cursor-pointer flex items-center justify-center gap-2"
         >
           <Wallet size={14} />
-          Connect Wallet to Bet
+          Connect Wallet to Prophesy
         </button>
         <p className="font-mono text-[11px] text-neutral-600 mt-2 text-center">
           You&apos;ll need a Solana wallet like Phantom
@@ -277,7 +280,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   }
 
   // ──────────────────────────────────────────────
-  // RENDER: Bet just placed (ephemeral confirmation before useMyBet picks it up)
+  // RENDER: Prophecy just sealed (ephemeral confirmation before useMyBet picks it up)
   // ──────────────────────────────────────────────
   if (betPlaced && !showBetForm) {
     return (
@@ -288,7 +291,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
             <Check size={20} className="text-emerald-400" />
           </div>
           <div className="font-[var(--font-rajdhani)] text-sm tracking-widest uppercase text-emerald-400">
-            Prediction Placed
+            Prophecy Sealed
           </div>
           <div className="font-mono text-xs text-neutral-400">
             {betAmount} SOL on {selectedAgent?.name ?? 'your champion'}
@@ -300,7 +303,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
             onClick={() => { reset(); setShowBetForm(true); }}
             className="font-mono text-xs text-neutral-500 hover:text-[#D4A843] tracking-widest uppercase transition-colors"
           >
-            Place Another
+            Prophesy Again
           </button>
         </div>
       </div>
@@ -317,7 +320,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
       <div className="flex items-center gap-2">
         <Swords size={14} className="text-[#D4A843]" />
         <span className="font-[var(--font-rajdhani)] text-xs tracking-widest uppercase text-[#D4A843]">
-          Place Your Prediction
+          Stake Your Prophecy
         </span>
       </div>
 
@@ -436,7 +439,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
             agentName={selectedAgent.name}
           />
 
-          {/* Place bet button */}
+          {/* Seal prophecy button */}
           <button
             onClick={handlePlaceBet}
             disabled={isLoading || !isValidBet}
@@ -454,12 +457,12 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
             ) : placingBet ? (
               <span className="flex items-center justify-center gap-2">
                 <Loader2 size={14} className="animate-spin" />
-                Recording Prediction...
+                Sealing Prophecy...
               </span>
             ) : (
               <span className="flex items-center justify-center gap-2">
                 <Swords size={14} />
-                Place Prediction
+                Seal Prophecy
               </span>
             )}
           </button>
@@ -495,7 +498,7 @@ function getStatusMessage(status: string | null) {
     case 'in_progress':
       return {
         title: 'Battle in Progress',
-        message: 'Predictions are locked. Agents are competing now.',
+        message: 'Prophecies are sealed. Agents are competing now.',
         borderClass: 'border-red-500/20',
         iconClass: 'text-red-400',
         titleClass: 'text-red-400',
@@ -503,7 +506,7 @@ function getStatusMessage(status: string | null) {
     case 'judging':
       return {
         title: 'Judges Deliberating',
-        message: 'Predictions locked. Results incoming.',
+        message: 'Prophecies sealed. Results incoming.',
         borderClass: 'border-[#D4A843]/20',
         iconClass: 'text-[#D4A843]',
         titleClass: 'text-[#D4A843]',
@@ -519,15 +522,15 @@ function getStatusMessage(status: string | null) {
     case 'scheduled':
       return {
         title: 'Match Scheduled',
-        message: 'Betting opens shortly. Stand by.',
+        message: 'The Norns await your prophecy. Stand by.',
         borderClass: 'border-[#D4A843]/20',
         iconClass: 'text-[#D4A843]/60',
         titleClass: 'text-[#D4A843]/60',
       };
     default:
       return {
-        title: 'Predictions',
-        message: 'No active match. The scheduler will summon the next battle.',
+        title: 'Prophecies',
+        message: 'No active match. The Norns will summon the next battle.',
         borderClass: 'border-neutral-800',
         iconClass: 'text-neutral-600',
         titleClass: 'text-neutral-500',
