@@ -74,9 +74,13 @@ supabase/.temp
 .env*.local
 
 # Claude Code
+CLAUDE.md
 CLAUDE.local.md
+CLAUDE_MD_APPEND.md
+SPECS.md
 PROGRESS.md
 .claude/
+src/app/api/CLAUDE.md
 
 # Outdated internal docs (contain PII / infra details)
 RAGNAROK_ROADMAP.md
