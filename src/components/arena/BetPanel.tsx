@@ -37,9 +37,6 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   const wallet = useWallet();
   const { connection } = useConnection();
   const { setVisible } = useWalletModal();
-  const openWalletModal = useCallback(() => {
-    setVisible(true);
-  }, [setVisible]);
   const toast = useToast();
   const { placeBet, loading: placingBet, error: betError, success: betPlaced, reset } = usePlaceBet();
   const { poolA, poolB, oddsA, oddsB } = useMatchOdds(
@@ -53,6 +50,51 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   const [transferring, setTransferring] = useState(false);
   const [showBetForm, setShowBetForm] = useState(false);
   const [solBalance, setSolBalance] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile (SSR-safe)
+  useEffect(() => {
+    setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
+  }, []);
+
+  // Smart connect: Phantom direct on mobile, modal on desktop
+  const handleConnect = useCallback(() => {
+    // Case 1: Phantom provider already injected (in-app browser or desktop extension)
+    const phantomProvider =
+      typeof window !== 'undefined' &&
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).phantom?.solana;
+
+    if (phantomProvider?.isPhantom) {
+      const phantom = wallet.wallets.find(
+        (w) => w.adapter.name === 'Phantom'
+      );
+      if (phantom) {
+        wallet.select(phantom.adapter.name);
+        // autoConnect will fire, or we trigger it explicitly
+        wallet.connect().catch(() => {
+          // If direct connect fails, fall back to modal
+          setVisible(true);
+        });
+        return;
+      }
+    }
+
+    // Case 2: Mobile browser (no extension) → deep-link to Phantom app
+    if (isMobile) {
+      const currentUrl = window.location.href;
+      window.location.href = `https://phantom.app/ul/browse/${encodeURIComponent(currentUrl)}?ref=${encodeURIComponent(window.location.origin)}`;
+      return;
+    }
+
+    // Case 3: Desktop → standard wallet modal
+    setVisible(true);
+  }, [wallet, isMobile, setVisible]);
+
+  // Fallback: open wallet modal (for "Other wallets" link on mobile)
+  const openWalletModal = useCallback(() => {
+    setVisible(true);
+  }, [setVisible]);
 
   const fetchBalance = useCallback(async () => {
     if (!wallet.publicKey || !connection) return;
@@ -263,18 +305,34 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
           </span>
         </div>
         <p className="font-mono text-xs text-neutral-500 mb-3">
-          Connect your wallet to stake your prophecy on this match.
+          {isMobile
+            ? 'Connect via Phantom to stake your prophecy.'
+            : 'Connect your wallet to stake your prophecy on this match.'}
         </p>
         <button
-          onClick={openWalletModal}
-          className="w-full min-h-[48px] py-3 border border-[#D4A843]/40 hover:border-[#D4A843] bg-[#D4A843]/5 hover:bg-[#D4A843]/10 text-center font-mono text-xs text-[#D4A843] tracking-widest uppercase transition-colors cursor-pointer flex items-center justify-center gap-2"
+          onClick={handleConnect}
+          className="w-full min-h-[48px] py-3 border border-[#D4A843]/40 hover:border-[#D4A843] bg-[#D4A843]/5 hover:bg-[#D4A843]/10 font-mono text-xs text-[#D4A843] tracking-widest uppercase transition-colors cursor-pointer flex items-center justify-center gap-2"
         >
           <Wallet size={14} />
-          Connect Wallet to Prophesy
+          {isMobile ? 'Open in Phantom' : 'Connect Wallet to Prophesy'}
         </button>
-        <p className="font-mono text-[11px] text-neutral-600 mt-2 text-center">
-          You&apos;ll need a Solana wallet like Phantom
-        </p>
+        {isMobile ? (
+          <div className="mt-2 text-center space-y-1">
+            <p className="font-mono text-[11px] text-neutral-600">
+              Opens the Phantom app to connect your wallet
+            </p>
+            <button
+              onClick={openWalletModal}
+              className="font-mono text-[11px] text-neutral-500 hover:text-[#D4A843] underline transition-colors"
+            >
+              Use another wallet
+            </button>
+          </div>
+        ) : (
+          <p className="font-mono text-[11px] text-neutral-600 mt-2 text-center">
+            You&apos;ll need a Solana wallet like Phantom
+          </p>
+        )}
       </div>
     );
   }
