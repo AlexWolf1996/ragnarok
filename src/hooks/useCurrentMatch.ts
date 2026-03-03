@@ -45,8 +45,8 @@ export interface CurrentMatch {
   timeRemainingMs: number | null;
 }
 
-const POLL_INTERVAL_DEFAULT = 10_000; // 10s
-const POLL_INTERVAL_FAST = 5_000;     // 5s during in_progress/judging for snappy transitions
+const POLL_INTERVAL_DEFAULT = 15_000; // 15s — reduced for scale (edge-cached)
+const POLL_INTERVAL_FAST = 8_000;     // 8s during in_progress/judging
 
 export function useCurrentMatch() {
   const [match, setMatch] = useState<CurrentMatch | null>(null);

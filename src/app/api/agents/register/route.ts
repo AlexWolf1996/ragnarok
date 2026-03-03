@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
   try {
     // Rate limit: 5 registrations per IP per minute
     const ip = getClientIp(request);
-    const rateCheck = checkRateLimit(`agent-register:${ip}`, 5);
+    const rateCheck = await checkRateLimit(`agent-register:${ip}`, 5);
     if (!rateCheck.allowed) {
       return NextResponse.json(
         { error: 'Too many requests. Try again in a minute.' },

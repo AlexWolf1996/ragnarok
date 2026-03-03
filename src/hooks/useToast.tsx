@@ -43,9 +43,9 @@ const toastColors: Record<ToastType, string> = {
 function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: () => void }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: -20, scale: 0.95 }}
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+      exit={{ opacity: 0, y: 20, scale: 0.95 }}
       transition={{ duration: 0.2 }}
       className={`
         relative flex items-start gap-3 p-4
@@ -123,7 +123,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
       {/* Toast container */}
       <div
-        className="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"
+        className="fixed bottom-4 left-4 right-4 sm:top-4 sm:right-4 sm:left-auto sm:bottom-auto z-[100] flex flex-col-reverse sm:flex-col gap-2 pointer-events-none"
         aria-label="Notifications"
       >
         <AnimatePresence mode="popLayout">

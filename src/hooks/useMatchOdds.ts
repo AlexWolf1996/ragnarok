@@ -15,7 +15,7 @@ export interface MatchOddsData {
 }
 
 const RAKE = 0.05;
-const POLL_INTERVAL = 5_000; // 5s
+const POLL_INTERVAL = 10_000; // 10s — reduced for scale (edge-cached)
 
 /**
  * Client-side odds calculation (mirrors backend logic).

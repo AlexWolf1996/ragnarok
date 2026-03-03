@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Swords, Check, Loader2, AlertTriangle, TrendingUp } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Swords, Check, Loader2, AlertTriangle, TrendingUp, Wallet } from 'lucide-react';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { usePlaceBet } from '@/hooks/usePlaceBet';
@@ -21,6 +22,17 @@ interface BetPanelProps {
 const QUICK_PICKS = [0.05, 0.1, 0.5, 1] as const;
 const MIN_BET = 0.01;
 
+function friendlyTransferError(raw: string, betAmount: number): string {
+  const lower = raw.toLowerCase();
+  if (lower.includes('insufficient') || lower.includes('not enough'))
+    return `Not enough SOL. You need at least ${betAmount} SOL plus fees. Fund your wallet and try again.`;
+  if (lower.includes('rejected') || lower.includes('cancelled') || lower.includes('canceled') || lower.includes('user rejected'))
+    return 'You cancelled the transaction. Try again when ready.';
+  if (lower.includes('network') || lower.includes('timed out') || lower.includes('timeout') || lower.includes('failed to fetch'))
+    return 'Could not reach Solana. Check your internet and try again.';
+  return raw;
+}
+
 export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   const wallet = useWallet();
   const { connection } = useConnection();
@@ -37,6 +49,21 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   const [customInput, setCustomInput] = useState('0.1');
   const [transferring, setTransferring] = useState(false);
   const [showBetForm, setShowBetForm] = useState(false);
+  const [solBalance, setSolBalance] = useState<number | null>(null);
+
+  const fetchBalance = useCallback(async () => {
+    if (!wallet.publicKey || !connection) return;
+    try {
+      const lamports = await connection.getBalance(wallet.publicKey);
+      setSolBalance(lamports / LAMPORTS_PER_SOL);
+    } catch {
+      setSolBalance(null);
+    }
+  }, [wallet.publicKey, connection]);
+
+  useEffect(() => {
+    fetchBalance();
+  }, [fetchBalance]);
 
   const isBettingOpen = match?.status === 'betting_open';
   const selectedAgent = selectedSide === 'A' ? match?.agentA : selectedSide === 'B' ? match?.agentB : null;
@@ -72,7 +99,8 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
       );
 
       if (!transferResult.success || !transferResult.signature) {
-        toast.error('Payment Failed', transferResult.error || 'Transaction failed');
+        const rawError = transferResult.error || 'Transaction failed';
+        toast.error('Payment Failed', friendlyTransferError(rawError, betAmount));
         setTransferring(false);
         return;
       }
@@ -90,11 +118,11 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
 
       toast.success('Prediction Placed', `${betAmount} SOL on ${selectedAgent?.name ?? 'your champion'}`);
       setShowBetForm(false);
-      // Refresh bets to pick up the new bet
       refreshBets();
+      fetchBalance();
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to place bet';
-      toast.error('Bet Failed', msg);
+      toast.error('Bet Failed', friendlyTransferError(msg, betAmount));
       setTransferring(false);
     }
   };
@@ -104,7 +132,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   // ──────────────────────────────────────────────
   if (hasBet && !showBetForm) {
     return (
-      <div className="bg-black/40 backdrop-blur-sm border border-emerald-500/30 p-6 space-y-4 relative overflow-hidden">
+      <div className="bg-black/40 backdrop-blur-sm border border-emerald-500/30 p-4 sm:p-6 space-y-4 relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
         {/* Header */}
         <div className="flex items-center gap-2">
@@ -116,21 +144,21 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
 
         {/* Position details */}
         <div className="space-y-2">
-          <div className="flex justify-between font-mono text-[10px]">
+          <div className="flex justify-between font-mono text-xs">
             <span className="text-neutral-500">Backing</span>
             <span className={betSide === 'A' ? 'text-[#D4A843]' : 'text-[#c0392b]'}>
               {betAgent?.name ?? 'Unknown'}
             </span>
           </div>
-          <div className="flex justify-between font-mono text-[10px]">
+          <div className="flex justify-between font-mono text-xs">
             <span className="text-neutral-500">Your Stake</span>
             <span className="text-white">{totalBet} SOL</span>
           </div>
-          <div className="flex justify-between font-mono text-[10px]">
+          <div className="flex justify-between font-mono text-xs">
             <span className="text-neutral-500">Current Odds</span>
             <span className="text-white">{betOdds > 0 ? `${betOdds.toFixed(2)}x` : '—'}</span>
           </div>
-          <div className="flex justify-between font-mono text-[10px]">
+          <div className="flex justify-between font-mono text-xs">
             <span className="text-neutral-500">Potential Return</span>
             <span className="text-emerald-400">
               {betOdds > 0 ? `${(totalBet * betOdds).toFixed(4)} SOL` : '—'}
@@ -145,7 +173,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
               <div className="font-[var(--font-rajdhani)] text-sm tracking-widest uppercase text-emerald-400">
                 You Won!
               </div>
-              <div className="font-mono text-[10px] text-emerald-400">
+              <div className="font-mono text-xs text-emerald-400">
                 Payout: {payout.toFixed(4)} SOL
               </div>
             </div>
@@ -155,39 +183,39 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
               <div className="font-[var(--font-rajdhani)] text-sm tracking-widest uppercase text-red-400">
                 Defeated
               </div>
-              <div className="font-mono text-[9px] text-neutral-600 mt-1">
+              <div className="font-mono text-[11px] text-neutral-600 mt-1">
                 Better luck next battle.
               </div>
             </div>
           )}
           {(!betStatus || betStatus === 'pending') && match?.status === 'in_progress' && (
             <div className="text-center">
-              <div className="font-mono text-[10px] text-red-400 tracking-widest uppercase">
+              <div className="font-mono text-xs text-red-400 tracking-widest uppercase">
                 Battle in Progress
               </div>
-              <div className="font-mono text-[9px] text-neutral-600 mt-1">
+              <div className="font-mono text-[11px] text-neutral-600 mt-1">
                 Agents are competing. Your prediction is locked.
               </div>
             </div>
           )}
           {(!betStatus || betStatus === 'pending') && match?.status === 'judging' && (
             <div className="text-center">
-              <div className="font-mono text-[10px] text-[#D4A843] tracking-widest uppercase">
+              <div className="font-mono text-xs text-[#D4A843] tracking-widest uppercase">
                 Judges Deliberating
               </div>
-              <div className="font-mono text-[9px] text-neutral-600 mt-1">
+              <div className="font-mono text-[11px] text-neutral-600 mt-1">
                 Results incoming. Final payout based on closing odds.
               </div>
             </div>
           )}
           {(!betStatus || betStatus === 'pending') && isBettingOpen && (
             <div className="text-center space-y-2">
-              <div className="font-mono text-[9px] text-neutral-600">
+              <div className="font-mono text-[11px] text-neutral-600">
                 Odds update in real-time. Final payout based on closing odds.
               </div>
               <button
                 onClick={() => { reset(); setShowBetForm(true); }}
-                className="font-mono text-[10px] text-neutral-500 hover:text-[#D4A843] tracking-widest uppercase transition-colors"
+                className="font-mono text-xs text-neutral-500 hover:text-[#D4A843] tracking-widest uppercase transition-colors"
               >
                 Place Another Prediction
               </button>
@@ -211,7 +239,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
             {statusMessage.title}
           </span>
         </div>
-        <p className="font-mono text-[10px] text-neutral-600">
+        <p className="font-mono text-xs text-neutral-600">
           {statusMessage.message}
         </p>
       </div>
@@ -223,7 +251,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   // ──────────────────────────────────────────────
   if (!wallet.connected) {
     return (
-      <div className="bg-black/40 backdrop-blur-sm border border-neutral-800 p-6 relative overflow-hidden">
+      <div className="bg-black/40 backdrop-blur-sm border border-neutral-800 p-4 sm:p-6 relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c]/50 to-transparent" />
         <div className="flex items-center gap-2 mb-3">
           <Swords size={14} className="text-[#D4A843]" />
@@ -231,15 +259,19 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
             Place Your Prediction
           </span>
         </div>
-        <p className="font-mono text-[10px] text-neutral-500 mb-3">
+        <p className="font-mono text-xs text-neutral-500 mb-3">
           Connect your wallet to place predictions on this match.
         </p>
         <button
           onClick={() => openWalletModal(true)}
-          className="w-full py-3 border border-[#D4A843]/40 hover:border-[#D4A843] bg-[#D4A843]/5 hover:bg-[#D4A843]/10 text-center font-mono text-[10px] text-[#D4A843] tracking-widest uppercase transition-colors cursor-pointer"
+          className="w-full min-h-[48px] py-3 border border-[#D4A843]/40 hover:border-[#D4A843] bg-[#D4A843]/5 hover:bg-[#D4A843]/10 text-center font-mono text-xs text-[#D4A843] tracking-widest uppercase transition-colors cursor-pointer flex items-center justify-center gap-2"
         >
+          <Wallet size={14} />
           Connect Wallet to Bet
         </button>
+        <p className="font-mono text-[11px] text-neutral-600 mt-2 text-center">
+          You&apos;ll need a Solana wallet like Phantom
+        </p>
       </div>
     );
   }
@@ -249,7 +281,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   // ──────────────────────────────────────────────
   if (betPlaced && !showBetForm) {
     return (
-      <div className="bg-black/40 backdrop-blur-sm border border-emerald-500/30 p-6 relative overflow-hidden">
+      <div className="bg-black/40 backdrop-blur-sm border border-emerald-500/30 p-4 sm:p-6 relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
         <div className="text-center space-y-3">
           <div className="w-10 h-10 border border-emerald-500/50 flex items-center justify-center mx-auto">
@@ -258,15 +290,15 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
           <div className="font-[var(--font-rajdhani)] text-sm tracking-widest uppercase text-emerald-400">
             Prediction Placed
           </div>
-          <div className="font-mono text-[10px] text-neutral-400">
+          <div className="font-mono text-xs text-neutral-400">
             {betAmount} SOL on {selectedAgent?.name ?? 'your champion'}
           </div>
-          <div className="font-mono text-[9px] text-neutral-600">
+          <div className="font-mono text-[11px] text-neutral-600">
             Odds update in real-time. Final payout based on closing odds.
           </div>
           <button
             onClick={() => { reset(); setShowBetForm(true); }}
-            className="font-mono text-[10px] text-neutral-500 hover:text-[#D4A843] tracking-widest uppercase transition-colors"
+            className="font-mono text-xs text-neutral-500 hover:text-[#D4A843] tracking-widest uppercase transition-colors"
           >
             Place Another
           </button>
@@ -279,7 +311,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
   // RENDER: Betting form
   // ──────────────────────────────────────────────
   return (
-    <div className="bg-black/40 backdrop-blur-sm border border-[#D4A843]/30 p-6 space-y-4 relative overflow-hidden">
+    <div className="bg-black/40 backdrop-blur-sm border border-[#D4A843]/30 p-4 sm:p-6 space-y-4 relative overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#c9a84c]/50 to-transparent" />
       {/* Header */}
       <div className="flex items-center gap-2">
@@ -293,7 +325,7 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
       {!selectedSide && (
         <div className="text-center py-4">
           <Swords size={20} className="text-neutral-600 mx-auto mb-2" />
-          <p className="font-mono text-[10px] text-neutral-500">
+          <p className="font-mono text-xs text-neutral-500">
             Click an agent card to pick your champion
           </p>
         </div>
@@ -318,9 +350,24 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
 
           {/* Wager amount input */}
           <div>
-            <div className="font-mono text-[10px] text-neutral-500 tracking-widest uppercase mb-2">
-              Wager Amount
+            <div className="flex items-center justify-between mb-2">
+              <div className="font-mono text-xs text-neutral-500 tracking-widest uppercase">
+                Wager Amount
+              </div>
+              {solBalance !== null && (
+                <div className="font-mono text-xs text-neutral-500">
+                  Available: <span className="text-white">{solBalance.toFixed(2)} SOL</span>
+                </div>
+              )}
             </div>
+            {solBalance !== null && solBalance < betAmount && (
+              <div className="flex items-center gap-2 px-3 py-2 mb-2 border border-[#c9a84c]/30 bg-[#c9a84c]/5">
+                <AlertTriangle size={12} className="text-[#c9a84c] flex-shrink-0" />
+                <span className="font-mono text-xs text-[#c9a84c]">
+                  Insufficient balance. You need at least {betAmount} SOL plus fees.
+                </span>
+              </div>
+            )}
             <div className="relative">
               <input
                 type="number"
@@ -339,16 +386,16 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
                   }
                 }}
                 disabled={isLoading}
-                className={`w-full bg-black border py-2.5 px-3 pr-12 font-mono text-sm text-white outline-none transition-colors ${
+                className={`w-full min-h-[44px] bg-black border py-2.5 px-3 pr-12 font-mono text-base text-white outline-none transition-colors ${
                   !isValidBet ? 'border-red-500/50' : 'border-neutral-800 focus:border-[#D4A843]'
                 } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] text-neutral-500">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-xs text-neutral-500">
                 SOL
               </span>
             </div>
             {!isValidBet && (
-              <div className="font-mono text-[9px] text-red-400 mt-1">
+              <div className="font-mono text-[11px] text-red-400 mt-1">
                 Minimum wager is {MIN_BET} SOL
               </div>
             )}
@@ -372,11 +419,11 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
 
           {/* Odds info */}
           <div className="space-y-1">
-            <div className="flex justify-between font-mono text-[10px]">
+            <div className="flex justify-between font-mono text-xs">
               <span className="text-neutral-500">Current Odds</span>
               <span className="text-white">{currentOdds > 0 ? `${currentOdds.toFixed(2)}x` : '—'}</span>
             </div>
-            <div className="flex justify-between font-mono text-[10px]">
+            <div className="flex justify-between font-mono text-xs">
               <span className="text-neutral-500">Your Wager</span>
               <span className="text-white">{betAmount} SOL</span>
             </div>
@@ -421,12 +468,12 @@ export default function BetPanel({ match, selectedSide }: BetPanelProps) {
           {betError && (
             <div className="flex items-center gap-2 px-3 py-2 border border-red-500/30 bg-red-500/5">
               <AlertTriangle size={12} className="text-red-400 flex-shrink-0" />
-              <span className="font-mono text-[10px] text-red-400">{betError}</span>
+              <span className="font-mono text-xs text-red-400">{betError}</span>
             </div>
           )}
 
           {/* Note */}
-          <p className="font-mono text-[9px] text-neutral-600 text-center">
+          <p className="font-mono text-[11px] text-neutral-600 text-center">
             Odds update in real-time. Final payout based on closing odds.
           </p>
         </div>

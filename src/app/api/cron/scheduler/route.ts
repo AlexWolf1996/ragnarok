@@ -23,7 +23,8 @@ export const maxDuration = 60;
 
 // Timing constants (in milliseconds)
 const BETTING_WINDOW_MS = 15 * 60 * 1000;  // 15 min betting window
-const MATCH_INTERVAL_MS = 60 * 60 * 1000;  // 60 min between matches (~14 battles/day)
+// 30 min with paid Groq (default), 60 min on free tier — override via MATCH_INTERVAL_MINUTES env var
+const MATCH_INTERVAL_MS = (parseInt(process.env.MATCH_INTERVAL_MINUTES || '30', 10)) * 60 * 1000;
 const STUCK_IN_PROGRESS_MS = 5 * 60 * 1000; // Force-complete after 5 min
 const STUCK_BETTING_MS = 20 * 60 * 1000;    // Force-start after 20 min
 const LOCK_TIMEOUT_S = 50; // Lock expires after 50 seconds
@@ -106,9 +107,10 @@ async function handler(request: NextRequest) {
       actions.push(`started battle for match ${match.id}`);
     }
 
-    // 3. Process pending payouts (batch — up to 10 per invocation)
+    // 3. Process pending payouts (batch — up to 5 per tick, ~5/min sustained via cron)
+    // Each payout involves sendAndConfirmTransaction (5-20s), so 5 is safe within 60s timeout
     let totalPayoutsProcessed = 0;
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 5; i++) {
       const payoutResult = await processPayoutQueue();
       if (payoutResult.processed === 0) break;
       totalPayoutsProcessed += payoutResult.processed;

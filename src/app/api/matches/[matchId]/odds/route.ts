@@ -9,6 +9,7 @@ import { calculateParimutuelOdds } from '@/lib/bets/parimutuel';
 import { isValidUUID } from '@/lib/validation';
 
 export const runtime = 'nodejs';
+export const maxDuration = 30;
 
 export async function GET(
   _request: NextRequest,
@@ -25,7 +26,9 @@ export async function GET(
 
   try {
     const odds = await calculateParimutuelOdds(matchId);
-    return NextResponse.json({ success: true, odds });
+    const response = NextResponse.json({ success: true, odds });
+    response.headers.set('Cache-Control', 'public, s-maxage=3, stale-while-revalidate=2');
+    return response;
   } catch (err) {
     return NextResponse.json(
       { success: false, error: err instanceof Error ? err.message : 'Unknown error' },

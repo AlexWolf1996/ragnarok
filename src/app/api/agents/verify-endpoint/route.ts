@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
   try {
     // Rate limit: 3 checks per IP per minute
     const ip = getClientIp(request);
-    const rateCheck = checkRateLimit(`verify-endpoint:${ip}`, 3);
+    const rateCheck = await checkRateLimit(`verify-endpoint:${ip}`, 3);
     if (!rateCheck.allowed) {
       return NextResponse.json(
         { error: 'Too many requests. Try again in a minute.' },

@@ -8,9 +8,10 @@
  * This solves the daily-cron problem (Vercel Hobby only runs cron once/day).
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/battles/engine';
 import { calculateParimutuelOdds } from '@/lib/bets/parimutuel';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -35,8 +36,18 @@ function triggerScheduler() {
   });
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    // Soft rate limit: 30 req/min per IP (prevents bot abuse)
+    const ip = getClientIp(request);
+    const rateCheck = await checkRateLimit(`match-poll:${ip}`, 30);
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        { success: false, error: 'Too many requests' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil((rateCheck.retryAfterMs ?? 60000) / 1000)) } },
+      );
+    }
+
     const supabase = getSupabaseAdmin();
 
     // Find active match (in_progress > betting_open > judging priority)
@@ -77,7 +88,9 @@ export async function GET() {
         .single();
 
       if (!recentMatch) {
-        return NextResponse.json({ success: true, match: null });
+        const response = NextResponse.json({ success: true, match: null });
+        response.headers.set('Cache-Control', 'public, s-maxage=3, stale-while-revalidate=5');
+        return response;
       }
 
       // Return the recently completed match so user sees the result
@@ -86,7 +99,7 @@ export async function GET() {
         .select('id, name, avatar_url, elo_rating, wins, losses, matches_played')
         .in('id', [recentMatch.agent_a_id, recentMatch.agent_b_id]);
 
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: true,
         match: {
           ...recentMatch,
@@ -96,6 +109,8 @@ export async function GET() {
           timeRemainingMs: null,
         },
       });
+      response.headers.set('Cache-Control', 'public, s-maxage=3, stale-while-revalidate=5');
+      return response;
     }
 
     // Self-healing: if betting_open match has starts_at in the past → trigger scheduler
@@ -129,7 +144,7 @@ export async function GET() {
     const startsAt = match.starts_at ? new Date(match.starts_at).getTime() : null;
     const timeRemainingMs = startsAt ? Math.max(0, startsAt - now) : null;
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       match: {
         ...match,
@@ -139,6 +154,9 @@ export async function GET() {
         timeRemainingMs,
       },
     });
+    // Edge cache: serve stale for up to 5s while revalidating, fresh for 3s
+    response.headers.set('Cache-Control', 'public, s-maxage=3, stale-while-revalidate=5');
+    return response;
   } catch (err) {
     return NextResponse.json(
       { success: false, error: err instanceof Error ? err.message : 'Unknown error' },
