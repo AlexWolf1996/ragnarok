@@ -24,6 +24,13 @@ export interface MatchOdds {
   agentBId: string;
 }
 
+export interface MatchChallenge {
+  name: string;
+  prompt: string | null;
+  type: string;
+  difficulty: string;
+}
+
 export interface CurrentMatch {
   id: string;
   status: string;
@@ -43,6 +50,7 @@ export interface CurrentMatch {
   agentB: MatchAgent | null;
   odds: MatchOdds | null;
   timeRemainingMs: number | null;
+  challenge: MatchChallenge | null;
 }
 
 const POLL_INTERVAL_DEFAULT = 15_000; // 15s — reduced for scale (edge-cached)

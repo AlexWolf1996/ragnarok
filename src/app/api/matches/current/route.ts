@@ -59,7 +59,9 @@ export async function GET(request: NextRequest) {
         id, status, category, created_at, started_at, starts_at,
         betting_opens_at, completed_at, scheduled_at,
         agent_a_id, agent_b_id, winner_id,
-        agent_a_score, agent_b_score
+        agent_a_score, agent_b_score,
+        challenge_id,
+        challenges ( id, name, prompt, type, difficulty )
       `)
       .in('status', activeStatuses)
       .order('created_at', { ascending: false })
@@ -79,7 +81,9 @@ export async function GET(request: NextRequest) {
           id, status, category, created_at, started_at, starts_at,
           betting_opens_at, completed_at, scheduled_at,
           agent_a_id, agent_b_id, winner_id,
-          agent_a_score, agent_b_score
+          agent_a_score, agent_b_score,
+          challenge_id,
+          challenges ( id, name, prompt, type, difficulty )
         `)
         .eq('status', 'completed')
         .gte('completed_at', fiveMinAgo)
@@ -99,6 +103,15 @@ export async function GET(request: NextRequest) {
         .select('id, name, avatar_url, elo_rating, wins, losses, matches_played')
         .in('id', [recentMatch.agent_a_id, recentMatch.agent_b_id]);
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const recentChallenge = (recentMatch as any).challenges;
+      let recentPrompt: string | null = null;
+      if (recentChallenge?.prompt) {
+        const p = recentChallenge.prompt;
+        recentPrompt = typeof p === 'string' ? p
+          : (p.question || p.prompt || JSON.stringify(p));
+      }
+
       const response = NextResponse.json({
         success: true,
         match: {
@@ -107,6 +120,12 @@ export async function GET(request: NextRequest) {
           agentB: recentAgents?.find((a) => a.id === recentMatch.agent_b_id) ?? null,
           odds: null,
           timeRemainingMs: null,
+          challenge: recentChallenge ? {
+            name: recentChallenge.name,
+            prompt: recentPrompt,
+            type: recentChallenge.type,
+            difficulty: recentChallenge.difficulty,
+          } : null,
         },
       });
       response.headers.set('Cache-Control', 'public, s-maxage=3, stale-while-revalidate=5');
@@ -144,6 +163,16 @@ export async function GET(request: NextRequest) {
     const startsAt = match.starts_at ? new Date(match.starts_at).getTime() : null;
     const timeRemainingMs = startsAt ? Math.max(0, startsAt - now) : null;
 
+    // Extract challenge prompt text
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const challengeData = (match as any).challenges;
+    let challengePrompt: string | null = null;
+    if (challengeData?.prompt) {
+      const p = challengeData.prompt;
+      challengePrompt = typeof p === 'string' ? p
+        : (p.question || p.prompt || JSON.stringify(p));
+    }
+
     const response = NextResponse.json({
       success: true,
       match: {
@@ -152,6 +181,12 @@ export async function GET(request: NextRequest) {
         agentB,
         odds,
         timeRemainingMs,
+        challenge: challengeData ? {
+          name: challengeData.name,
+          prompt: challengePrompt,
+          type: challengeData.type,
+          difficulty: challengeData.difficulty,
+        } : null,
       },
     });
     // Edge cache: serve stale for up to 5s while revalidating, fresh for 3s

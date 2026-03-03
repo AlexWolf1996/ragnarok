@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useCurrentMatch } from '@/hooks/useCurrentMatch';
 import { useMatchOdds } from '@/hooks/useMatchOdds';
 import { useUpcomingMatches } from '@/hooks/useUpcomingMatches';
-import { Swords } from 'lucide-react';
+import { Swords, ScrollText } from 'lucide-react';
 import AgentCard from './AgentCard';
 import OddsDisplay from './OddsDisplay';
 import CountdownTimer from './CountdownTimer';
@@ -98,14 +98,12 @@ export default function MatchLiveView({ selectedSide, onSelectSide }: MatchLiveV
       {/* Status banner */}
       <MatchStatusBanner status={match.status} />
 
-      {/* Category + Challenge */}
-      {match.category && (
-        <div className="text-center">
-          <span className="font-mono text-[10px] text-neutral-500 tracking-widest uppercase">
-            {match.category} challenge
-          </span>
-        </div>
-      )}
+      {/* Challenge briefing */}
+      <ChallengeBriefing
+        category={match.category}
+        challenge={match.challenge}
+        status={match.status}
+      />
 
       {/* Agent cards face-to-face */}
       {match.agentA && match.agentB && (
@@ -249,6 +247,71 @@ function JudgingView() {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function ChallengeBriefing({
+  category,
+  challenge,
+  status,
+}: {
+  category: string | null;
+  challenge: { name: string; prompt: string | null; type: string; difficulty: string } | null;
+  status: string;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const promptText = challenge?.prompt ?? null;
+  const hasPrompt = !!promptText;
+
+  // During betting, show the full challenge so users can make informed prophecies
+  const showFull = status === 'betting_open' || expanded;
+
+  if (!category && !challenge) return null;
+
+  return (
+    <div className="bg-black/40 backdrop-blur-sm border border-[#c9a84c]/20 p-3 sm:p-4 relative overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#c9a84c]/30 to-transparent" />
+
+      {/* Header row */}
+      <div className="flex items-center justify-between gap-2 mb-1">
+        <div className="flex items-center gap-2">
+          <ScrollText size={12} className="text-[#c9a84c] flex-shrink-0" />
+          <span className="font-mono text-[10px] text-[#c9a84c] tracking-widest uppercase">
+            {category ?? challenge?.type ?? 'Challenge'}
+          </span>
+        </div>
+        {challenge?.difficulty && (
+          <span className="font-mono text-[10px] text-neutral-600 tracking-wider uppercase">
+            {challenge.difficulty}
+          </span>
+        )}
+      </div>
+
+      {/* Challenge prompt */}
+      {hasPrompt ? (
+        <div>
+          <p
+            className={`font-[var(--font-rajdhani)] text-sm sm:text-base text-white leading-relaxed ${
+              !showFull ? 'line-clamp-2' : ''
+            }`}
+          >
+            {promptText}
+          </p>
+          {promptText && promptText.length > 120 && !showFull && (
+            <button
+              onClick={() => setExpanded(true)}
+              className="font-mono text-[10px] text-[#c9a84c] hover:text-[#D4A843] mt-1 transition-colors"
+            >
+              Read full challenge
+            </button>
+          )}
+        </div>
+      ) : (
+        <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400 italic">
+          {challenge?.name ?? `${category} challenge`}
+        </p>
+      )}
     </div>
   );
 }
