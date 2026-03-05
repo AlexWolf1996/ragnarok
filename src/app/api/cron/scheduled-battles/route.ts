@@ -73,7 +73,89 @@ export async function GET(request: Request) {
       }
     }
 
-    // 2. Create a scheduled battle royale if none are currently open
+    // 2. Detect and cancel stuck BR battles (in_progress > 10 minutes)
+    const tenMinAgo = new Date(now.getTime() - 10 * 60 * 1000).toISOString();
+    const { data: stuckBattles } = await supabase
+      .from('battle_royales')
+      .select('id, name, buy_in_sol')
+      .eq('status', 'in_progress')
+      .lt('started_at', tenMinAgo);
+
+    if (stuckBattles && stuckBattles.length > 0) {
+      for (const stuck of stuckBattles) {
+        // Cancel the battle
+        await supabase
+          .from('battle_royales')
+          .update({ status: 'cancelled' })
+          .eq('id', stuck.id);
+
+        // Refund participants
+        const { data: participants } = await supabase
+          .from('battle_royale_participants')
+          .select('agent_id')
+          .eq('battle_id', stuck.id);
+
+        if (participants) {
+          for (const p of participants) {
+            const { data: agent } = await supabase
+              .from('agents')
+              .select('wallet_address')
+              .eq('id', p.agent_id)
+              .single();
+
+            if (agent?.wallet_address) {
+              await supabase.from('payout_queue').insert({
+                battle_royale_id: stuck.id,
+                wallet_address: agent.wallet_address,
+                amount_sol: stuck.buy_in_sol,
+                status: 'pending',
+              });
+
+              await supabase.from('notifications').insert({
+                wallet_address: agent.wallet_address,
+                type: 'match_result',
+                title: 'Battle Cancelled — Refund Issued',
+                message: `Battle "${stuck.name}" timed out. Your ${stuck.buy_in_sol} SOL buy-in will be refunded.`,
+              });
+            }
+          }
+        }
+
+        // Refund pending spectator bets
+        const { data: pendingBets } = await supabase
+          .from('battle_royale_bets')
+          .select('id, wallet_address, amount_sol')
+          .eq('battle_id', stuck.id)
+          .eq('status', 'pending');
+
+        if (pendingBets) {
+          for (const bet of pendingBets) {
+            await supabase
+              .from('battle_royale_bets')
+              .update({ status: 'refunded', payout_sol: bet.amount_sol })
+              .eq('id', bet.id);
+
+            await supabase.from('payout_queue').insert({
+              battle_royale_id: stuck.id,
+              wallet_address: bet.wallet_address,
+              amount_sol: bet.amount_sol,
+              status: 'pending',
+            });
+
+            await supabase.from('notifications').insert({
+              wallet_address: bet.wallet_address,
+              type: 'match_result',
+              title: 'Bet Refunded — Battle Timed Out',
+              message: `Battle "${stuck.name}" timed out. Your ${bet.amount_sol} SOL bet will be refunded.`,
+            });
+          }
+        }
+
+        results.push(`Cancelled stuck battle: ${stuck.name} (refunded participants + bets)`);
+      }
+    }
+
+    // 3. Create a scheduled battle royale if none are currently open
     const { count: openCount } = await supabase
       .from('battle_royales')
       .select('*', { count: 'exact', head: true })

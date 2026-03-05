@@ -366,33 +366,28 @@ export async function getCurrentRound(battleId: string): Promise<BattleRoyaleRou
 // ============================================================================
 
 /**
- * Place a bet on a battle royale participant
- * For now, bets are recorded in Supabase directly (no SOL transfer for spectator bets)
+ * Place a bet on a battle royale participant (via Vercel API route with Solana verification)
  */
 export async function placeBattleBet(
   battleId: string,
   agentId: string,
   amountSol: number,
-  walletAddress: string
+  walletAddress: string,
+  txSignature: string
 ): Promise<{ success: boolean; bet_id?: string; error?: string }> {
   try {
-    const { data, error } = await supabase
-      .from('battle_royale_bets')
-      .insert({
+    const response = await fetch('/api/battle-royale/bet', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         battle_id: battleId,
         agent_id: agentId,
         amount_sol: amountSol,
         wallet_address: walletAddress,
-        status: 'pending',
-        payout_sol: 0,
-      })
-      .select('id')
-      .single();
-
-    if (error) {
-      return { success: false, error: error.message };
-    }
-    return { success: true, bet_id: data.id };
+        tx_signature: txSignature,
+      }),
+    });
+    return await response.json();
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : 'Bet failed' };
   }

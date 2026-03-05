@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { X, Loader2, TrendingUp, AlertCircle } from 'lucide-react';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import {
   BattleRoyaleWithRelations,
   BattleRoyaleParticipant,
@@ -15,6 +16,7 @@ import {
   getBattleBets,
   placeBattleBet,
 } from '@/lib/supabase/battleRoyale';
+import { transferToTreasury } from '@/lib/solana/transfer';
 
 interface BettingModalProps {
   battleId: string;
@@ -31,6 +33,8 @@ export default function BettingModal({
   onClose,
   onBetPlaced,
 }: BettingModalProps) {
+  const wallet = useWallet();
+  const { connection } = useConnection();
   const [, setBattle] = useState<BattleRoyaleWithRelations | null>(null);
   const [participants, setParticipants] = useState<BattleRoyaleParticipant[]>([]);
   const [bets, setBets] = useState<BattleRoyaleBet[]>([]);
@@ -38,6 +42,7 @@ export default function BettingModal({
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [submitPhase, setSubmitPhase] = useState<'idle' | 'sending' | 'recording'>('idle');
   const [error, setError] = useState<string | null>(null);
 
   // Calculate odds
@@ -85,6 +90,11 @@ export default function BettingModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!wallet.connected || !wallet.publicKey) {
+      setError('Please connect your wallet first');
+      return;
+    }
+
     if (!selectedAgentId || !amount) {
       setError('Please select an agent and enter an amount');
       return;
@@ -105,18 +115,34 @@ export default function BettingModal({
     setError(null);
 
     try {
-      const result = await placeBattleBet(battleId, selectedAgentId, amountNum, walletAddress);
+      // Phase 1: Send SOL to treasury
+      setSubmitPhase('sending');
+      const transferResult = await transferToTreasury(wallet, amountNum, connection);
+
+      if (!transferResult.success || !transferResult.signature) {
+        setError(transferResult.error || 'Transfer failed');
+        setSubmitting(false);
+        setSubmitPhase('idle');
+        return;
+      }
+
+      // Phase 2: Record bet with tx signature
+      setSubmitPhase('recording');
+      const result = await placeBattleBet(
+        battleId, selectedAgentId, amountNum, walletAddress, transferResult.signature
+      );
 
       if (result.success) {
         onBetPlaced?.();
         onClose();
       } else {
-        setError(result.error || 'Failed to place bet');
+        setError(result.error || 'Failed to record bet');
       }
     } catch {
       setError('Failed to place bet');
     } finally {
       setSubmitting(false);
+      setSubmitPhase('idle');
     }
   };
 
@@ -258,20 +284,35 @@ export default function BettingModal({
             )}
 
             {/* Submit */}
-            <button
-              type="submit"
-              disabled={submitting || !selectedAgentId || !amount}
-              className="w-full py-3 font-mono text-sm tracking-wider
-                       bg-[#d4a843] text-[#0a0a0f] rounded-sm
-                       hover:bg-[#e4b853] transition-colors duration-200
-                       disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {submitting ? (
-                <Loader2 className="w-4 h-4 animate-spin mx-auto" />
-              ) : (
-                'PLACE BET'
-              )}
-            </button>
+            {!wallet.connected ? (
+              <button
+                type="button"
+                onClick={() => wallet.select && wallet.select(null as never)}
+                className="w-full py-3 font-mono text-sm tracking-wider
+                         bg-[#2a2a35] text-[#e8e8e8] rounded-sm
+                         hover:bg-[#3a3a45] transition-colors duration-200"
+              >
+                CONNECT WALLET
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={submitting || !selectedAgentId || !amount}
+                className="w-full py-3 font-mono text-sm tracking-wider
+                         bg-[#d4a843] text-[#0a0a0f] rounded-sm
+                         hover:bg-[#e4b853] transition-colors duration-200
+                         disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {submitting ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    {submitPhase === 'sending' ? 'Sending SOL...' : 'Recording bet...'}
+                  </span>
+                ) : (
+                  'PLACE BET'
+                )}
+              </button>
+            )}
           </form>
         )}
       </motion.div>

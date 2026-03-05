@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/battles/engine';
 import { TIER_CONFIG, ArenaTier, PayoutType } from '@/types/battleRoyale';
 import { isValidWalletAddress } from '@/lib/validation';
+import { checkRateLimit } from '@/lib/rateLimit';
 
 export const runtime = 'nodejs';
 
@@ -59,10 +60,54 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Rate limit: 3 creates/wallet/minute
+    const rateCheck = await checkRateLimit(`br-create:${wallet_address}`, 3);
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        { success: false, error: 'Rate limit exceeded', retryAfterMs: rateCheck.retryAfterMs },
+        { status: 429 }
+      );
+    }
+
     // Validate tier
     if (!['bifrost', 'midgard', 'asgard'].includes(tier)) {
       return NextResponse.json(
         { success: false, error: 'Invalid tier' },
+        { status: 400 }
+      );
+    }
+
+    // Validate num_rounds: must be 3, 5, or 7
+    if (![3, 5, 7].includes(num_rounds)) {
+      return NextResponse.json(
+        { success: false, error: 'num_rounds must be 3, 5, or 7' },
+        { status: 400 }
+      );
+    }
+
+    // Validate registration_minutes: 5-60 range
+    if (registration_minutes < 5 || registration_minutes > 60) {
+      return NextResponse.json(
+        { success: false, error: 'registration_minutes must be between 5 and 60' },
+        { status: 400 }
+      );
+    }
+
+    // Validate max_agents: must be between tier min and 20
+    const tierMinAgents = TIER_CONFIG[tier as ArenaTier].minAgents;
+    if (max_agents !== undefined && max_agents !== null) {
+      if (max_agents < tierMinAgents || max_agents > 20) {
+        return NextResponse.json(
+          { success: false, error: `max_agents must be between ${tierMinAgents} and 20` },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validate payout_structure
+    if (!['winner_takes_all', 'top_three'].includes(payout_structure)) {
+      return NextResponse.json(
+        { success: false, error: 'payout_structure must be winner_takes_all or top_three' },
         { status: 400 }
       );
     }

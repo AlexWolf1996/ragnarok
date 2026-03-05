@@ -5,8 +5,9 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/battles/engine';
-import { verifyTransactionDetails, BETTING_TIERS, BettingTier } from '@/lib/solana/transfer';
+import { verifyTransactionDetails } from '@/lib/solana/transfer';
 import { isValidUUID, isValidWalletAddress, isValidTransactionSignature } from '@/lib/validation';
+import { checkRateLimit } from '@/lib/rateLimit';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -43,6 +44,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { success: false, error: 'Invalid transaction signature format' },
         { status: 400 }
+      );
+    }
+
+    // Rate limit: 10 joins/wallet/minute
+    const rateCheck = await checkRateLimit(`br-join:${wallet_address}`, 10);
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        { success: false, error: 'Rate limit exceeded', retryAfterMs: rateCheck.retryAfterMs },
+        { status: 429 }
       );
     }
 
@@ -123,7 +133,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify the Solana transaction (buy-in payment)
-    const buyInSol = BETTING_TIERS[battle.tier as BettingTier];
+    const buyInSol = Number(battle.buy_in_sol);
     console.log(`[BR Join] Verifying transaction: ${tx_signature} for ${buyInSol} SOL`);
     const verification = await verifyTransactionDetails(tx_signature, buyInSol);
 
@@ -135,41 +145,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Insert participant
-    const { data: participant, error: insertError } = await supabase
-      .from('battle_royale_participants')
-      .insert({
-        battle_id,
-        agent_id,
-        round_scores: [],
-        total_score: 0,
-        payout_sol: 0,
-      })
-      .select('id')
-      .single();
+    // Atomic join: insert participant + increment counts in one transaction
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: participantId, error: joinError } = await (supabase.rpc as any)(
+      'atomic_br_join', {
+        p_battle_id: battle_id,
+        p_agent_id: agent_id,
+        p_buy_in_sol: buyInSol,
+      }
+    );
 
-    if (insertError || !participant) {
-      console.error('[BR Join] Insert error:', insertError);
+    if (joinError) {
+      console.error('[BR Join] Atomic join error:', joinError.message);
       return NextResponse.json(
         { success: false, error: 'Failed to register participant' },
         { status: 500 }
       );
     }
 
-    // Update battle pool and participant count
-    await supabase
-      .from('battle_royales')
-      .update({
-        participant_count: battle.participant_count + 1,
-        total_pool_sol: battle.total_pool_sol + battle.buy_in_sol,
-      })
-      .eq('id', battle_id);
-
-    console.log(`[BR Join] ${agent.name} joined battle ${battle.name} (participant #${battle.participant_count + 1})`);
+    console.log(`[BR Join] ${agent.name} joined battle ${battle.name} (participant_id: ${participantId})`);
 
     return NextResponse.json({
       success: true,
-      participant_id: participant.id,
+      participant_id: participantId,
       message: `${agent.name} has entered the battle!`,
     });
   } catch (error) {

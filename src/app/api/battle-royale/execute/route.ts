@@ -9,11 +9,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/battles/engine';
 import { generateAgentResponse, scoreBatchResponses } from '@/lib/groq/client';
-import { sendPayout } from '@/lib/solana/payout';
-import { solToLamports } from '@/lib/solana/transfer';
+import { verifyCronAuth } from '@/lib/qstash/verify';
 
 export const runtime = 'nodejs';
-export const maxDuration = 300; // 5 minutes for long battles
+export const maxDuration = 60; // Vercel Hobby tier limit
 
 interface ParticipantWithAgent {
   id: string;
@@ -30,6 +29,10 @@ interface ParticipantWithAgent {
 }
 
 export async function POST(request: NextRequest) {
+  // Auth: only scheduler/cron can trigger execution
+  const authResult = await verifyCronAuth(request);
+  if (authResult) return authResult;
+
   const startTime = Date.now();
 
   try {
@@ -45,24 +48,25 @@ export async function POST(request: NextRequest) {
 
     const supabase = getSupabaseAdmin();
 
-    // Fetch battle
-    const { data: battle, error: battleError } = await supabase
-      .from('battle_royales')
-      .select('*')
-      .eq('id', battle_id)
-      .single();
+    // Acquire exclusive lock on the battle (prevents concurrent execution)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: lockedBattles, error: lockError } = await (supabase.rpc as any)(
+      'lock_battle_for_execution', { p_battle_id: battle_id }
+    );
 
-    if (battleError || !battle) {
+    if (lockError) {
+      console.error('[BR Execute] Lock error:', lockError.message);
       return NextResponse.json(
-        { success: false, error: 'Battle not found' },
-        { status: 404 }
+        { success: false, error: 'Failed to acquire battle lock' },
+        { status: 500 }
       );
     }
 
-    if (battle.status !== 'in_progress') {
+    const battle = lockedBattles?.[0];
+    if (!battle) {
       return NextResponse.json(
-        { success: false, error: 'Battle is not in progress' },
-        { status: 400 }
+        { success: false, error: 'Battle not found, not in progress, or already being executed' },
+        { status: 409 }
       );
     }
 
@@ -107,6 +111,16 @@ export async function POST(request: NextRequest) {
 
     // Process each round
     for (const round of rounds) {
+      // Timeout check: if approaching Vercel limit, fail gracefully
+      const elapsed = Date.now() - startTime;
+      if (elapsed > 50_000) {
+        await markBattleFailed(supabase, battle_id, 'Execution timed out');
+        return NextResponse.json(
+          { success: false, error: 'Battle execution timed out' },
+          { status: 504 }
+        );
+      }
+
       const challenge = round.challenge as unknown as {
         id: string;
         name: string;
@@ -287,25 +301,98 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Process SOL payouts for winners
+    // Settle spectator bets (parimutuel)
+    if (winnerId) {
+      const { data: allBets } = await supabase
+        .from('battle_royale_bets')
+        .select('id, wallet_address, agent_id, amount_sol')
+        .eq('battle_id', battle_id)
+        .eq('status', 'pending');
+
+      if (allBets && allBets.length > 0) {
+        const totalBetPool = allBets.reduce((sum, b) => sum + Number(b.amount_sol), 0);
+        const rake = totalBetPool * 0.05;
+        const netBetPool = totalBetPool - rake;
+        const winningBets = allBets.filter(b => b.agent_id === winnerId);
+        const winningPool = winningBets.reduce((sum, b) => sum + Number(b.amount_sol), 0);
+
+        // Mark winning bets and queue payouts
+        for (const bet of winningBets) {
+          const betPayout = winningPool > 0
+            ? (Number(bet.amount_sol) / winningPool) * netBetPool
+            : 0;
+
+          await supabase
+            .from('battle_royale_bets')
+            .update({ status: 'won', payout_sol: betPayout })
+            .eq('id', bet.id);
+
+          if (betPayout > 0) {
+            await supabase.from('payout_queue').insert({
+              battle_royale_id: battle_id,
+              wallet_address: bet.wallet_address,
+              amount_sol: betPayout,
+              status: 'pending',
+            });
+
+            await supabase.from('notifications').insert({
+              wallet_address: bet.wallet_address,
+              type: 'payout_completed',
+              title: 'Bet Won!',
+              message: `Your bet on the Battle Royale winner paid out ${betPayout.toFixed(4)} SOL!`,
+            });
+          }
+        }
+
+        // Mark losing bets and send loss notifications
+        const losingBets = allBets.filter(b => b.agent_id !== winnerId);
+        for (const bet of losingBets) {
+          await supabase
+            .from('battle_royale_bets')
+            .update({ status: 'lost' })
+            .eq('id', bet.id);
+
+          await supabase.from('notifications').insert({
+            wallet_address: bet.wallet_address,
+            type: 'match_result',
+            title: 'Battle Royale Result',
+            message: 'Your prediction was defeated. Better luck next battle.',
+          });
+        }
+
+        console.log(`[BR Execute] Settled ${allBets.length} spectator bets (${winningBets.length} winners, ${losingBets.length} losers)`);
+      }
+    }
+
+    // Queue SOL payouts for winners (processed by existing payout_queue processor)
     for (const result of results) {
       if (result.payout_sol > 0) {
         const winner = ranked.find(p => p.agent_id === result.agent_id);
         const walletAddress = winner?.agent.wallet_address;
 
         if (walletAddress) {
-          try {
-            const payoutLamports = solToLamports(result.payout_sol);
-            const payoutResult = await sendPayout(walletAddress, payoutLamports);
+          const { error: queueError } = await supabase
+            .from('payout_queue')
+            .insert({
+              battle_royale_id: battle_id,
+              wallet_address: walletAddress,
+              amount_sol: result.payout_sol,
+              status: 'pending',
+            });
 
-            if (payoutResult.success) {
-              console.log(`[BR Execute] Payout sent to ${walletAddress}: ${result.payout_sol} SOL (${payoutResult.signature})`);
-            } else {
-              console.error(`[BR Execute] Payout failed for ${walletAddress}: ${payoutResult.error}`);
-            }
-          } catch (payoutErr) {
-            console.error(`[BR Execute] Payout error for ${walletAddress}:`, payoutErr);
+          if (queueError) {
+            console.error(`[BR Execute] Failed to queue payout for ${walletAddress}:`, queueError.message);
+          } else {
+            console.log(`[BR Execute] Payout queued for ${walletAddress}: ${result.payout_sol} SOL`);
           }
+
+          // Notification: payout queued
+          await supabase.from('notifications').insert({
+            wallet_address: walletAddress,
+            type: 'payout_completed',
+            title: 'Battle Royale Victory!',
+            message: `Your agent placed #${result.rank} and won ${result.payout_sol} SOL!`,
+          });
         }
       }
     }
@@ -322,6 +409,18 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('[BR Execute] Error:', error);
+
+    // Try to refund on unexpected failure
+    try {
+      const body = await request.clone().json().catch(() => null);
+      if (body?.battle_id) {
+        const supabase = getSupabaseAdmin();
+        await markBattleFailed(supabase, body.battle_id, error instanceof Error ? error.message : 'Execution failed');
+      }
+    } catch (refundErr) {
+      console.error('[BR Execute] Failed to refund after error:', refundErr);
+    }
+
     return NextResponse.json(
       { success: false, error: error instanceof Error ? error.message : 'Execution failed' },
       { status: 500 }
@@ -335,12 +434,84 @@ async function markBattleFailed(
   reason: string
 ) {
   try {
+    // Mark battle as cancelled
     await supabase
       .from('battle_royales')
       .update({ status: 'cancelled' })
       .eq('id', battleId);
     console.error(`[BR Execute] Battle ${battleId} cancelled: ${reason}`);
+
+    // Refund participants via payout_queue
+    const { data: participants } = await supabase
+      .from('battle_royale_participants')
+      .select('agent_id')
+      .eq('battle_id', battleId);
+
+    const { data: battle } = await supabase
+      .from('battle_royales')
+      .select('buy_in_sol')
+      .eq('id', battleId)
+      .single();
+
+    if (participants && battle) {
+      for (const p of participants) {
+        // Get agent wallet
+        const { data: agent } = await supabase
+          .from('agents')
+          .select('wallet_address')
+          .eq('id', p.agent_id)
+          .single();
+
+        if (agent?.wallet_address) {
+          await supabase.from('payout_queue').insert({
+            battle_royale_id: battleId,
+            wallet_address: agent.wallet_address,
+            amount_sol: battle.buy_in_sol,
+            status: 'pending',
+          });
+
+          await supabase.from('notifications').insert({
+            wallet_address: agent.wallet_address,
+            type: 'match_result',
+            title: 'Battle Cancelled — Refund Issued',
+            message: `Battle Royale was cancelled: ${reason}. Your ${battle.buy_in_sol} SOL buy-in will be refunded.`,
+          });
+        }
+      }
+      console.log(`[BR Execute] Queued refunds for ${participants.length} participants`);
+    }
+
+    // Refund pending spectator bets via payout_queue
+    const { data: pendingBets } = await supabase
+      .from('battle_royale_bets')
+      .select('id, wallet_address, amount_sol')
+      .eq('battle_id', battleId)
+      .eq('status', 'pending');
+
+    if (pendingBets && pendingBets.length > 0) {
+      for (const bet of pendingBets) {
+        await supabase
+          .from('battle_royale_bets')
+          .update({ status: 'refunded', payout_sol: bet.amount_sol })
+          .eq('id', bet.id);
+
+        await supabase.from('payout_queue').insert({
+          battle_royale_id: battleId,
+          wallet_address: bet.wallet_address,
+          amount_sol: bet.amount_sol,
+          status: 'pending',
+        });
+
+        await supabase.from('notifications').insert({
+          wallet_address: bet.wallet_address,
+          type: 'match_result',
+          title: 'Bet Refunded — Battle Cancelled',
+          message: `Battle Royale was cancelled. Your ${bet.amount_sol} SOL bet will be refunded.`,
+        });
+      }
+      console.log(`[BR Execute] Queued refunds for ${pendingBets.length} spectator bets`);
+    }
   } catch (err) {
-    console.error(`[BR Execute] Failed to cancel battle:`, err);
+    console.error(`[BR Execute] Failed to cancel/refund battle:`, err);
   }
 }

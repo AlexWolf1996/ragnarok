@@ -6,12 +6,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/battles/engine';
 import { TIER_CONFIG, ArenaTier } from '@/types/battleRoyale';
+import { verifyCronAuth } from '@/lib/qstash/verify';
+import { checkRateLimit } from '@/lib/rateLimit';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
   try {
+    // Auth: cron passes CRON_SECRET, users pass wallet_address
+    const cronAuth = await verifyCronAuth(request);
+    const isCronAuthed = cronAuth === null;
+
     const body = await request.json();
     const { battle_id, wallet_address } = body;
 
@@ -22,26 +28,44 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // If not cron-authed, require wallet_address and rate limit
+    if (!isCronAuthed) {
+      if (!wallet_address) {
+        return NextResponse.json(
+          { success: false, error: 'Unauthorized' },
+          { status: 401 }
+        );
+      }
+      const rateCheck = await checkRateLimit(`br-start:${wallet_address}`, 5);
+      if (!rateCheck.allowed) {
+        return NextResponse.json(
+          { success: false, error: 'Rate limit exceeded', retryAfterMs: rateCheck.retryAfterMs },
+          { status: 429 }
+        );
+      }
+    }
+
     const supabase = getSupabaseAdmin();
 
-    // Fetch battle
-    const { data: battle, error: battleError } = await supabase
-      .from('battle_royales')
-      .select('*')
-      .eq('id', battle_id)
-      .single();
+    // Acquire exclusive lock on the battle (prevents concurrent start)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: lockedBattles, error: lockError } = await (supabase.rpc as any)(
+      'lock_battle_for_start', { p_battle_id: battle_id }
+    );
 
-    if (battleError || !battle) {
+    if (lockError) {
+      console.error('[BR Start] Lock error:', lockError.message);
       return NextResponse.json(
-        { success: false, error: 'Battle not found' },
-        { status: 404 }
+        { success: false, error: 'Failed to acquire battle lock' },
+        { status: 500 }
       );
     }
 
-    if (battle.status !== 'open') {
+    const battle = lockedBattles?.[0];
+    if (!battle) {
       return NextResponse.json(
-        { success: false, error: 'Battle is not in open state' },
-        { status: 400 }
+        { success: false, error: 'Battle not found, not open, or already being started' },
+        { status: 409 }
       );
     }
 
@@ -131,7 +155,10 @@ export async function POST(request: NextRequest) {
 
     fetch(`${baseUrl}/api/battle-royale/execute`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(process.env.CRON_SECRET ? { 'Authorization': `Bearer ${process.env.CRON_SECRET}` } : {}),
+      },
       body: JSON.stringify({ battle_id }),
     }).catch(err => {
       console.error('[BR Start] Failed to trigger execution:', err);

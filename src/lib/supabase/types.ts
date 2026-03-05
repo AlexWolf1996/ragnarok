@@ -442,6 +442,7 @@ export type Database = {
           status: "pending" | "won" | "lost" | "refunded"
           payout_sol: number
           placed_at: string
+          tx_signature: string | null
         }
         Insert: {
           id?: string
@@ -452,6 +453,7 @@ export type Database = {
           status?: "pending" | "won" | "lost" | "refunded"
           payout_sol?: number
           placed_at?: string
+          tx_signature?: string | null
         }
         Update: {
           id?: string
@@ -462,6 +464,7 @@ export type Database = {
           status?: "pending" | "won" | "lost" | "refunded"
           payout_sol?: number
           placed_at?: string
+          tx_signature?: string | null
         }
         Relationships: []
       }
@@ -607,7 +610,8 @@ export type Database = {
       payout_queue: {
         Row: {
           id: string
-          match_id: string
+          match_id: string | null
+          battle_royale_id: string | null
           wallet_address: string
           amount_sol: number
           status: "pending" | "processing" | "completed" | "failed"
@@ -620,7 +624,8 @@ export type Database = {
         }
         Insert: {
           id?: string
-          match_id: string
+          match_id?: string | null
+          battle_royale_id?: string | null
           wallet_address: string
           amount_sol: number
           status?: "pending" | "processing" | "completed" | "failed"
@@ -633,7 +638,8 @@ export type Database = {
         }
         Update: {
           id?: string
-          match_id?: string
+          match_id?: string | null
+          battle_royale_id?: string | null
           wallet_address?: string
           amount_sol?: number
           status?: "pending" | "processing" | "completed" | "failed"
@@ -650,6 +656,13 @@ export type Database = {
             columns: ["match_id"]
             isOneToOne: false
             referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payout_queue_battle_royale_id_fkey"
+            columns: ["battle_royale_id"]
+            isOneToOne: false
+            referencedRelation: "battle_royales"
             referencedColumns: ["id"]
           },
         ]
