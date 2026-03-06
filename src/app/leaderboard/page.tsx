@@ -327,7 +327,7 @@ function LeaderboardContent() {
               }`}
             >
               <Coins size={14} />
-              BETTORS
+              PROPHETS
             </button>
           </div>
         </motion.div>

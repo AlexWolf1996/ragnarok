@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { X, Loader2, TrendingUp, AlertCircle } from 'lucide-react';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import {
   BattleRoyaleWithRelations,
   BattleRoyaleParticipant,
@@ -35,6 +36,7 @@ export default function BettingModal({
 }: BettingModalProps) {
   const wallet = useWallet();
   const { connection } = useConnection();
+  const { setVisible: setWalletModalVisible } = useWalletModal();
   const [, setBattle] = useState<BattleRoyaleWithRelations | null>(null);
   const [participants, setParticipants] = useState<BattleRoyaleParticipant[]>([]);
   const [bets, setBets] = useState<BattleRoyaleBet[]>([]);
@@ -107,7 +109,7 @@ export default function BettingModal({
     }
 
     if (amountNum > 10) {
-      setError('Maximum bet is 10 SOL');
+      setError('Maximum prophecy is 10 SOL');
       return;
     }
 
@@ -136,10 +138,10 @@ export default function BettingModal({
         onBetPlaced?.();
         onClose();
       } else {
-        setError(result.error || 'Failed to record bet');
+        setError(result.error || 'Failed to record prophecy');
       }
     } catch {
-      setError('Failed to place bet');
+      setError('Failed to stake prophecy');
     } finally {
       setSubmitting(false);
       setSubmitPhase('idle');
@@ -164,7 +166,7 @@ export default function BettingModal({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-[#2a2a35]">
           <h2 className="font-mono text-lg text-[#e8e8e8] tracking-wider">
-            PLACE BET
+            STAKE PROPHECY
           </h2>
           <button
             onClick={onClose}
@@ -227,7 +229,7 @@ export default function BettingModal({
             {/* Amount */}
             <div>
               <label className="block font-mono text-xs text-[#888890] mb-2 tracking-wider">
-                BET AMOUNT (SOL)
+                PROPHECY AMOUNT (SOL)
               </label>
               <input
                 type="number"
@@ -275,7 +277,7 @@ export default function BettingModal({
             <div className="flex items-start gap-2 text-[#f59e0b] text-xs">
               <AlertCircle size={14} className="flex-shrink-0 mt-0.5" />
               <span className="font-mono">
-                Betting is risky. Only bet what you can afford to lose.
+                Prophecy carries risk. Only stake what you can afford to lose.
               </span>
             </div>
 
@@ -287,10 +289,10 @@ export default function BettingModal({
             {!wallet.connected ? (
               <button
                 type="button"
-                onClick={() => wallet.select && wallet.select(null as never)}
+                onClick={() => setWalletModalVisible(true)}
                 className="w-full py-3 font-mono text-sm tracking-wider
-                         bg-[#2a2a35] text-[#e8e8e8] rounded-sm
-                         hover:bg-[#3a3a45] transition-colors duration-200"
+                         bg-[#d4a843] text-[#0a0a0f] rounded-sm
+                         hover:bg-[#e4b853] transition-colors duration-200"
               >
                 CONNECT WALLET
               </button>
@@ -306,10 +308,10 @@ export default function BettingModal({
                 {submitting ? (
                   <span className="flex items-center justify-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    {submitPhase === 'sending' ? 'Sending SOL...' : 'Recording bet...'}
+                    {submitPhase === 'sending' ? 'Sending SOL...' : 'Recording prophecy...'}
                   </span>
                 ) : (
-                  'PLACE BET'
+                  'STAKE PROPHECY'
                 )}
               </button>
             )}

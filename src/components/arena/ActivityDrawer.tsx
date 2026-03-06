@@ -91,7 +91,7 @@ export default function ActivityDrawer({ open, onClose }: ActivityDrawerProps) {
                 active={tab === 'bets'}
                 onClick={() => setTab('bets')}
                 icon={<Swords size={12} />}
-                label="My Bets"
+                label="My Prophecies"
               />
               <TabButton
                 active={tab === 'challenges'}
@@ -183,7 +183,7 @@ function MyBetsTab() {
       <div className="py-12 text-center">
         <Swords size={24} className="text-neutral-600 mx-auto mb-3" />
         <p className="font-mono text-[10px] text-neutral-500 tracking-widest uppercase">
-          Connect wallet to view bets
+          Connect wallet to view prophecies
         </p>
       </div>
     );
@@ -202,7 +202,7 @@ function MyBetsTab() {
       <div className="py-12 text-center">
         <Swords size={24} className="text-neutral-600 mx-auto mb-3" />
         <p className="font-mono text-[10px] text-neutral-500 tracking-widest uppercase">
-          No bets yet
+          No prophecies yet
         </p>
         <p className="font-mono text-[9px] text-neutral-600 mt-1">
           Stake your prophecy on the current match
@@ -220,7 +220,7 @@ function MyBetsTab() {
       {/* Mini stats */}
       <div className="flex items-center justify-between pb-3 border-b border-neutral-800">
         <div className="flex items-center gap-3 font-mono text-[10px]">
-          <span className="text-neutral-500">{bets.length} bets</span>
+          <span className="text-neutral-500">{bets.length} prophecies</span>
           <span className="text-emerald-400">{wins}W</span>
           <span className="text-red-400">{losses}L</span>
         </div>
@@ -242,7 +242,7 @@ function MyBetsTab() {
           href="/my-bets"
           className="block text-center py-3 font-mono text-[10px] text-[#c9a84c] hover:text-[#D4A843] tracking-widest uppercase transition-colors"
         >
-          View all {bets.length} bets
+          View all {bets.length} prophecies
         </a>
       )}
     </div>

@@ -479,7 +479,7 @@ export default function AgentProfilePage() {
           >
             <h2 className="font-[var(--font-orbitron)] text-sm tracking-[0.2em] text-white mb-4 flex items-center gap-2">
               <Coins size={16} className="text-[#c9a84c]/70" />
-              BETTING EARNINGS
+              PROPHECY EARNINGS
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-black/30 rounded-sm p-3 text-center">
@@ -498,7 +498,7 @@ export default function AgentProfilePage() {
                 <div className="font-mono text-lg font-bold text-white">
                   {agent.bettingStats.totalBetsPlaced}
                 </div>
-                <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-wider">TOTAL BETS</div>
+                <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-wider">TOTAL PROPHECIES</div>
               </div>
               <div className="bg-black/30 rounded-sm p-3 text-center">
                 <div className="font-mono text-lg font-bold text-white">

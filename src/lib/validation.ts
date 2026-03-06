@@ -69,8 +69,8 @@ export function isValidUrl(url: string): boolean {
 export const betAmountSchema = z
   .number()
   .positive('Amount must be positive')
-  .min(0.01, 'Minimum bet is 0.01 SOL')
-  .max(10, 'Maximum bet is 10 SOL');
+  .min(0.01, 'Minimum prophecy is 0.01 SOL')
+  .max(10, 'Maximum prophecy is 10 SOL');
 
 export const buyInAmountSchema = z
   .number()

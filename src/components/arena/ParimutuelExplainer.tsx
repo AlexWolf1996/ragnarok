@@ -76,7 +76,7 @@ export default function ParimutuelExplainer({ poolA, poolB, agentAName, agentBNa
 
           {/* Explainer text */}
           <p className="font-mono text-[9px] text-neutral-600 leading-relaxed">
-            All bets go into one pool. Treasury takes 5%. The rest goes to winners
+            All wagers go into one pool. Treasury takes 5%. The rest goes to winners
             proportionally based on their share of the winning side&apos;s pool.
           </p>
         </div>

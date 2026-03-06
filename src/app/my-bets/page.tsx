@@ -69,7 +69,7 @@ function MyBetsContent() {
       const data = await getMatchBetsByWallet(wallet.publicKey.toString());
       setBets((data as BetEntry[]) || []);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to load bets';
+      const msg = err instanceof Error ? err.message : 'Failed to load prophecies';
       setError(msg);
       toast.error('Load Failed', msg);
     } finally {
@@ -119,7 +119,7 @@ function MyBetsContent() {
             CONNECT YOUR WALLET
           </h1>
           <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
-            Link your Solana wallet to view your betting history and track your victories.
+            Link your Solana wallet to view your prophecy history and track your victories.
           </p>
         </div>
       </div>
@@ -195,7 +195,7 @@ function MyBetsContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <StatCard label="TOTAL BETS" value={totalBets.toString()} />
+          <StatCard label="TOTAL PROPHECIES" value={totalBets.toString()} />
           <StatCard label="WIN RATE" value={`${winRate}%`} sub={`${wins}W / ${losses}L`} />
           <StatCard label="WAGERED" value={`${totalWagered.toFixed(2)}`} sub="SOL" />
           <StatCard
@@ -275,7 +275,7 @@ function MyBetsContent() {
             <div className="p-12 text-center">
               <Coins size={48} className="text-[#c9a84c]/30 mx-auto mb-4" />
               <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
-                {bets.length === 0 ? 'No wagers placed yet. Enter the arena and test your fate.' : `No ${filter} bets found.`}
+                {bets.length === 0 ? 'No wagers placed yet. Enter the arena and test your fate.' : `No ${filter} prophecies found.`}
               </p>
             </div>
           ) : (
@@ -365,7 +365,7 @@ function MyBetsContent() {
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 font-mono text-[10px] text-neutral-500 hover:text-[#D4A843] transition-colors"
                         >
-                          bet <ExternalLink size={10} />
+                          stake <ExternalLink size={10} />
                         </a>
                       )}
                       {bet.payout_tx_signature && (

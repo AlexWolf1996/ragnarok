@@ -458,7 +458,7 @@ export default function BettingDuelPanel({
             {/* Pick Winner */}
             <div>
               <label className="block text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">
-                BET ON VICTOR
+                CHOOSE YOUR CHAMPION
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <button
@@ -499,7 +499,7 @@ export default function BettingDuelPanel({
               <div className="p-3 bg-[#c9a84c]/10 border border-[#c9a84c]/30 rounded-sm flex items-center gap-2">
                 <AlertTriangle size={14} className="text-[#c9a84c] flex-shrink-0" />
                 <span className="font-[var(--font-rajdhani)] text-xs text-[#D4A843]">
-                  Connect your wallet to place bets
+                  Connect your wallet to stake prophecies
                 </span>
               </div>
             )}

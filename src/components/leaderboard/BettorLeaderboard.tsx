@@ -221,12 +221,12 @@ export default function BettorLeaderboard() {
           <div className="font-mono text-[10px] text-neutral-500 mt-1">SOL</div>
         </div>
         <div className="bg-black/40 border border-neutral-800 rounded-sm p-4 text-center">
-          <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">TOTAL BETS</div>
+          <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">TOTAL PROPHECIES</div>
           <div className="font-[var(--font-orbitron)] text-xl font-bold text-white">{globalBets}</div>
           <div className="font-mono text-[10px] text-neutral-500 mt-1">{bettors.length} wallets</div>
         </div>
         <div className="bg-black/40 border border-neutral-800 rounded-sm p-4 text-center">
-          <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">BETS WON</div>
+          <div className="text-[10px] font-[var(--font-orbitron)] text-neutral-500 tracking-[0.2em] mb-2">PROPHECIES FULFILLED</div>
           <div className="font-[var(--font-orbitron)] text-xl font-bold text-emerald-400">{globalWins}</div>
           <div className="font-mono text-[10px] text-neutral-500 mt-1">{globalBets > 0 ? Math.round((globalWins / globalBets) * 100) : 0}% win rate</div>
         </div>
@@ -266,7 +266,7 @@ export default function BettorLeaderboard() {
             Wallet
           </div>
           <div className="col-span-2 text-center">
-            <SortButton field="totalBets" label="Bets" />
+            <SortButton field="totalBets" label="Prophecies" />
           </div>
           <div className="col-span-2 text-center">
             <SortButton field="winRate" label="Win %" />

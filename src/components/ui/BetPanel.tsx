@@ -72,15 +72,15 @@ export default function BetPanel({ match, isOpen, onClose, onBetPlaced }: BetPan
       return;
     }
     if (!selectedAgent) {
-      setError('Please select an agent to bet on');
+      setError('Please select an agent to back');
       return;
     }
     if (!amount || parseFloat(amount) < 0.01) {
-      setError('Minimum bet is 0.01 SOL');
+      setError('Minimum prophecy is 0.01 SOL');
       return;
     }
     if (parseFloat(amount) > 10) {
-      setError('Maximum bet is 10 SOL');
+      setError('Maximum prophecy is 10 SOL');
       return;
     }
     if (!match) return;
@@ -99,7 +99,7 @@ export default function BetPanel({ match, isOpen, onClose, onBetPlaced }: BetPan
       onBetPlaced?.();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to place bet');
+      setError(err instanceof Error ? err.message : 'Failed to stake prophecy');
     } finally {
       setIsSubmitting(false);
     }
@@ -129,7 +129,7 @@ export default function BetPanel({ match, isOpen, onClose, onBetPlaced }: BetPan
             <div className="flex items-center justify-between p-4 border-b border-[#1a1a25]">
               <div className="flex items-center gap-2">
                 <Coins className="text-[#666670]" size={18} />
-                <h3 className="font-mono text-sm tracking-[0.15em] text-[#e8e8e8]">PLACE BET</h3>
+                <h3 className="font-mono text-sm tracking-[0.15em] text-[#e8e8e8]">STAKE PROPHECY</h3>
               </div>
               <button
                 onClick={onClose}
@@ -193,7 +193,7 @@ export default function BetPanel({ match, isOpen, onClose, onBetPlaced }: BetPan
               {/* Amount input */}
               <div>
                 <label className="block text-[10px] font-mono text-[#666670] tracking-[0.2em] mb-2">
-                  BET AMOUNT (SOL)
+                  PROPHECY AMOUNT (SOL)
                 </label>
                 <div className="relative">
                   <input
@@ -241,17 +241,17 @@ export default function BetPanel({ match, isOpen, onClose, onBetPlaced }: BetPan
                 {isSubmitting ? (
                   <>
                     <Loader2 size={16} className="animate-spin" />
-                    PLACING BET...
+                    STAKING PROPHECY...
                   </>
                 ) : !connected ? (
                   'CONNECT WALLET'
                 ) : (
-                  `BET ${amount || '0'} SOL`
+                  `STAKE ${amount || '0'} SOL`
                 )}
               </button>
 
               <p className="text-[10px] font-mono text-[#666670] text-center">
-                Bets are recorded off-chain. On-chain settlement coming soon.
+                Prophecies are recorded off-chain. On-chain settlement coming soon.
               </p>
             </div>
           </motion.div>

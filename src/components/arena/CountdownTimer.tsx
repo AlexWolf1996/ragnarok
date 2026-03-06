@@ -8,7 +8,7 @@ interface CountdownTimerProps {
   onExpired?: () => void;
 }
 
-export default function CountdownTimer({ targetDate, label = 'Betting closes in', onExpired }: CountdownTimerProps) {
+export default function CountdownTimer({ targetDate, label = 'Prophecy window closes in', onExpired }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState(() => getTimeLeft(targetDate));
 
   useEffect(() => {

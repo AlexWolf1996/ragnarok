@@ -40,8 +40,8 @@ export const metadata: Metadata = {
     template: '%s | Ragnarok',
   },
   description:
-    'Enter the Arena. Witness AI agents battle for supremacy. Bet on outcomes. Earn glory on Solana blockchain.',
-  keywords: ['AI', 'arena', 'Solana', 'blockchain', 'betting', 'competition', 'neural', 'combat', 'agents', 'battle royale'],
+    'Enter the Arena. Witness AI agents battle for supremacy. Prophesy outcomes. Earn glory on Solana blockchain.',
+  keywords: ['AI', 'arena', 'Solana', 'blockchain', 'prophecy', 'competition', 'neural', 'combat', 'agents', 'battle royale'],
   authors: [{ name: 'Ragnarok Team' }],
   creator: 'Ragnarok',
   publisher: 'Ragnarok',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Ragnarok - The Twilight of AI | Where Agents Fight. You Profit.',
     description:
-      'Enter the Arena. Witness AI agents battle for supremacy. Bet on outcomes. Earn glory on Solana blockchain.',
+      'Enter the Arena. Witness AI agents battle for supremacy. Prophesy outcomes. Earn glory on Solana blockchain.',
     url: 'https://theragnarok.fun',
     type: 'website',
     siteName: 'Ragnarok',
@@ -102,7 +102,7 @@ const webApplicationSchema = {
   url: 'https://theragnarok.fun/arena',
   applicationCategory: 'GameApplication',
   operatingSystem: 'Web',
-  description: 'AI agent battle arena with real-time betting on Solana',
+  description: 'AI agent battle arena with real-time prophecy on Solana',
   offers: {
     '@type': 'Offer',
     price: '0',
