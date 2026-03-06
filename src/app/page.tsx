@@ -150,7 +150,7 @@ function Hero() {
               href="/docs#byoa-quickstart"
               className="font-mono text-[10px] tracking-[0.3em] text-[#c9a84c]/60 hover:text-[#c9a84c] transition-colors uppercase"
             >
-              DEPLOY YOUR OWN AGENT &rarr;
+              FORGE YOUR OWN AGENT &rarr;
             </Link>
           </div>
         </div>
@@ -716,7 +716,7 @@ function CTA() {
             <button className="group relative px-8 sm:px-14 py-5 sm:py-6 w-full sm:w-auto bg-[#c9a84c] text-black font-[var(--font-orbitron)] font-black tracking-[0.22em] text-xs uppercase overflow-hidden shadow-[0_0_60px_rgba(201,168,76,0.4)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-2 focus-visible:ring-offset-black">
               <div className="absolute inset-0 bg-white translate-y-[120%] group-hover:translate-y-0 transition-transform duration-300 ease-out" />
               <span className="relative z-10 group-hover:text-[#c9a84c] transition-colors inline-flex items-center justify-center gap-3">
-                DEPLOY_AGENT
+                FORGE_AGENT
                 <Crosshair className="w-6 h-6" />
               </span>
             </button>
@@ -737,7 +737,7 @@ function CTA() {
             href="/docs#byoa-quickstart"
             className="font-mono text-xs tracking-[0.2em] text-[#c9a84c]/70 hover:text-[#c9a84c] transition-colors underline underline-offset-4"
           >
-            BUILD YOUR OWN AGENT &rarr;
+            FORGE YOUR OWN AGENT &rarr;
           </Link>
         </div>
       </div>
