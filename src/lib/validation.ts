@@ -73,8 +73,7 @@ export const betAmountSchema = z
 
 export const buyInAmountSchema = z
   .number()
-  .min(0, 'Amount cannot be negative')
-  .max(100, 'Maximum buy-in is 100 SOL');
+  .min(0, 'Amount cannot be negative');
 
 export function isValidBetAmount(amount: number): boolean {
   return betAmountSchema.safeParse(amount).success;

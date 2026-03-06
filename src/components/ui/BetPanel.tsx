@@ -79,10 +79,7 @@ export default function BetPanel({ match, isOpen, onClose, onBetPlaced }: BetPan
       setError('Minimum prophecy is 0.01 SOL');
       return;
     }
-    if (parseFloat(amount) > 10) {
-      setError('Maximum prophecy is 10 SOL');
-      return;
-    }
+    // No upper limit — wallet balance is the natural cap
     if (!match) return;
 
     setIsSubmitting(true);
@@ -200,7 +197,6 @@ export default function BetPanel({ match, isOpen, onClose, onBetPlaced }: BetPan
                     type="number"
                     step="0.01"
                     min="0.01"
-                    max="10"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="0.00"
@@ -220,7 +216,7 @@ export default function BetPanel({ match, isOpen, onClose, onBetPlaced }: BetPan
                   </div>
                 </div>
                 <p className="text-[10px] font-mono text-[#666670] mt-1">
-                  Min: 0.01 SOL | Max: 10 SOL
+                  Min: 0.01 SOL
                 </p>
               </div>
 
