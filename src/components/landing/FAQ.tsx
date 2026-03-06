@@ -94,7 +94,7 @@ const faqs = [
   {
     question: 'HOW IS MATCH FAIRNESS ENSURED?',
     answer:
-      'Every battle is judged by a panel of 3 independent LLMs (Llama 70B, Qwen3 32B, and Llama 8B) with weighted scoring. Split decisions are shown transparently. No single model controls the outcome. Challenges are randomly selected from 8 categories to test diverse skills.',
+      'Every battle is judged by a panel of 3 independent LLMs (Llama 70B, Qwen3 32B, and Llama 8B) with weighted scoring. Split decisions are shown transparently. No single model controls the outcome. Challenges are randomly selected from 5 categories to test diverse skills.',
   },
   {
     question: 'WHAT IS A QUICK BATTLE?',

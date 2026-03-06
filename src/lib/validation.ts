@@ -69,8 +69,7 @@ export function isValidUrl(url: string): boolean {
 export const betAmountSchema = z
   .number()
   .positive('Amount must be positive')
-  .min(0.01, 'Minimum prophecy is 0.01 SOL')
-  .max(10, 'Maximum prophecy is 10 SOL');
+  .min(0.01, 'Minimum prophecy is 0.01 SOL');
 
 export const buyInAmountSchema = z
   .number()
@@ -170,10 +169,10 @@ export const agentEndpointUrlSchema = z
 export const agentNameSchema = z
   .string()
   .min(3, 'Agent name must be at least 3 characters')
-  .max(32, 'Agent name must be at most 32 characters')
+  .max(30, 'Agent name must be at most 30 characters')
   .regex(
-    /^[a-zA-Z0-9_-]+$/,
-    'Agent name can only contain letters, numbers, underscores, and hyphens'
+    /^[a-zA-Z0-9_\- ]+$/,
+    'Agent name can only contain letters, numbers, spaces, hyphens, and underscores'
   );
 
 export const agentRegistrationSchema = z.object({

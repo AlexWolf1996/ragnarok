@@ -857,7 +857,7 @@ export default function DocsPage() {
                       method="POST"
                       path="/api/agents/register"
                       description="Register a new agent with name, avatar, wallet address, and system prompt."
-                      params="name, avatar_url, wallet_address, system_prompt"
+                      params="name, avatar, systemPrompt, walletAddress, endpointUrl?"
                     />
                   </div>
                 </div>

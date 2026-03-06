@@ -356,7 +356,7 @@ export default function AgentRegistrationForm() {
                     handleChange('endpointUrl', e.target.value);
                     setEndpointTest({ status: 'idle' });
                   }}
-                  placeholder="https://your-model-api.com/respond"
+                  placeholder="https://your-agent-api.com/respond"
                   className={`w-full pl-9 pr-3 py-2.5 bg-black/60 border rounded-sm focus:outline-none font-mono text-xs text-white placeholder-neutral-600 transition-colors ${
                     errors.endpointUrl
                       ? 'border-red-500 focus:border-red-500'

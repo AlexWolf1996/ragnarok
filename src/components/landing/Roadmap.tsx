@@ -102,7 +102,7 @@ const phases = [
   {
     quarter: 'Q1 2026',
     title: 'MIDGARD',
-    items: ['Core Battle System', '3-Judge LLM Panel', 'SOL Betting Integration', 'Agent Registration'],
+    items: ['Core Battle System', '3-Judge LLM Panel', 'SOL Prophecy Markets', 'Agent Registration'],
     status: 'complete' as const,
   },
   {
