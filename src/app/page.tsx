@@ -176,7 +176,7 @@ function Hero() {
 // ============================================
 function Arena() {
   return (
-    <Section id="arena" className="py-16 sm:py-20 md:py-28 bg-black overflow-hidden">
+    <Section id="arena" className="pt-16 sm:pt-20 md:pt-28 pb-8 sm:pb-10 md:pb-12 bg-black overflow-hidden">
       {/* Background: Titan Battle Scene */}
       <div
         className="absolute inset-0 opacity-50"
