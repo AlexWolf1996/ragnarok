@@ -795,7 +795,6 @@ export default function Home() {
             <Protocol />
             <SectionDivider variant="gradient" accentColor="gold" />
             <Leaderboard agents={agents} />
-            <Roadmap />
             <FAQ />
             <CTA />
           </>
