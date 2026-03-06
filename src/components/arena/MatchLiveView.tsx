@@ -137,7 +137,7 @@ export default function MatchLiveView({ selectedSide, onSelectSide }: MatchLiveV
         <div className="flex justify-center">
           <CountdownTimer
             targetDate={match.starts_at}
-            label="Betting closes in"
+            label="Prophecy window closes in"
             onExpired={refresh}
           />
         </div>
