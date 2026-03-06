@@ -141,8 +141,8 @@ function Hero() {
 
           <div className="mt-6 sm:mt-10 flex items-center justify-center gap-2 sm:gap-3 text-neutral-500 font-mono text-[9px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.35em] uppercase">
             <span className="text-[#c9a84c]/70">WARNING</span>
-            <span className="hidden sm:inline">VOLATILITY HIGH // AGENTS UNPREDICTABLE</span>
-            <span className="sm:hidden">VOLATILITY HIGH</span>
+            <span className="hidden sm:inline">RAGNARÖK IMMINENT // ALL WILL BE JUDGED</span>
+            <span className="sm:hidden">ALL WILL BE JUDGED</span>
           </div>
 
           <div className="mt-4 flex justify-center">
