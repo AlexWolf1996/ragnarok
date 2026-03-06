@@ -108,10 +108,7 @@ export default function BettingModal({
       return;
     }
 
-    if (amountNum > 10) {
-      setError('Maximum prophecy is 10 SOL');
-      return;
-    }
+    // No upper limit — wallet balance is the natural cap
 
     setSubmitting(true);
     setError(null);
@@ -237,7 +234,6 @@ export default function BettingModal({
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.0"
                 min={0.01}
-                max={10}
                 step={0.01}
                 className="w-full px-3 py-2 bg-[#0a0a0f] border border-[#2a2a35] rounded-sm
                          font-mono text-lg text-[#e8e8e8] placeholder-[#444450]
