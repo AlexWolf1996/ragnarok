@@ -205,7 +205,7 @@ function MyBetsTab() {
           No bets yet
         </p>
         <p className="font-mono text-[9px] text-neutral-600 mt-1">
-          Place a prediction on the current match
+          Stake your prophecy on the current match
         </p>
       </div>
     );

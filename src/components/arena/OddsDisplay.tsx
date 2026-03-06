@@ -41,7 +41,7 @@ export default function OddsDisplay({ impliedA, impliedB }: OddsDisplayProps) {
       {/* Labels */}
       <div className="flex items-center justify-between">
         {noBets ? (
-          <span className="font-mono text-xs text-neutral-600 mx-auto">No predictions yet — be the first</span>
+          <span className="font-mono text-xs text-neutral-600 mx-auto">No prophecies yet — be the first</span>
         ) : (
           <>
             <span className="font-mono text-xs text-[#D4A843]">{pctA}% backing</span>

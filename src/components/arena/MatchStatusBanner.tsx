@@ -21,7 +21,7 @@ function getStatusConfig(status: string) {
   switch (status) {
     case 'betting_open':
       return {
-        label: 'Betting Open — Place Your Predictions',
+        label: 'Betting Open — Speak Your Prophecy',
         dotClass: 'bg-[#D4A843] animate-pulse',
         textClass: 'text-[#D4A843]',
         borderClass: 'border-[#D4A843]/30',
@@ -45,7 +45,7 @@ function getStatusConfig(status: string) {
       };
     case 'completed':
       return {
-        label: 'Battle Complete — Predictions Settled',
+        label: 'Battle Complete — Prophecies Fulfilled',
         dotClass: 'bg-emerald-500',
         textClass: 'text-emerald-400',
         borderClass: 'border-emerald-500/30',

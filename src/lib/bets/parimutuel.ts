@@ -156,7 +156,7 @@ export async function settleMatch(matchId: string, winnerId: string): Promise<{
         wallet_address: bet.wallet_address,
         type: 'match_result',
         title: 'Battle Result',
-        message: 'Your prediction was defeated. Better luck next battle.',
+        message: 'Your prophecy was wrong. Better luck next battle.',
         match_id: matchId,
       });
   }
