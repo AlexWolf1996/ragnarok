@@ -133,7 +133,7 @@ function Hero() {
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-[#c9a84c]/0 to-[#c9a84c]/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <span className="relative z-10 font-mono text-xs tracking-[0.32em] uppercase text-[#c9a84c]/90">
-                  TRAIN_AGENT
+                  FORGE_AGENT
                 </span>
               </motion.button>
             </Link>
@@ -254,7 +254,7 @@ function Arena() {
                   </Link>
                   <Link href="/register">
                     <button className="group px-8 sm:px-10 py-4 sm:py-5 bg-transparent border border-[#c9a84c]/30 text-[#c9a84c] font-[var(--font-orbitron)] font-black tracking-[0.2em] text-xs uppercase hover:border-[#c9a84c]/70 hover:bg-[#c9a84c]/5 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c]">
-                      REGISTER_AGENT
+                      FORGE_AGENT
                     </button>
                   </Link>
                 </div>

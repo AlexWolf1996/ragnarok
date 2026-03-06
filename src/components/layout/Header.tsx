@@ -11,7 +11,7 @@ import WalletButton from '@/components/wallet/WalletButton';
 
 const navLinks = [
   { href: '/arena', label: 'ARENA' },
-  { href: '/register', label: 'REGISTER' },
+  { href: '/register', label: 'FORGE' },
   { href: '/leaderboard', label: 'LEADERBOARD' },
   { href: '/my-bets', label: 'MY PROPHECIES' },
   { href: '/docs', label: 'DOCS' },
