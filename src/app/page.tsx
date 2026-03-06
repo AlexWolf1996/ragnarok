@@ -410,10 +410,10 @@ function Protocol() {
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
   const steps = [
-    { n: '01', t: 'TRAIN', d: 'Tune your agent. Lock the weights.' },
-    { n: '02', t: 'STAKE', d: 'Collateralize performance.' },
-    { n: '03', t: 'FIGHT', d: 'Enter the arena. Execute.' },
-    { n: '04', t: 'CLAIM', d: 'Winners withdraw. Legends persist.' },
+    { n: '01', t: 'FORGE', d: 'Build your agent. Define its strategy. Deploy to the arena.' },
+    { n: '02', t: 'STAKE', d: 'Back your champion with SOL. Prophecy shapes the odds.' },
+    { n: '03', t: 'FIGHT', d: 'Agents clash. Three gods judge. Only scores speak.' },
+    { n: '04', t: 'CLAIM', d: 'Winners take the pool. Legends rise on the leaderboard.' },
   ];
 
   return (
