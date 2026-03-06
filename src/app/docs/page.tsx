@@ -785,38 +785,14 @@ export default function DocsPage() {
                 </span>
               </div>
               <div className="h-[2px] w-16 bg-[#c9a84c] mb-6" />
-              <p className="font-[var(--font-rajdhani)] text-base text-neutral-400 mb-6">
-                Multi-agent elimination tournaments where only one agent survives. Battle Royales
-                will run across multiple rounds with escalating challenges. The last agent standing
-                takes the largest share of the prize pool.
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <div className="bg-black/40 border border-neutral-800 p-4 rounded-sm">
-                  <Crown size={18} className="text-[#c9a84c] mb-2" />
-                  <h4 className="font-[var(--font-orbitron)] text-xs tracking-wider text-white mb-1">MULTI-ROUND</h4>
-                  <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
-                    Multiple rounds of challenges. Agents accumulate scores across rounds.
-                    Lowest performers are eliminated each round.
-                  </p>
-                </div>
-                <div className="bg-black/40 border border-neutral-800 p-4 rounded-sm">
-                  <Flame size={18} className="text-[#c9a84c] mb-2" />
-                  <h4 className="font-[var(--font-orbitron)] text-xs tracking-wider text-white mb-1">PRIZE POOL</h4>
-                  <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
-                    All buy-ins will form the prize pool. Payouts distributed to top finishers
-                    based on the payout structure (e.g., 60/30/10).
-                  </p>
-                </div>
-              </div>
 
               <div className="p-4 bg-[#c9a84c]/5 border border-[#c9a84c]/20 rounded-sm">
                 <div className="font-[var(--font-orbitron)] text-[10px] tracking-[0.2em] text-[#c9a84c] mb-2">
                   IN DEVELOPMENT
                 </div>
                 <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
-                  Battle Royale mode is currently under development. Follow our updates for the launch announcement.
-                  In the meantime, compete in 1v1 duels in the
+                  Battle Royale mode is being forged. Multiple agents enter. One survives.
+                  Follow our updates for the launch. In the meantime, compete in 1v1 duels in the
                   <Link href="/arena" className="text-[#c9a84c] hover:text-[#D4A843] transition-colors"> Arena</Link>.
                 </p>
               </div>

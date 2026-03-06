@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
@@ -8,107 +8,6 @@ import Image from 'next/image';
 import GlitchText from '@/components/effects/GlitchText';
 import ParticleField from '@/components/effects/ParticleField';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-
-// Target date: 14 days from a fixed reference
-const TARGET_DATE = new Date('2026-03-09T18:00:00Z');
-
-interface CountdownBlockProps {
-  value: number;
-  label: string;
-  isSeconds?: boolean;
-}
-
-function CountdownBlock({ value, label, isSeconds }: CountdownBlockProps) {
-  const prevValueRef = useRef(value);
-  const [isFlipping, setIsFlipping] = useState(false);
-  const reducedMotion = useReducedMotion();
-
-  useEffect(() => {
-    if (value !== prevValueRef.current) {
-      if (!reducedMotion) {
-        const flipTimeout = setTimeout(() => setIsFlipping(true), 0);
-        const resetTimeout = setTimeout(() => setIsFlipping(false), 300);
-        prevValueRef.current = value;
-        return () => {
-          clearTimeout(flipTimeout);
-          clearTimeout(resetTimeout);
-        };
-      }
-      prevValueRef.current = value;
-    }
-  }, [value, reducedMotion]);
-
-  return (
-    <div className="text-center">
-      <div
-        className={`countdown-digit font-mono text-2xl sm:text-4xl md:text-6xl font-light tracking-wider ${
-          isSeconds ? 'text-[#c41e3a]' : 'text-[#e8e8e8]'
-        } ${isFlipping ? 'digit-flip' : ''}`}
-      >
-        {String(value).padStart(2, '0')}
-      </div>
-      <div className="font-mono text-[10px] md:text-xs tracking-[0.3em] text-[#8a8a95] mt-2">
-        {label}
-      </div>
-    </div>
-  );
-}
-
-function Countdown() {
-  const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; mins: number; secs: number } | null>(null);
-
-  const computeTimeLeft = useCallback(() => {
-    const now = new Date();
-    const diff = TARGET_DATE.getTime() - now.getTime();
-    if (diff <= 0) return null;
-    return {
-      days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-      mins: Math.floor((diff / (1000 * 60)) % 60),
-      secs: Math.floor((diff / 1000) % 60),
-    };
-  }, []);
-
-  useEffect(() => {
-    const initTimeout = setTimeout(() => setTimeLeft(computeTimeLeft()), 0);
-    const timer = setInterval(() => {
-      const tl = computeTimeLeft();
-      if (!tl) {
-        clearInterval(timer);
-        return;
-      }
-      setTimeLeft(tl);
-    }, 1000);
-    return () => {
-      clearTimeout(initTimeout);
-      clearInterval(timer);
-    };
-  }, [computeTimeLeft]);
-
-  if (!timeLeft) {
-    return null;
-  }
-
-  const blocks = [
-    { value: timeLeft.days, label: 'DAYS' },
-    { value: timeLeft.hours, label: 'HOURS' },
-    { value: timeLeft.mins, label: 'MINS' },
-    { value: timeLeft.secs, label: 'SECS', isSeconds: true },
-  ];
-
-  return (
-    <div className="flex items-center justify-center gap-4 md:gap-8">
-      {blocks.map((block) => (
-        <CountdownBlock
-          key={block.label}
-          value={block.value}
-          label={block.label}
-          isSeconds={block.isSeconds}
-        />
-      ))}
-    </div>
-  );
-}
 
 const subtitleWords = ['THE', 'TWILIGHT', 'OF', 'AI'];
 
@@ -256,14 +155,6 @@ export default function Hero() {
           </Link>
         </motion.div>
 
-        {/* Countdown */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7, duration: 0.8 }}
-        >
-          <Countdown />
-        </motion.div>
       </div>
 
       {/* Scroll indicator */}
