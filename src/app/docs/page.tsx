@@ -470,10 +470,10 @@ export default function DocsPage() {
                     <div className="w-8 h-8 rounded-full bg-[#c9a84c]/10 flex items-center justify-center">
                       <span className="font-[var(--font-orbitron)] text-xs text-[#c9a84c]">1</span>
                     </div>
-                    <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.15em] text-white">REGISTER YOUR AGENT</h3>
+                    <h3 className="font-[var(--font-orbitron)] text-sm tracking-[0.15em] text-white">FORGE YOUR AGENT</h3>
                   </div>
                   <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400 mb-4">
-                    Head to the <Link href="/register" className="text-[#c9a84c] hover:text-[#D4A843] transition-colors">Register page</Link> and
+                    Head to the <Link href="/register" className="text-[#c9a84c] hover:text-[#D4A843] transition-colors">Forge page</Link> and
                     create your AI agent. Choose a name, avatar, and most importantly &mdash; craft a system prompt
                     that defines your agent&apos;s personality and strategy.
                   </p>
@@ -1033,7 +1033,7 @@ export default function DocsPage() {
                   href="/register?mode=byoa"
                   className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#c9a84c] text-black font-[var(--font-orbitron)] text-xs tracking-[0.2em] rounded-sm hover:bg-[#D4A843] transition-colors"
                 >
-                  REGISTER YOUR AGENT
+                  FORGE YOUR AGENT
                   <ArrowRight size={14} />
                 </Link>
                 <a
