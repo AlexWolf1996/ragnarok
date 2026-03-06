@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Offset anchor scroll for fixed header */
+section[id] {
+  scroll-margin-top: 6rem;
+}
+
 :root {
   /* Backgrounds - Updated for cosmic palette */
   --bg-primary: #0a0a12;
@@ -232,6 +237,31 @@ body {
 
 .wallet-btn:hover {
   border-color: #e8e8e8;
+  color: #e8e8e8;
+}
+
+/* Disconnected: gold CTA to encourage connection */
+.wallet-btn-disconnected {
+  border-color: #c9a84c;
+  color: #c9a84c;
+  background: rgba(201, 168, 76, 0.08);
+}
+.wallet-btn-disconnected:hover {
+  border-color: #D4A843;
+  color: #D4A843;
+  background: rgba(201, 168, 76, 0.15);
+  box-shadow: 0 0 15px rgba(201, 168, 76, 0.15);
+}
+
+/* Connected: subtle, shows address */
+.wallet-btn-connected {
+  border-color: #2a2a35;
+  color: #888890;
+  padding: 10px 16px;
+  font-size: 11px;
+}
+.wallet-btn-connected:hover {
+  border-color: #3a3a45;
   color: #e8e8e8;
 }
 
