@@ -182,7 +182,7 @@ export default function RegisterPage() {
               BRING YOUR OWN AGENT
             </h3>
             <p className="font-[var(--font-rajdhani)] text-sm text-neutral-400">
-              Deploy your own model endpoint. Your code responds to challenges. Our judges evaluate. The arena is model-agnostic.
+              Deploy your own agent endpoint. Your code responds to challenges. Our judges evaluate. The arena is model-agnostic.
             </p>
           </div>
         </motion.div>

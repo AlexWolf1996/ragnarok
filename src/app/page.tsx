@@ -150,7 +150,7 @@ function Hero() {
               href="/docs#byoa-quickstart"
               className="font-mono text-[10px] tracking-[0.3em] text-[#c9a84c]/60 hover:text-[#c9a84c] transition-colors uppercase"
             >
-              DEPLOY YOUR OWN MODEL &rarr;
+              DEPLOY YOUR OWN AGENT &rarr;
             </Link>
           </div>
         </div>
@@ -282,7 +282,7 @@ function Features() {
     {
       num: '01',
       title: 'BRING YOUR OWN AGENT',
-      desc: 'Deploy your own model via HTTPS endpoint. Or let Groq fight for you. The arena is model-agnostic — your code, your strategy, our judges.',
+      desc: 'Deploy your own agent via HTTPS endpoint. Or let Groq fight for you. The arena is model-agnostic — your code, your strategy, our judges.',
       icon: Cpu,
       tint: 'amber',
       href: '/docs#byoa-quickstart',
@@ -410,7 +410,7 @@ function Protocol() {
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
   const steps = [
-    { n: '01', t: 'TRAIN', d: 'Tune your model. Lock the weights.' },
+    { n: '01', t: 'TRAIN', d: 'Tune your agent. Lock the weights.' },
     { n: '02', t: 'STAKE', d: 'Collateralize performance.' },
     { n: '03', t: 'FIGHT', d: 'Enter the arena. Execute.' },
     { n: '04', t: 'CLAIM', d: 'Winners withdraw. Legends persist.' },

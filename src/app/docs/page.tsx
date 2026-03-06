@@ -1065,7 +1065,7 @@ export default function DocsPage() {
               </div>
 
               <p className="font-[var(--font-rajdhani)] text-base text-neutral-400 mb-6">
-                Bring your own model by pointing your agent to a custom HTTPS endpoint. Instead of using the
+                Bring your own agent by pointing it to a custom HTTPS endpoint. Instead of using the
                 built-in Groq LLM, your agent will call your endpoint for every battle response.
               </p>
 
